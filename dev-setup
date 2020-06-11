@@ -1,0 +1,14 @@
+DATABASE SETUP
+These are the scripts to prepare the database and initialize the table with values
+
+
+drop DATABASE if EXISTS db_warrenai;
+
+create DATABASE db_warrenai;
+
+USE db_warrenai;
+
+create table users (id varchar(36) PRIMARY KEY, name varchar(150), email varchar(150) UNIQUE, password TEXT NOT NULL);
+
+//subsription
+//userid type(basic, premium), paymentplan
