@@ -9,13 +9,11 @@ import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
+
 import ListSubheader from "@material-ui/core/ListSubheader";
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
@@ -24,6 +22,18 @@ import StarBorder from "@material-ui/icons/StarBorder";
 import DashboardPane from "./DashboardPane";
 import NavLink from "./NavLink";
 import NavItem from "./NavItem";
+
+// Icons
+import MenuIcon from "@material-ui/icons/Menu";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import TuneIcon from "@material-ui/icons/Tune";
+import TrackChangesIcon from "@material-ui/icons/TrackChanges";
+import BuildIcon from "@material-ui/icons/Build";
+import FastRewindIcon from "@material-ui/icons/FastRewind";
+import ImportContactsIcon from "@material-ui/icons/ImportContacts";
+import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
+import ComputerIcon from "@material-ui/icons/Computer";
 
 const drawerWidth = 300;
 
@@ -166,7 +176,7 @@ const NavDrawer = ({ children }) => {
           {/* My Dashboard */}
           <ListItem button key={"My Dashboard"}>
             <ListItemIcon>
-              <InboxIcon />
+              <TuneIcon />
             </ListItemIcon>
             <NavLink href="/dashboard">
               <ListItemText primary={"My Dashboard"} />
@@ -176,7 +186,7 @@ const NavDrawer = ({ children }) => {
           {/* Scanners */}
           <ListItem button onClick={handleClickScanners}>
             <ListItemIcon>
-              <InboxIcon />
+              <TrackChangesIcon />
             </ListItemIcon>
             <ListItemText primary={"Scanners"} />
             {openScanners ? <ExpandLess /> : <ExpandMore />}
@@ -204,7 +214,7 @@ const NavDrawer = ({ children }) => {
           {/* Portfolio */}
           <ListItem button onClick={handleClickPortfolio}>
             <ListItemIcon>
-              <InboxIcon />
+              <BuildIcon />
             </ListItemIcon>
             <ListItemText primary={"Portfolio"} />
             {openPortfolio ? <ExpandLess /> : <ExpandMore />}
@@ -225,7 +235,7 @@ const NavDrawer = ({ children }) => {
           {/* Backtesting */}
           <ListItem button key={"Backtesting"}>
             <ListItemIcon>
-              <InboxIcon />
+              <FastRewindIcon />
             </ListItemIcon>
             <ListItemText primary={"Backtesting"} />
           </ListItem>
@@ -233,7 +243,7 @@ const NavDrawer = ({ children }) => {
           {/* Learn */}
           <ListItem button key={"Learn"}>
             <ListItemIcon>
-              <InboxIcon />
+              <ImportContactsIcon />
             </ListItemIcon>
             <ListItemText primary={"Learn"} />
           </ListItem>
@@ -252,7 +262,7 @@ const NavDrawer = ({ children }) => {
           {/* Frequently Asked Questions */}
           <ListItem button key={"Frequently Asked Questions"}>
             <ListItemIcon>
-              <InboxIcon />
+              <PeopleAltOutlinedIcon />
             </ListItemIcon>
             <ListItemText primary={"Frequently Asked Questions"} />
           </ListItem>
@@ -260,7 +270,7 @@ const NavDrawer = ({ children }) => {
           {/* Contact Us */}
           <ListItem button key={"Contact Us"}>
             <ListItemIcon>
-              <InboxIcon />
+              <ComputerIcon />
             </ListItemIcon>
             <ListItemText primary={"Contact Us"} />
           </ListItem>
