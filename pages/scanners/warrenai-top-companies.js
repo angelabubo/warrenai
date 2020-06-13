@@ -6,7 +6,7 @@ const WarrenAITopCo = (props) => {
   return (
     <div>
       <NavDrawer {...props}>
-        <DashboardPane {...props} message="hello from TOP Companies list" />
+        <DashboardPane {...props} message="WARRENAI TOP Companies List" />
       </NavDrawer>
     </div>
   );

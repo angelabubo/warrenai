@@ -1,15 +1,16 @@
 import { useState } from "react";
 import clsx from "clsx";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-
+import Brand from "./Brand";
+import { Grid } from "@material-ui/core";
+import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -22,6 +23,7 @@ import StarBorder from "@material-ui/icons/StarBorder";
 import DashboardPane from "./DashboardPane";
 import NavLink from "./NavLink";
 import NavItem from "./NavItem";
+import InputBase from "@material-ui/core/InputBase";
 
 // Icons
 import MenuIcon from "@material-ui/icons/Menu";
@@ -34,14 +36,20 @@ import FastRewindIcon from "@material-ui/icons/FastRewind";
 import ImportContactsIcon from "@material-ui/icons/ImportContacts";
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import ComputerIcon from "@material-ui/icons/Computer";
+import SearchIcon from "@material-ui/icons/Search";
+
+import AccountMenu from "./AccountMenu";
 
 const drawerWidth = 300;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
+    color: "secondary",
   },
   appBar: {
+    backgroundColor: "#fff",
+    color: "black",
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -67,6 +75,8 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaper: {
     width: drawerWidth,
+    backgroundColor: "#26303e",
+    color: "#fff",
   },
   drawerHeader: {
     display: "flex",
@@ -74,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
   },
   content: {
     flexGrow: 1,
@@ -95,14 +105,61 @@ const useStyles = makeStyles((theme) => ({
   nested: {
     paddingLeft: theme.spacing(4),
   },
+  brand: {
+    paddingLeft: 8,
+    paddingRight: 8,
+  },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.black, 0.15),
+    "&:hover": {
+      backgroundColor: fade(theme.palette.common.black, 0.25),
+    },
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      marginLeft: 0, //theme.spacing(3),
+      width: "auto",
+    },
+  },
+  searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inputRoot: {
+    color: "inherit",
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("md")]: {
+      width: "20ch",
+    },
+  },
 }));
 
-const NavDrawer = ({ children }) => {
+const NavDrawer = ({ children, auth }) => {
+  console.log("NavDrawer");
+  console.log(auth);
+
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(true);
   const [openScanners, setOpenScanners] = useState(false);
   const [openPortfolio, setOpenPortfolio] = useState(false);
+  const {
+    user: { name },
+  } = auth;
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -140,9 +197,31 @@ const NavDrawer = ({ children }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap>
-            Persistent drawer
-          </Typography>
+          <Grid
+            container
+            direction="row"
+            alignItems="center"
+            justify="space-between"
+          >
+            <Grid item>
+              <div className={classes.search}>
+                <div className={classes.searchIcon}>
+                  <SearchIcon />
+                </div>
+                <InputBase
+                  placeholder="Search…"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{ "aria-label": "search" }}
+                />
+              </div>
+            </Grid>
+            <Grid item>
+              <AccountMenu userName={name} />
+            </Grid>
+          </Grid>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -155,6 +234,9 @@ const NavDrawer = ({ children }) => {
         }}
       >
         <div className={classes.drawerHeader}>
+          <span className={classes.brand}>
+            <Brand light />
+          </span>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "ltr" ? (
               <ChevronLeftIcon />
@@ -176,7 +258,7 @@ const NavDrawer = ({ children }) => {
           {/* My Dashboard */}
           <ListItem button key={"My Dashboard"}>
             <ListItemIcon>
-              <TuneIcon />
+              <TuneIcon color="secondary" />
             </ListItemIcon>
             <NavLink href="/dashboard">
               <ListItemText primary={"My Dashboard"} />
@@ -186,7 +268,7 @@ const NavDrawer = ({ children }) => {
           {/* Scanners */}
           <ListItem button onClick={handleClickScanners}>
             <ListItemIcon>
-              <TrackChangesIcon />
+              <TrackChangesIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Scanners"} />
             {openScanners ? <ExpandLess /> : <ExpandMore />}
@@ -214,7 +296,7 @@ const NavDrawer = ({ children }) => {
           {/* Portfolio */}
           <ListItem button onClick={handleClickPortfolio}>
             <ListItemIcon>
-              <BuildIcon />
+              <BuildIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Portfolio"} />
             {openPortfolio ? <ExpandLess /> : <ExpandMore />}
@@ -235,7 +317,7 @@ const NavDrawer = ({ children }) => {
           {/* Backtesting */}
           <ListItem button key={"Backtesting"}>
             <ListItemIcon>
-              <FastRewindIcon />
+              <FastRewindIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Backtesting"} />
           </ListItem>
@@ -243,7 +325,7 @@ const NavDrawer = ({ children }) => {
           {/* Learn */}
           <ListItem button key={"Learn"}>
             <ListItemIcon>
-              <ImportContactsIcon />
+              <ImportContactsIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Learn"} />
           </ListItem>
@@ -262,7 +344,7 @@ const NavDrawer = ({ children }) => {
           {/* Frequently Asked Questions */}
           <ListItem button key={"Frequently Asked Questions"}>
             <ListItemIcon>
-              <PeopleAltOutlinedIcon />
+              <PeopleAltOutlinedIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Frequently Asked Questions"} />
           </ListItem>
@@ -270,7 +352,7 @@ const NavDrawer = ({ children }) => {
           {/* Contact Us */}
           <ListItem button key={"Contact Us"}>
             <ListItemIcon>
-              <ComputerIcon />
+              <ComputerIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Contact Us"} />
           </ListItem>

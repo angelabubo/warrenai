@@ -58,7 +58,7 @@ function Signin() {
 
     signinUser(user)
       .then(() => {
-        Router.push("/");
+        Router.push("/dashboard");
       })
       .catch((err) => {
         showError(err);

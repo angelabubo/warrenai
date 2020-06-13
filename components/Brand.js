@@ -1,4 +1,3 @@
-import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Link from "next/link";
 import { Fragment } from "react";
@@ -17,7 +16,7 @@ const useStyle = makeStyles((theme) => ({
   },
   linklight: {
     textDecoration: "none",
-    color: "#fff",
+    color: "#f5f5ff",
     fontSize: "1.5rem",
     letterSpacing: 1.5,
     fontWeight: "700",

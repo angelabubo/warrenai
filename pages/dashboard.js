@@ -7,7 +7,7 @@ const Dashboard = (props) => {
   return (
     <div>
       <NavDrawer {...props}>
-        <DashboardPane {...props} message="hello from dash companies list" />
+        <DashboardPane {...props} message="DASHBOARD" />
       </NavDrawer>
     </div>
   );
