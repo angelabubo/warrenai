@@ -149,9 +149,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NavDrawer = ({ children, auth }) => {
-  console.log("NavDrawer");
-  console.log(auth);
-
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(true);

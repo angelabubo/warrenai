@@ -8,7 +8,7 @@ create DATABASE db_warrenai;
 
 USE db_warrenai;
 
-create table users (id varchar(36) PRIMARY KEY, name varchar(150), email varchar(150) UNIQUE, password TEXT NOT NULL);
+create table users (id varchar(36) PRIMARY KEY, name varchar(150), email varchar(150) UNIQUE, password TEXT NOT NULL, stripeCustomerId varchar(36));
 
 //subsription
 //userid type(basic, premium), paymentplan

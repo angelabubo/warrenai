@@ -20,7 +20,7 @@ exports.getAuthUser = (req, res) => {
 exports.getUserById = async (req, res, next, id) => {
   await dbHelper.getUserById(id).then((user) => {
     req.profile = user;
-    if (req.profile && req.profile.id === req.user.id) {
+    if (req.profile && req.user && req.profile.id === req.user.id) {
       //User is authenticated
       req.isAuthUser = true;
       return next();
@@ -50,4 +50,8 @@ exports.deleteUser = async (req, res) => {
 
   const deletedUser = await dbHelper.deleteUser(userId);
   res.json(deletedUser);
+};
+
+exports.getUsersTest = (req, res) => {
+  res.json({ message: "Success getUsersTest call!" });
 };
