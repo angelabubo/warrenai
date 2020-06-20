@@ -2,6 +2,7 @@ const express = require("express");
 const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
 const stripeController = require("../controllers/stripeController");
+const bodyParser = require("body-parser");
 
 const router = express.Router();
 
@@ -35,15 +36,22 @@ router
 router.get("/api/users/profile/:userId", userController.getUserProfile);
 
 //STRIPE ROUTES: /api/stripe
-//Create a customer object from an existing user when they subscribe
-// router.post(
-//   "/api/stripe/:userId/create-customer",
-//   stripeController.createCustomer
-// );
-//Create a subscription 21579129-aeb4-11ea-967a-086266b3719a
 router.post(
   "/api/stripe/:userId/create-subscription",
   stripeController.createSubscription
+);
+
+router.post("/api/stripe/:userId/retry-invoice", stripeController.retryInvoice);
+router.post(
+  "/api/stripe/:userId/update-subscription",
+  stripeController.updateSubscription
+);
+
+//STRIPE WEBHOOK handler for asynchronous events.
+router.post(
+  "/api/stripe/stripe-webhook",
+  bodyParser.raw({ type: "application/json" }),
+  stripeController.stripeWebhookHandler
 );
 
 router.get("/api/test", userController.getUsersTest);

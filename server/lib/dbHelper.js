@@ -92,8 +92,6 @@ exports.registerUser = (name, email, password, callback) => {
 };
 
 exports.deleteUser = (id) => {
-  //Check if email exists. SQL is case insensitive in selecting data
-  //delete from users where id='03a8c191-a6aa-11ea-9806-086266b3719a';
   let statement = "delete from users where id = ?";
   return dbConnection
     .execute(statement, [id])
@@ -107,9 +105,14 @@ exports.deleteUser = (id) => {
     });
 };
 
-exports.updateUser = (id, newData) => {
+exports.updateTableRowById = (table, id, newData) => {
   // UPDATE table_name SET column1 = value1, column2 = value2,...
   // WHERE condition;
+
+  console.log("updateTableRowById");
+  console.log(table);
+  console.log(id);
+  console.log(newData);
 
   const columns = Object.keys(newData);
   const values = Object.values(newData);
@@ -123,9 +126,10 @@ exports.updateUser = (id, newData) => {
     }
   });
 
-  let updateStatement = `update users set ${setStatement} where id = ?`;
+  let updateStatement = `update ${table} set ${setStatement} where id = ?`;
+  console.log(updateStatement);
   return dbConnection
-    .execute(statement, [...values, id])
+    .execute(updateStatement, [...values, id])
     .then(([rows, fields]) => {
       console.log(rows);
       return rows;
@@ -151,6 +155,59 @@ exports.getStripeCustomerId = (userId) => {
       console.log(
         "[ERROR][getStripeCustomerId] - " + userId + " - " + err.message
       );
+      return null;
+    });
+};
+
+exports.addSubscription = (sub) => {
+  let statement = "insert into subscriptions values (?, ?, ?, ?, ?, ?)";
+  return dbConnection
+    .execute(statement, [
+      sub.id,
+      sub.customer,
+      sub.current_period_end,
+      sub.status,
+      sub.items.data[0].price.id,
+      sub.items.data[0].price.product,
+    ])
+    .then(([rows, fields]) => {
+      if (rows.length > 0) {
+        return true;
+      }
+    })
+    .catch((err) => {
+      console.log("[ERROR][addSubscription] - " + err.message);
+      throw err;
+    });
+};
+
+exports.getSubscriptionByUserId = (id) => {
+  let statement =
+    "select users.id, users.name, users.email, subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId and subscriptions.status = 'active') where users.id = ? order by subscriptions.current_period_end desc limit 1";
+
+  return dbConnection
+    .execute(statement, [id])
+    .then(([rows, fields]) => {
+      if (rows.length > 0) {
+        console.log("getSubscriptionByUserId");
+        console.log(rows[0]);
+        return {
+          id: rows[0].id,
+          name: rows[0].name,
+          email: rows[0].email,
+          subscription: {
+            status: rows[0].status,
+            current_period_end: rows[0].current_period_end,
+            product_price_id: rows[0].product_price_id,
+          },
+          // password: rows[0].password,
+        };
+      } else {
+        return null;
+      }
+    })
+    .catch((err) => {
+      console.log("[ERROR][getSubscriptionByUserId] - " + err.message);
       return null;
     });
 };

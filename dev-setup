@@ -8,7 +8,40 @@ create DATABASE db_warrenai;
 
 USE db_warrenai;
 
-create table users (id varchar(36) PRIMARY KEY, name varchar(150), email varchar(150) UNIQUE, password TEXT NOT NULL, stripeCustomerId varchar(36));
+create table users (
+id varchar(36) PRIMARY KEY,
+name varchar(150),
+email varchar(150) UNIQUE,
+password TEXT NOT NULL,
+stripeCustomerId varchar(36),
+);
 
+create table subscriptions(
+id varchar(36) PRIMARY KEY,
+stripeCustomerId varchar(36) references users(stripeCustomerId),
+current_period_end BIGINT,
+status varchar(20),
+product_price_id varchar(36),
+product_id varchar(36)
+)
+
+//JOIN users and subscriptions table then filter
+select users.id, users.name, users.email, users.password, users.stripeCustomerId,
+subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id from users
+left join subscriptions on (
+    users.stripeCustomerId = subscriptions.stripeCustomerId and
+    subscriptions.status = 'active')
+where users.id = ?
+order by subscriptions.current_period_end desc
+limit 1
+
+  let statement =
+    "select users.id, users.name, users.email, users.password, users.stripeCustomerId, subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId and subscriptions.status = 'active') where users.id = ? order by subscriptions.current_period_end desc limit 1";
+
+test1 - 1595105460  21579129-aeb4-11ea-967a-086266b3719a
+test2 - 1595112254  615a3b16-aeb4-11ea-967a-086266b3719a
+test3 -             9abe4ec0-b1b7-11ea-967a-086266b3719a
 //subsription
 //userid type(basic, premium), paymentplan
+//To Frontend
+//If subscription status is active, when it will end, product_price_id

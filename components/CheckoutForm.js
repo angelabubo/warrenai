@@ -10,6 +10,11 @@ import {
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import axios from "axios";
+import {
+  createSubscription,
+  retryInvoiceWithNewPaymentMethod,
+  updateSubscription,
+} from "../lib/subscription";
 
 const CARD_ELEMENT_OPTIONS = {
   style: {
@@ -29,72 +34,244 @@ const CARD_ELEMENT_OPTIONS = {
   },
 };
 
-//test1 user cus_HT4gEtc9Zy8ndM
-const createSubscription = async ({ userId, paymentMethodId, priceId }) => {
-  console.log("Checkout Form - createSubscription");
-  try {
-    const result = await axios.post(
-      `/api/stripe/${userId}/create-subscription`,
-      {
-        paymentMethodId,
-        priceId,
-      }
-    );
-    //console.log(data);//JSON object
-    console.log(result);
-
-    // If the card is declined, display an error to the user.
-    if (result.error) {
-      // The card had an error when trying to attach it to a customer.
-      throw result;
-    }
-
-    // If attaching this card to a Customer object succeeds,
-    // but attempts to charge the customer fail, you
-    // get a requires_payment_method error.
-    // .then(handleRequiresPaymentMethod)
-
-    // No more actions required. Provision your service for the user.
-    // .then(onSubscriptionComplete)
-  } catch (error) {
-    // An error has happened. Display the failure to the user here.
-    // We utilize the HTML element we created.
-    //showCardError(error);
-    console.log(error);
-  }
-};
-
 const CheckoutForm = ({ userId }) => {
   const elements = useElements();
   const stripe = useStripe();
 
-  const createPaymentMethod = (cardElement, userId, priceId) => {
-    return stripe
-      .createPaymentMethod({
+  const createPaymentMethod = async (cardElement) => {
+    try {
+      const result = await stripe.createPaymentMethod({
         type: "card",
         card: cardElement,
-      })
-      .then((result) => {
-        if (result.error) {
-          console.log(result.error);
-        } else {
-          createSubscription({
-            userId: userId,
-            paymentMethodId: result.paymentMethod.id,
-            priceId: priceId,
-          });
-        }
       });
+
+      if (result.error) {
+        throw result;
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error Creating Payment Method");
+      throw error;
+    }
+  };
+
+  const confirmCardPayment = async (paymentIntent, paymentMethodId) => {
+    try {
+      const result = await stripe.confirmCardPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: paymentMethodId,
+        }
+      );
+
+      if (result.error) {
+        throw result;
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error Confirming Card Payment");
+      throw error;
+    }
+  };
+
+  const handleSubscriptionComplete = async (userId, priceId, result) => {
+    // Payment was successful.
+    // Remove invoice from localstorage because payment is now complete.
+    localStorage.clear();
+
+    // Call your backend to grant access to your service based on
+    // the product your customer subscribed to.
+    // Get the product by using result.subscription.price.product
+    try {
+      const serverStatus = await updateSubscription(userId, priceId, result);
+      console.log(serverStatus);
+    } catch (error) {
+      console.error("Backend Call error - " + error.message);
+    }
+
+    // Change your UI to show a success message to your customer.
+    //onSubscriptionSampleDemoComplete(result);
+    alert("SUCCESS");
+    //Display Account Settings Page
+  };
+
+  const handlePaymentMethodRequired = ({
+    subscription,
+    paymentMethodId,
+    priceId,
+  }) => {
+    try {
+      if (subscription.status === "active") {
+        // subscription is active, no customer actions required.
+        return { subscription, priceId, paymentMethodId };
+      } else if (
+        subscription.latest_invoice.payment_intent.status ===
+        "requires_payment_method"
+      ) {
+        // Using localStorage to store the state of the retry here
+        // (feel free to replace with what you prefer)
+        // Store the latest invoice ID and status
+        localStorage.setItem("latestInvoiceId", subscription.latest_invoice.id);
+        localStorage.setItem(
+          "latestInvoicePaymentIntentStatus",
+          subscription.latest_invoice.payment_intent.status
+        );
+        throw { error: { message: "Your card was declined." } };
+      } else {
+        return { subscription, priceId, paymentMethodId };
+      }
+    } catch (error) {
+      //console.error("handlePaymentMethodRequired - " + error.error.message);
+      throw error;
+    }
+  };
+
+  const handleCustomerActionRequired = async ({
+    subscription,
+    invoice,
+    priceId,
+    paymentMethodId,
+    isRetry,
+  }) => {
+    if (subscription && subscription.status === "active") {
+      // subscription is active, no customer actions required.
+      return { subscription, priceId, paymentMethodId };
+    }
+
+    // If it's a first payment attempt, the payment intent is on the subscription latest invoice.
+    // If it's a retry, the payment intent will be on the invoice itself.
+    let paymentIntent = invoice
+      ? invoice.payment_intent
+      : subscription.latest_invoice.payment_intent;
+
+    if (
+      paymentIntent.status === "requires_action" ||
+      (isRetry === true && paymentIntent.status === "requires_payment_method")
+    ) {
+      try {
+        const result = await confirmCardPayment(paymentIntent, paymentMethodId);
+
+        if (result.paymentIntent.status === "succeeded") {
+          // There's a risk of the customer closing the window before callback
+          // execution. To handle this case, set up a webhook endpoint and
+          // listen to invoice.payment_succeeded. This webhook endpoint
+          // returns an Invoice. //TODO
+          return {
+            priceId: priceId,
+            subscription: subscription,
+            invoice: invoice,
+            paymentMethodId: paymentMethodId,
+          };
+        }
+      } catch (error) {
+        throw error;
+      }
+    } else {
+      // No customer action needed
+      return { subscription, priceId, paymentMethodId };
+    }
+  };
+
+  const processSubscriptionRequest = async (userId, priceId, paymentMethod) => {
+    // If a previous payment was attempted, get the lastest invoice
+    const latestInvoicePaymentIntentStatus = localStorage.getItem(
+      "latestInvoicePaymentIntentStatus"
+    );
+
+    try {
+      if (latestInvoicePaymentIntentStatus === "requires_payment_method") {
+        //This is a payment retry, get the latest invoice id
+        const invoiceId = localStorage.getItem("latestInvoiceId");
+
+        //Update the payment method and retry invoice payment
+        const { data } = await retryInvoiceWithNewPaymentMethod({
+          userId: userId,
+          paymentMethodId: paymentMethod.paymentMethod.id,
+          invoiceId: invoiceId,
+        });
+        return {
+          // Use the Stripe 'object' property on the
+          // returned result to understand what object is returned.
+          invoice: data,
+          paymentMethodId: paymentMethod.paymentMethod.id,
+          priceId: priceId,
+          isRetry: true,
+        };
+      } else {
+        //First payment attempt
+        //Attach the payment method to a customer and create subsciption
+        const { data } = await createSubscription({
+          userId: userId,
+          paymentMethodId: paymentMethod.paymentMethod.id,
+          priceId: priceId,
+        });
+
+        return {
+          // Use the Stripe 'object' property on the
+          // returned result to understand what object is returned.
+          subscription: data,
+          paymentMethodId: paymentMethod.paymentMethod.id,
+          priceId: priceId,
+        };
+      }
+    } catch (error) {
+      throw error;
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    createPaymentMethod(
-      elements.getElement(CardElement),
-      userId,
-      "price_1Gu2n8AOCcUhE0MFLb8xXxIr"
-    );
+    try {
+      //Create a payment method
+      const paymentMethod = await createPaymentMethod(
+        elements.getElement(CardElement)
+      );
+
+      //Process Subscription Request
+      const subscription = await processSubscriptionRequest(
+        userId,
+        "price_1Gu2n8AOCcUhE0MFLb8xXxIr", //TODO
+        paymentMethod
+      );
+
+      // Some payment methods require a customer to be on session
+      // to complete the payment process or do additional
+      // authentication with their financial institution.
+      // Eg: 2FA for cards.
+      // Check the status of the
+      // payment intent to handle these actions.
+      const result = await handleCustomerActionRequired(subscription);
+
+      // You will get a requires_payment_method error if attempt
+      // to charge the card for the subscription failed.
+      if (result.subscription) {
+        const { subscription, priceId } = await handlePaymentMethodRequired(
+          result
+        );
+        // No more actions required. Provision your service for the user.
+        await handleSubscriptionComplete(userId, priceId, subscription);
+      } else if (result.invoice) {
+        // No more actions required. Provision your service for the user.
+        await handleSubscriptionComplete(
+          userId,
+          result.priceId,
+          result.invoice
+        );
+      } else {
+        throw {
+          error: {
+            message: "Unknown result object. Neither subscription nor invoice",
+          },
+        };
+      }
+    } catch (error) {
+      //Display error in UI - error.error.message
+      console.error(error);
+      alert(error.error.message);
+    }
   };
 
   return (
