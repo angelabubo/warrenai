@@ -5,6 +5,7 @@ const { createStripeCustomer } = require("./stripeHelper");
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 
+//Users
 exports.getUserByEmail = (email) => {
   let statement = "select * from users where email = ?";
   return dbConnection
@@ -105,41 +106,7 @@ exports.deleteUser = (id) => {
     });
 };
 
-exports.updateTableRowById = (table, id, newData) => {
-  // UPDATE table_name SET column1 = value1, column2 = value2,...
-  // WHERE condition;
-
-  console.log("updateTableRowById");
-  console.log(table);
-  console.log(id);
-  console.log(newData);
-
-  const columns = Object.keys(newData);
-  const values = Object.values(newData);
-
-  let setStatement = "";
-  columns.forEach((column) => {
-    if (setStatement === "") {
-      setStatement = `${column} = ?`;
-    } else {
-      setStatement = `${setStatement}, ${column} = ?`;
-    }
-  });
-
-  let updateStatement = `update ${table} set ${setStatement} where id = ?`;
-  console.log(updateStatement);
-  return dbConnection
-    .execute(updateStatement, [...values, id])
-    .then(([rows, fields]) => {
-      console.log(rows);
-      return rows;
-    })
-    .catch((err) => {
-      console.log("[ERROR][updateUser] - " + err.message);
-      return null;
-    });
-};
-
+//Subscriptions
 exports.getStripeCustomerId = (userId) => {
   let statement = "select * from users where id = ?";
   return dbConnection
@@ -209,5 +176,73 @@ exports.getSubscriptionByUserId = (id) => {
     .catch((err) => {
       console.log("[ERROR][getSubscriptionByUserId] - " + err.message);
       return null;
+    });
+};
+
+exports.updateSubscription = async ({ priceId, data }) => {
+  console.log("INSIDE SERVER dbHelper updateSubscription");
+
+  let subId, newData;
+  if (data.object === "subscription") {
+    subId = data.id;
+    newData = {
+      current_period_end: data.current_period_end,
+      status: data.status,
+      product_id: data.items.data[0].price.product,
+    };
+  } else if (data.object === "invoice") {
+    subId = data.subscription;
+    if (data.status === "paid") {
+      newData = {
+        status: "active",
+      };
+    } else {
+      newData = {
+        status: data.status,
+      };
+    }
+    console.log("Inside Invoice");
+    console.log(newData);
+  } else {
+    throw {
+      message: "Unknown data object type in updateSubscription Request",
+    };
+  }
+
+  if (priceId) {
+    newData["product_price_id"] = priceId;
+  }
+  await exports.updateTableRowById("subscriptions", subId, newData);
+};
+//Generic Helpers
+exports.updateTableRowById = (table, id, newData) => {
+  console.log("NEW DATA");
+  console.log(newData);
+
+  const columns = Object.keys(newData);
+  const values = Object.values(newData);
+
+  let setStatement = "";
+  columns.forEach((column) => {
+    if (setStatement === "") {
+      setStatement = `${column} = ?`;
+    } else {
+      setStatement = `${setStatement}, ${column} = ?`;
+    }
+  });
+
+  let updateStatement = `update ${table} set ${setStatement} where id = ?`;
+  console.log(updateStatement);
+  return dbConnection
+    .execute(updateStatement, [...values, id])
+    .then(([rows, fields]) => {
+      if (rows.affectedRows > 0) {
+        console.log(`${table} table was updated in row id ${id}`);
+      }
+      return true;
+    })
+    .catch((err) => {
+      console.log("[ERROR][updateTableRowById] - " + err.message);
+      return false;
     });
 };

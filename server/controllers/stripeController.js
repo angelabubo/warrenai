@@ -25,15 +25,21 @@ exports.createSubscription = async (req, res) => {
       priceId
     );
 
-    console.log(subscription);
-
-    //Create entry subscriptions table if successful
+    //Create entry subscriptions table
     await dbHelper.addSubscription(subscription);
 
     //Send response
     return res.send(subscription);
   } catch (error) {
-    return res.status("402").send({ error: { message: error.message } });
+    console.error("[SERVER] createSubscription");
+    console.error(error);
+
+    return res.status("402").json({
+      error: {
+        message:
+          "There was an error processing your payment request. Please contact WarrenAi.",
+      },
+    });
   }
 };
 
@@ -64,17 +70,18 @@ exports.retryInvoice = async (req, res) => {
     console.log("RETRY INVOICE ROUTE");
     console.log(invoice);
 
-    //Create entry subscriptions table if successful
-    if (invoice.status === "active") {
-      await dbHelper.addSubscription(subscription);
-    }
-
-    //Update users table
-
     //Send response
     return res.send(invoice);
   } catch (error) {
-    return res.status("402").send({ error: { message: error.message } });
+    console.error("[SERVER] retryInvoice");
+    console.error(error);
+
+    return res.status("402").json({
+      error: {
+        message:
+          "There was an error processing your payment request. Please contact WarrenAi.",
+      },
+    });
   }
 };
 
@@ -90,52 +97,25 @@ exports.updateSubscription = async (req, res) => {
     return res.redirect("/signin");
   }
 
-  //User is authenticated, get the stripe customer id of the user which was created when user signed up
+  //User is authenticated
   const { priceId, data } = req.body;
 
   //Update subscription for current customer
   try {
-    console.log("INSIDE SERVER updateSubscription");
+    await dbHelper.updateSubscription({ priceId, data });
 
-    console.log(data);
-    console.log(priceId);
-
-    let subId, newData;
-    if (data.object === "subscription") {
-      subId = data.id;
-      newData = {
-        current_period_end: data.current_period_end,
-        status: data.status,
-        product_price_id: priceId,
-        product_id: data.items.data[0].price.product,
-      };
-
-      await dbHelper.updateTableRowById("subscriptions", subId, newData);
-      //Send response
-      return res.send("OK TODO");
-    } else if (data.object === "invoice") {
-      subId = data.subscription;
-      if (data.status === "paid") {
-        newData = {
-          status: "active",
-          product_price_id: priceId,
-        };
-      } else {
-        newData = {
-          status: data.status,
-          product_price_id: priceId,
-        };
-      }
-      await dbHelper.updateTableRowById("subscriptions", subId, newData);
-      //Send response
-      return res.send("OK TODO");
-    } else {
-      throw {
-        message: "Unknown data object type in updateSubscription Request",
-      };
-    }
+    //Send response
+    res.sendStatus(200);
   } catch (error) {
-    return res.status("402").send({ error: { message: error.message } });
+    console.error("[SERVER] updateSubscription");
+    console.error(error);
+
+    return res.status("402").json({
+      error: {
+        message:
+          "There was an error updating your subscription. Please contact WarrenAi.",
+      },
+    });
   }
 };
 
@@ -158,7 +138,7 @@ exports.stripeWebhookHandler = async (req, res) => {
   //Test END
 
   // Extract the object from the event.
-  const dataObject = event.data.object;
+  const data = event.data.object;
 
   // Handle the event
   // Review important events for Billing webhooks
@@ -170,12 +150,18 @@ exports.stripeWebhookHandler = async (req, res) => {
       // Used to provision services after the trial has ended.
       // The status of the invoice will show up as paid. Store the status in your
       // database to reference when a user accesses your service to avoid hitting rate limits.
-      console.log("WEBHOOOOOOOOOOOOOKKKK");
-      console.log(dataObject);
+      console.log("WEBHOOOOOOOOOOOOOKKKK invoice.payment_succeeded");
+      console.log(data);
+      //Update subscription for current customer
+      try {
+        dbHelper.updateSubscription({ data });
+      } catch (error) {
+        console.error(error);
+      }
       break;
     case "invoice.payment_failed":
       // If the payment fails or the customer does not have a valid payment method,
-      //  an invoice.payment_failed event is sent, the subscription becomes past_due.
+      // an invoice.payment_failed event is sent, the subscription becomes past_due.
       // Use this webhook to notify your user that their payment has
       // failed and to retrieve new card details.
       break;

@@ -9,12 +9,12 @@ import {
 } from "@stripe/react-stripe-js";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
-import axios from "axios";
 import {
   createSubscription,
   retryInvoiceWithNewPaymentMethod,
-  updateSubscription,
 } from "../lib/subscription";
+
+import { clientlogger } from "../lib/clientlogger";
 
 const CARD_ELEMENT_OPTIONS = {
   style: {
@@ -81,15 +81,18 @@ const CheckoutForm = ({ userId }) => {
     // Remove invoice from localstorage because payment is now complete.
     localStorage.clear();
 
+    console.log("handleSubscriptionComplete");
+    console.log(result);
+
     // Call your backend to grant access to your service based on
     // the product your customer subscribed to.
     // Get the product by using result.subscription.price.product
-    try {
-      const serverStatus = await updateSubscription(userId, priceId, result);
-      console.log(serverStatus);
-    } catch (error) {
-      console.error("Backend Call error - " + error.message);
-    }
+    // try {
+    //   const serverStatus = await updateSubscription(userId, priceId, result);
+    //   console.log(serverStatus);
+    // } catch (error) {
+    //   console.error("Backend Call error - " + error.message);
+    // }
 
     // Change your UI to show a success message to your customer.
     //onSubscriptionSampleDemoComplete(result);
@@ -157,7 +160,7 @@ const CheckoutForm = ({ userId }) => {
           // There's a risk of the customer closing the window before callback
           // execution. To handle this case, set up a webhook endpoint and
           // listen to invoice.payment_succeeded. This webhook endpoint
-          // returns an Invoice. //TODO
+          // returns an Invoice.
           return {
             priceId: priceId,
             subscription: subscription,
@@ -268,9 +271,11 @@ const CheckoutForm = ({ userId }) => {
         };
       }
     } catch (error) {
-      //Display error in UI - error.error.message
-      console.error(error);
-      alert(error.error.message);
+      //Normalize the error as data object for cases of 40x/50x status codes
+      const data = clientlogger("err", error);
+
+      //Display error in UI - data.error.message
+      alert(data.error.message);
     }
   };
 
