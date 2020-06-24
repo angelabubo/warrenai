@@ -12,31 +12,88 @@ import TextField from "@material-ui/core/TextField";
 import {
   createSubscription,
   retryInvoiceWithNewPaymentMethod,
-} from "../lib/subscription";
+} from "../../lib/subscription";
 
-import { clientlogger } from "../lib/clientlogger";
+import { clientlogger } from "../../lib/clientlogger";
+
+//Dialog
+import React, { Fragment, useState } from "react";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import { STRIPE_PUBLIC_KEY } from "../../lib/subscription";
+import Typography from "@material-ui/core/Typography";
+
+import { makeStyles } from "@material-ui/core/styles";
+//Dialog
 
 const CARD_ELEMENT_OPTIONS = {
   style: {
     base: {
-      color: "#32325d",
-      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+      fontWeight: 400,
       fontSmoothing: "antialiased",
-      fontSize: "16px",
+      fontSize: "18px",
+      color: "#424770",
+      letterSpacing: "0.025em",
+      fontFamily: "Source Code Pro, monospace",
       "::placeholder": {
         color: "#aab7c4",
       },
     },
     invalid: {
-      color: "#fa755a",
-      iconColor: "#fa755a",
+      color: "#9e2146",
     },
   },
+  // iconStyle: "solid",
+  // style: {
+  //   base: {
+  //     color: "#32325d",
+  //     iconColor: "#fa755a",
+  //     fontWeight: 400,
+  //     fontFamily: '"Montserrat", Helvetica, sans-serif',
+  //     fontSmoothing: "antialiased",
+  //     fontSize: "18px",
+  //     "::placeholder": {
+  //       color: "#aab7c4",
+  //     },
+  //   },
+  //   invalid: {
+  //     color: "#fa755a",
+  //     iconColor: "#fa755a",
+  //   },
+  // },
+  // iconStyle: "solid",
+  // style: {
+  //   base: {
+  //     iconColor: "#c4f0ff",
+  //     color: "#fff",
+  //     fontWeight: 300,
+  //     fontFamily: "Montserrat, Open Sans, Segoe UI, sans-serif",
+  //     fontSize: "18px",
+  //     fontSmoothing: "antialiased",
+  //     ":-webkit-autofill": {
+  //       color: "#fce883",
+  //     },
+  //     "::placeholder": {
+  //       color: "#87bbfd",
+  //     },
+  //   },
+  //   invalid: {
+  //     iconColor: "#ffc7ee",
+  //     color: "#ffc7ee",
+  //   },
+  // },
 };
 
-const CheckoutForm = ({ userId }) => {
+const CardPaymentForm = ({ auth, plan }) => {
+  const userId = auth.user.id;
   const elements = useElements();
   const stripe = useStripe();
+
+  const classes = useStyles();
 
   const createPaymentMethod = async (cardElement) => {
     try {
@@ -230,7 +287,7 @@ const CheckoutForm = ({ userId }) => {
     try {
       //Create a payment method
       const paymentMethod = await createPaymentMethod(
-        elements.getElement(CardElement)
+        elements.getElement(CardNumberElement)
       );
 
       //Process Subscription Request
@@ -279,26 +336,70 @@ const CheckoutForm = ({ userId }) => {
     }
   };
 
-  return (
-    <Paper>
-      <form onSubmit={handleSubmit}>
-        <h3>Card Information</h3>
-        <CardElement options={CARD_ELEMENT_OPTIONS} />
-        <button type="submit" disabled={!stripe}>
-          Pay
-        </button>
-      </form>
+  const [open, setOpen] = React.useState(false);
 
-      {/* <CardNumberElement />
-      <CardExpiryElement />
-      <CardCvcElement />
-      <Divider />
-      <label>Name on Card</label>
-      <TextField id="name-on-card" label="" variant="outlined" />
-      <label>Postal Code</label>
-      <TextField id="postal-code" label="" variant="outlined" /> */}
-    </Paper>
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <Fragment>
+      <Button
+        fullWidth
+        variant="contained"
+        color="primary"
+        onClick={handleClickOpen}
+      >
+        Subscribe
+      </Button>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+        fullWidth={true}
+        PaperProps={{ classes: { root: classes.dialogPaper } }}
+      >
+        <DialogTitle id="form-dialog-title">
+          Subscribe to {plan.name}
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="h3" component="h3" align="center">
+            {plan.unitprice ? `$ ${plan.unitprice / 100}` : "Free"}
+          </Typography>
+          <Typography color="textSecondary" align="center">
+            {plan.recurring}
+          </Typography>
+          {/* <CardElement options={CARD_ELEMENT_OPTIONS} /> */}
+          <CardNumberElement options={CARD_ELEMENT_OPTIONS} />
+          <CardExpiryElement options={CARD_ELEMENT_OPTIONS} />
+          <CardCvcElement options={CARD_ELEMENT_OPTIONS} />
+          <Divider />
+          <label>Name on Card</label>
+          <TextField id="name-on-card" label="" variant="outlined" />
+          <label>Postal Code</label>
+          <TextField id="postal-code" label="" variant="outlined" />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            Subscribe
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Fragment>
   );
 };
 
-export default CheckoutForm;
+const useStyles = makeStyles({
+  dialogPaper: {
+    backgroundColor: "#f4f6ff",
+  },
+});
+
+export default CardPaymentForm;

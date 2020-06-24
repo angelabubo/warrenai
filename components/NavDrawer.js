@@ -20,7 +20,6 @@ import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import StarBorder from "@material-ui/icons/StarBorder";
-import DashboardPane from "./DashboardPane";
 import NavLink from "./NavLink";
 import NavItem from "./NavItem";
 import InputBase from "@material-ui/core/InputBase";

@@ -13,7 +13,7 @@ const NavLink = ({ router, href, children }) => {
     router.push(href);
   };
 
-  const isCurrentPath = router.pathname === href || router.asPath === href;
+  //const isCurrentPath = router.pathname === href || router.asPath === href;
 
   return (
     <div>
@@ -25,7 +25,7 @@ const NavLink = ({ router, href, children }) => {
           margin: 0,
           padding: 0,
           //   fontWeight: isCurrentPath ? "bold" : "normal",
-          color: "#f5f5ff",
+          color: "inherit",
         }}
       >
         {children}

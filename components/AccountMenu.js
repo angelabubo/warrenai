@@ -10,6 +10,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Divider from "@material-ui/core/Divider";
+import NavLink from "./NavLink";
+import { signoutUser } from "../lib/auth";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -87,10 +89,13 @@ export default function AccountMenu({ userName }) {
                   id="menu-list-grow"
                   onKeyDown={handleListKeyDown}
                 >
-                  <MenuItem onClick={handleClose}>Settings</MenuItem>
-                  <MenuItem onClick={handleClose}>Pricing Plans</MenuItem>
+                  <MenuItem onClick={handleClose}>Account Settings</MenuItem>
+                  <NavLink href="/account/pricingplans">
+                    <MenuItem onClick={handleClose}>Pricing Plans</MenuItem>
+                  </NavLink>
+
                   <Divider />
-                  <MenuItem onClick={handleClose}>Signout</MenuItem>
+                  <MenuItem onClick={signoutUser}>Signout</MenuItem>
                 </MenuList>
               </ClickAwayListener>
             </Paper>
