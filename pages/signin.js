@@ -99,8 +99,8 @@ function Signin() {
                   </Button>
                 </ButtonGroup>
                 <form onSubmit={handleSubmit} className={classes.form}>
-                  <FormControl margin="normal" fullWidth>
-                    <InputLabel htmlFor="name">Email</InputLabel>
+                  <FormControl margin="normal" fullWidth={true}>
+                    <InputLabel>Email</InputLabel>
                     <Input
                       name="email"
                       type="email"
@@ -109,8 +109,8 @@ function Signin() {
                       value={user.email}
                     />
                   </FormControl>
-                  <FormControl margin="normal" fullWidth>
-                    <InputLabel htmlFor="password">Password</InputLabel>
+                  <FormControl margin="normal" fullWidth={true}>
+                    <InputLabel>Password</InputLabel>
                     <Input
                       name="password"
                       type="password"

@@ -13,7 +13,7 @@ id varchar(36) PRIMARY KEY,
 name varchar(150),
 email varchar(150) UNIQUE,
 password TEXT NOT NULL,
-stripeCustomerId varchar(36),
+stripeCustomerId varchar(36)
 );
 
 create table subscriptions(
@@ -23,7 +23,7 @@ current_period_end BIGINT,
 status varchar(20),
 product_price_id varchar(36),
 product_id varchar(36)
-)
+);
 
 //JOIN users and subscriptions table then filter
 select users.id, users.name, users.email, users.password, users.stripeCustomerId,

@@ -97,7 +97,7 @@ function Signup() {
     <Fragment>
       <Container maxWidth={false} className={classes.container}>
         <Grid container direction="column" justify="center" alignItems="center">
-          <Grid item>
+          
             <div className={classes.root}>
               <Paper className={classes.paper}>
                 <Brand />
@@ -112,8 +112,8 @@ function Signup() {
                   <Button variant="contained">Sign Up</Button>
                 </ButtonGroup>
                 <form onSubmit={handleSubmit} className={classes.form}>
-                  <FormControl margin="normal" fullWidth>
-                    <InputLabel htmlFor="name">Name</InputLabel>
+                  <FormControl margin="normal" fullWidth={true}>
+                    <InputLabel>Name</InputLabel>
                     <Input
                       name="name"
                       type="text"
@@ -122,8 +122,8 @@ function Signup() {
                       value={user.name}
                     />
                   </FormControl>
-                  <FormControl margin="normal" fullWidth>
-                    <InputLabel htmlFor="name">Email</InputLabel>
+                  <FormControl margin="normal" fullWidth={true}>
+                    <InputLabel>Email</InputLabel>
                     <Input
                       name="email"
                       type="email"
@@ -132,8 +132,8 @@ function Signup() {
                       value={user.email}
                     />
                   </FormControl>
-                  <FormControl margin="normal" fullWidth>
-                    <InputLabel htmlFor="password">Password</InputLabel>
+                  <FormControl margin="normal" fullWidth={true}>
+                    <InputLabel>Password</InputLabel>
                     <Input
                       name="password"
                       type="password"
@@ -144,7 +144,7 @@ function Signup() {
                   </FormControl>
                   <Button
                     type="submit"
-                    fullWidth
+                    fullWidth={true}
                     variant="contained"
                     color="primary"
                     disabled={isLoading}
@@ -200,7 +200,7 @@ function Signup() {
                 </DialogActions>
               </Dialog>
             </div>
-          </Grid>
+        
         </Grid>
       </Container>
     </Fragment>

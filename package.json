@@ -35,7 +35,7 @@
     "react-dom": "^16.13.1",
     "react-jss": "^10.2.0",
     "react-router-dom": "^5.2.0",
-    "stripe": "^8.63.0",
+    "stripe": "^8.66.0",
     "validator": "^13.0.0"
   }
 }
