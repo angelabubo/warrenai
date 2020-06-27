@@ -1,7 +1,15 @@
 body {
   margin: 0;
+  font-family: "Montserrat", monospace;
+  letter-spacing: "0.025em";
 }
 
+.stripe-element-shadow {
+  box-shadow: 0 0 0 1px rgba(50, 151, 211, 0.3), 0 1px 1px 0 rgba(0, 0, 0, 0.07),
+    0 0 0 4px rgba(50, 151, 211, 0.3);
+  outline: none;
+  z-index: 9;
+}
 /* .StripeElement {
   display: block;
   margin: 10px 0 20px 0;
