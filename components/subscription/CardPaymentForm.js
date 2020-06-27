@@ -70,16 +70,16 @@ const CardPaymentForm = ({ auth, plan }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    //Check all required fields first just in case
-    //Card elements rely on the element.complete flag
+    //Update Pay button state to Processing...
+    setButtonStatus("Processing");
 
     try {
       //Create a payment method
       const paymentMethod = await createPaymentMethod(
         stripe,
         elements.getElement(CardNumberElement),
-        billingDetails.name,
-        billingDetails.postalCode
+        billingDetails.name
+        // billingDetails.postalCode
       );
 
       //Process Subscription Request
@@ -120,11 +120,22 @@ const CardPaymentForm = ({ auth, plan }) => {
         };
       }
     } catch (error) {
-      //Normalize the error as data object for cases of 40x/50x status codes
+      //Normalize the error as data object for cases of 40x/50x status code.
       const data = clientlogger("err", error);
 
       //Display error in UI - data.error.message
-      alert(data.error.message);
+      const errorElement = {
+        error: {
+          message: data.error.message,
+        },
+        complete: false,
+        elementType: "cardNumber",
+      };
+
+      //Set the card error for display
+      handleStripeElementChange(errorElement);
+      setButtonStatus("Pay");
+      handleFocusIn(errorElement);
     }
   };
   const [brandIcon, setBrandIcon] = useState("unknown");
@@ -132,21 +143,20 @@ const CardPaymentForm = ({ auth, plan }) => {
     cardNumber: "",
     cardExpiry: "",
     cardCvc: "",
-    name: "",
-    postalCode: "",
   });
   const [open, setOpen] = useState(false);
   const [billingDetails, setBillingDetails] = useState({
     name: "",
-    postalCode: "",
+    // postalCode: "",
   });
   const [completeForm, setCompleteForm] = useState({
     cardNumber: false,
     cardExpiry: false,
     cardCvc: false,
     name: false,
-    postalCode: false,
+    // postalCode: false,
   });
+  const [buttonStatus, setButtonStatus] = useState("Pay");
 
   const initializeStates = () => {
     setBrandIcon("unknown");
@@ -155,21 +165,23 @@ const CardPaymentForm = ({ auth, plan }) => {
       cardExpiry: "",
       cardCvc: "",
       name: "",
-      postalCode: "",
+      // postalCode: "",
     });
     setOpen(false);
 
     setBillingDetails({
       name: "",
-      postalCode: "",
+      // postalCode: "",
     });
     setCompleteForm({
       cardNumber: false,
       cardExpiry: false,
       cardCvc: false,
       name: false,
-      postalCode: false,
+      // postalCode: false,
     });
+
+    setButtonStatus("Pay");
   };
 
   const handleClickOpen = () => {
@@ -189,6 +201,8 @@ const CardPaymentForm = ({ auth, plan }) => {
   };
 
   const handleStripeElementChange = (evt) => {
+    console.log(evt);
+
     setCompleteForm((prev) => {
       return {
         ...prev,
@@ -258,7 +272,7 @@ const CardPaymentForm = ({ auth, plan }) => {
                 edge="end"
                 aria-label="close"
                 onClick={handleClose}
-                size="small"
+                // size="small"
               >
                 <CloseIcon />
               </IconButton>
@@ -376,7 +390,7 @@ const CardPaymentForm = ({ auth, plan }) => {
               </div>
             </div>
 
-            <div className={classes.section}>
+            {/* <div className={classes.section}>
               <div className={classes.label}>Postal code *</div>
               <div
                 id="postal-code"
@@ -397,7 +411,7 @@ const CardPaymentForm = ({ auth, plan }) => {
                   value={billingDetails.postalCode}
                 />
               </div>
-            </div>
+            </div> */}
 
             <div className={classes.section}>
               <Button
@@ -414,7 +428,7 @@ const CardPaymentForm = ({ auth, plan }) => {
                     : false
                 }
               >
-                Pay
+                {buttonStatus}
               </Button>
             </div>
             <div className={classes.section}>
@@ -550,6 +564,7 @@ const useStyles = makeStyles((theme) => ({
     fontSmoothing: "antialiased",
     fontSize: "16px",
     color: "#424770",
+    backgroundColor: "white",
     letterSpacing: "0.025em",
     fontFamily: '"Montserrat", Helvetica, sans-serif',
     "&::placeholder": {

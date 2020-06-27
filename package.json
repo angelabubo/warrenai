@@ -32,6 +32,7 @@
     "next-nprogress": "^1.4.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+    "postcode-validator": "^3.1.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-jss": "^10.2.0",
