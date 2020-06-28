@@ -29,6 +29,10 @@ exports.getUserByEmail = (email) => {
 };
 
 exports.getUserById = (id) => {
+  console.log("=====CALLED getUserById");
+
+  return exports.getSubscriptionByUserId(id);
+
   let statement = "select * from users where id = ?";
   return dbConnection
     .execute(statement, [id])
@@ -149,6 +153,8 @@ exports.addSubscription = (sub) => {
 };
 
 exports.getSubscriptionByUserId = (id) => {
+  console.log("=====CALLED getSubscriptionByUserId");
+
   let statement =
     "select users.id, users.name, users.email, subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId and subscriptions.status = 'active') where users.id = ? order by subscriptions.current_period_end desc limit 1";
 
@@ -156,8 +162,6 @@ exports.getSubscriptionByUserId = (id) => {
     .execute(statement, [id])
     .then(([rows, fields]) => {
       if (rows.length > 0) {
-        console.log("getSubscriptionByUserId");
-        console.log(rows[0]);
         return {
           id: rows[0].id,
           name: rows[0].name,
@@ -214,6 +218,7 @@ exports.updateSubscription = async ({ priceId, data }) => {
   }
   await exports.updateTableRowById("subscriptions", subId, newData);
 };
+
 //Generic Helpers
 exports.updateTableRowById = (table, id, newData) => {
   console.log("NEW DATA");

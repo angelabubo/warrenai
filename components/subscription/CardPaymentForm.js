@@ -294,6 +294,7 @@ const CardPaymentForm = ({ auth, plan }) => {
                 aria-label="close"
                 onClick={handleClose}
                 // size="small"
+                disabled={processing}
               >
                 <CloseIcon />
               </IconButton>

@@ -38,12 +38,14 @@ router.get("/api/users/profile/:userId", userController.getUserProfile);
 //STRIPE ROUTES: /api/stripe
 router.post(
   "/api/stripe/:userId/create-subscription",
+  authController.checkAuth,
   stripeController.createSubscription
 );
 
 router.post("/api/stripe/:userId/retry-invoice", stripeController.retryInvoice);
 router.post(
   "/api/stripe/:userId/update-subscription",
+  authController.checkAuth,
   stripeController.updateSubscription
 );
 
@@ -54,6 +56,6 @@ router.post(
   stripeController.stripeWebhookHandler
 );
 
-router.get("/api/test", userController.getUsersTest);
+router.get("/api/test", authController.checkAuth, userController.getUsersTest);
 
 module.exports = router;

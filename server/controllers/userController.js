@@ -4,21 +4,20 @@ exports.getUsers = () => {};
 exports.getAuthUser = (req, res) => {
   //Check if user who sent the request is authenticated (signed in)
   if (!req.isAuthUser) {
-    console.log("NOT AUTHENTICATED");
-
-    res
-      .status(403)
-      .json({ message: "You are not authenticated. Please signin or signup." });
-
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
     return res.redirect("/signin");
   }
-
   res.json(req.user);
 };
 
 //Store the user in req.profile
 exports.getUserById = async (req, res, next, id) => {
   await dbHelper.getUserById(id).then((user) => {
+    console.log("=======USER CONTROLLER");
+    console.log(user);
+
     req.profile = user;
     if (req.profile && req.user && req.profile.id === req.user.id) {
       //User is authenticated

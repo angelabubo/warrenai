@@ -145,6 +145,12 @@ const useStyles = makeStyles((theme) => ({
       width: "20ch",
     },
   },
+  listItem: {
+    color: "white",
+    "&:hover": {
+      backgroundColor: "#4f5969",
+    },
+  },
 }));
 
 const NavDrawer = ({ children, auth }) => {
@@ -235,9 +241,9 @@ const NavDrawer = ({ children, auth }) => {
           </span>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "ltr" ? (
-              <ChevronLeftIcon />
+              <ChevronLeftIcon style={{ color: "white" }} />
             ) : (
-              <ChevronRightIcon />
+              <ChevronRightIcon style={{ color: "white" }} />
             )}
           </IconButton>
         </div>
@@ -246,13 +252,17 @@ const NavDrawer = ({ children, auth }) => {
         {/* Stock Research Tools */}
         <List
           subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
+            <ListSubheader
+              component="div"
+              id="nested-list-subheader"
+              style={{ color: "white" }}
+            >
               Stock Research Tools
             </ListSubheader>
           }
         >
           {/* My Dashboard */}
-          <ListItem button key={"My Dashboard"}>
+          <ListItem button key={"My Dashboard"} className={classes.listItem}>
             <ListItemIcon>
               <TuneIcon color="secondary" />
             </ListItemIcon>
@@ -262,7 +272,11 @@ const NavDrawer = ({ children, auth }) => {
           </ListItem>
 
           {/* Scanners */}
-          <ListItem button onClick={handleClickScanners}>
+          <ListItem
+            button
+            onClick={handleClickScanners}
+            className={classes.listItem}
+          >
             <ListItemIcon>
               <TrackChangesIcon color="secondary" />
             </ListItemIcon>
@@ -271,18 +285,18 @@ const NavDrawer = ({ children, auth }) => {
           </ListItem>
           <Collapse in={openScanners} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem button>
+              <ListItem button className={classes.listItem}>
                 <ListItemIcon></ListItemIcon>
                 <NavLink href="/scanners/warrenai-top-companies">
                   <ListItemText primary="WarrenAi Top Companies" />
                 </NavLink>
               </ListItem>
 
-              <ListItem button>
+              <ListItem button className={classes.listItem}>
                 <ListItemIcon></ListItemIcon>
                 <ListItemText primary="Rank Companies by Sector" />
               </ListItem>
-              <ListItem button>
+              <ListItem button className={classes.listItem}>
                 <ListItemIcon></ListItemIcon>
                 <ListItemText primary="Dividend Scanner" />
               </ListItem>
@@ -290,7 +304,11 @@ const NavDrawer = ({ children, auth }) => {
           </Collapse>
 
           {/* Portfolio */}
-          <ListItem button onClick={handleClickPortfolio}>
+          <ListItem
+            button
+            onClick={handleClickPortfolio}
+            className={classes.listItem}
+          >
             <ListItemIcon>
               <BuildIcon color="secondary" />
             </ListItemIcon>
@@ -299,11 +317,11 @@ const NavDrawer = ({ children, auth }) => {
           </ListItem>
           <Collapse in={openPortfolio} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem button>
+              <ListItem button className={classes.listItem}>
                 <ListItemIcon></ListItemIcon>
                 <ListItemText primary="My Portfolio" />
               </ListItem>
-              <ListItem button>
+              <ListItem button className={classes.listItem}>
                 <ListItemIcon></ListItemIcon>
                 <ListItemText primary="My Watchlist" />
               </ListItem>
@@ -311,7 +329,7 @@ const NavDrawer = ({ children, auth }) => {
           </Collapse>
 
           {/* Backtesting */}
-          <ListItem button key={"Backtesting"}>
+          <ListItem button key={"Backtesting"} className={classes.listItem}>
             <ListItemIcon>
               <FastRewindIcon color="secondary" />
             </ListItemIcon>
@@ -319,7 +337,7 @@ const NavDrawer = ({ children, auth }) => {
           </ListItem>
 
           {/* Learn */}
-          <ListItem button key={"Learn"}>
+          <ListItem button key={"Learn"} className={classes.listItem}>
             <ListItemIcon>
               <ImportContactsIcon color="secondary" />
             </ListItemIcon>
@@ -332,13 +350,21 @@ const NavDrawer = ({ children, auth }) => {
         {/* Support */}
         <List
           subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
+            <ListSubheader
+              component="div"
+              id="nested-list-subheader"
+              style={{ color: "white" }}
+            >
               Support
             </ListSubheader>
           }
         >
           {/* Frequently Asked Questions */}
-          <ListItem button key={"Frequently Asked Questions"}>
+          <ListItem
+            button
+            key={"Frequently Asked Questions"}
+            className={classes.listItem}
+          >
             <ListItemIcon>
               <PeopleAltOutlinedIcon color="secondary" />
             </ListItemIcon>
@@ -346,7 +372,7 @@ const NavDrawer = ({ children, auth }) => {
           </ListItem>
 
           {/* Contact Us */}
-          <ListItem button key={"Contact Us"}>
+          <ListItem button key={"Contact Us"} className={classes.listItem}>
             <ListItemIcon>
               <ComputerIcon color="secondary" />
             </ListItemIcon>
