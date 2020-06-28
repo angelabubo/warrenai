@@ -564,7 +564,6 @@ const useStyles = makeStyles((theme) => ({
     fontSmoothing: "antialiased",
     fontSize: "16px",
     color: "#424770",
-    backgroundColor: "white",
     letterSpacing: "0.025em",
     fontFamily: '"Montserrat", Helvetica, sans-serif',
     "&::placeholder": {

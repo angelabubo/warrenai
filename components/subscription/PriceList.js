@@ -31,6 +31,13 @@ const useStyles = makeStyles({
   cardroot: {
     minWidth: 275,
     maxWidth: 300,
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+  cardBody: {
+    padding: 0,
   },
   bullet: {
     display: "inline-block",
@@ -48,12 +55,11 @@ const useStyles = makeStyles({
     minWidth: 35,
   },
   card_header: {
-    height: 125,
-    paddingBottom: 10,
+    height: 110,
   },
   card_action: {
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
     padding: 30,
   },
@@ -80,45 +86,50 @@ export default function PriceList(props) {
         container
         direction="row"
         justify="center"
-        alignItems="flex-start"
+        // alignItems="flex-start"
+        alignItems="stretch"
         spacing={2}
       >
         {plans.map((plan) => (
-          <Grid key={plan.id} item md={4}>
+          <Grid item key={plan.id} md={4}>
             <Card key={plan.id} className={classes.cardroot} variant="outlined">
-              <CardContent className={classes.card_header}>
-                <Typography variant="h6" component="h6" align="center">
-                  {plan.name}
-                </Typography>
-                <Typography variant="h3" component="h3" align="center">
-                  {plan.unitprice ? `$ ${plan.unitprice / 100}` : "Free"}
-                </Typography>
-                <Typography
-                  className={classes.pos}
-                  color="textSecondary"
-                  align="center"
-                >
-                  {plan.recurring}
-                </Typography>
-              </CardContent>
-              <CardContent>
-                <List>
-                  {plan.inclusions.map((inclusion, index) => (
-                    <ListItem
-                      key={index}
-                      disabled={inclusion.check ? false : true}
-                      dense={true}
-                    >
-                      <ListItemIcon className={classes.list_icon}>
-                        {inclusion.check ? <CheckIcon /> : <ClearIcon />}
-                      </ListItemIcon>
-                      <ListItemText primary={inclusion.feature} />
-                    </ListItem>
-                  ))}
-                </List>
+              <CardContent component="div" className={classes.cardBody}>
+                <CardContent className={classes.card_header}>
+                  <Typography variant="h6" component="h6" align="center">
+                    {plan.name}
+                  </Typography>
+                  <Typography variant="h3" component="h3" align="center">
+                    {plan.unitprice ? `$ ${plan.unitprice / 100}` : "Free"}
+                  </Typography>
+                  <Typography
+                    className={classes.pos}
+                    color="textSecondary"
+                    align="center"
+                  >
+                    {plan.recurring}
+                  </Typography>
+                </CardContent>
+                <CardContent>
+                  <List>
+                    {plan.inclusions.map((inclusion, index) => (
+                      <ListItem
+                        key={index}
+                        disabled={inclusion.check ? false : true}
+                        dense={true}
+                      >
+                        <ListItemIcon className={classes.list_icon}>
+                          {inclusion.check ? <CheckIcon /> : <ClearIcon />}
+                        </ListItemIcon>
+                        <ListItemText primary={inclusion.feature} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </CardContent>
               </CardContent>
               <CardActions className={classes.card_action}>
-                <Subscribe {...props} plan={plan} />
+                <Button fullWidth={true} variant="contained" color="primary">
+                  Subscribe
+                </Button>
               </CardActions>
             </Card>
           </Grid>
