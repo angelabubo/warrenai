@@ -35,6 +35,7 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    padding: 5,
   },
   cardBody: {
     padding: 0,
@@ -127,9 +128,7 @@ export default function PriceList(props) {
                 </CardContent>
               </CardContent>
               <CardActions className={classes.card_action}>
-                <Button fullWidth={true} variant="contained" color="primary">
-                  Subscribe
-                </Button>
+                <Subscribe {...props} plan={plan} />
               </CardActions>
             </Card>
           </Grid>

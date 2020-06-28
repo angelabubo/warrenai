@@ -1,4 +1,6 @@
 import { Container, Divider } from "@material-ui/core";
+import { green } from "@material-ui/core/colors";
+import Slide from "@material-ui/core/Slide";
 import {
   CardElement,
   CardNumberElement,
@@ -7,6 +9,8 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { blue } from "@material-ui/core/colors";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import {
@@ -17,6 +21,9 @@ import {
   handleCustomerActionRequired,
   processSubscriptionRequest,
 } from "../../lib/subscription";
+import theme from "../../pages/theme";
+
+import CheckCircleOutlineIcon from "@material-ui/icons/Check";
 
 import { clientlogger } from "../../lib/clientlogger";
 import clsx from "clsx";
@@ -60,18 +67,28 @@ const CardPaymentForm = ({ auth, plan }) => {
     // }
 
     // Change your UI to show a success message to your customer.
-    //onSubscriptionSampleDemoComplete(result);
-    console.log(result);
+    setProcessing(false);
+    setSuccess(true);
 
-    alert("SUCCESS");
-    //Display Account Settings Page
+    console.log(result);
+    setTimeout(() => {
+      //Close the dialog and initialize states
+      initializeStates();
+
+      //Display Account Settings Page
+    }, 2000);
   };
 
   const handleSubmit = async (event) => {
+    if (processing) {
+      //Do nothing.
+      return;
+    }
+
     event.preventDefault();
 
     //Update Pay button state to Processing...
-    setButtonStatus("Processing");
+    setProcessing(true);
 
     try {
       //Create a payment method
@@ -85,7 +102,7 @@ const CardPaymentForm = ({ auth, plan }) => {
       //Process Subscription Request
       const subscription = await processSubscriptionRequest(
         userId,
-        "price_1Gu2n8AOCcUhE0MFLb8xXxIr", //TODO
+        plan.id,
         paymentMethod
       );
 
@@ -134,7 +151,8 @@ const CardPaymentForm = ({ auth, plan }) => {
 
       //Set the card error for display
       handleStripeElementChange(errorElement);
-      setButtonStatus("Pay");
+      setProcessing(false);
+      setSuccess(false);
       handleFocusIn(errorElement);
     }
   };
@@ -156,7 +174,9 @@ const CardPaymentForm = ({ auth, plan }) => {
     name: false,
     // postalCode: false,
   });
-  const [buttonStatus, setButtonStatus] = useState("Pay");
+
+  const [processing, setProcessing] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const initializeStates = () => {
     setBrandIcon("unknown");
@@ -181,7 +201,8 @@ const CardPaymentForm = ({ auth, plan }) => {
       // postalCode: false,
     });
 
-    setButtonStatus("Pay");
+    setProcessing(false);
+    setSuccess(false);
   };
 
   const handleClickOpen = () => {
@@ -418,17 +439,45 @@ const CardPaymentForm = ({ auth, plan }) => {
                 fullWidth={true}
                 variant="contained"
                 color="primary"
-                className={classes.subscribeButton}
+                className={
+                  success
+                    ? clsx(classes.subscribeButton, classes.successButton)
+                    : clsx(classes.subscribeButton)
+                }
                 onClick={handleSubmit}
                 disabled={
+                  processing ||
                   Object.values(completeForm).find((value) => {
                     return !value;
                   }) === false
                     ? true
                     : false
                 }
+                disableFocusRipple={processing}
+                disableRipple={processing}
+                disableElevation={processing}
               >
-                {buttonStatus}
+                {processing ? "Processing..." : success ? "" : "Pay"}
+                {processing && (
+                  <CircularProgress
+                    size={24}
+                    className={classes.buttonProgress}
+                  />
+                )}
+
+                <Slide
+                  timeout={{ enter: 300, exit: 300 }}
+                  direction="left"
+                  in={success}
+                  mountOnEnter
+                  unmountOnExit
+                >
+                  <CheckCircleOutlineIcon
+                    id="check"
+                    size={30}
+                    className={classes.buttonCheck}
+                  />
+                </Slide>
               </Button>
             </div>
             <div className={classes.section}>
@@ -578,6 +627,29 @@ const useStyles = makeStyles((theme) => ({
     height: 45,
     color: "white",
     fontSize: "17px",
+  },
+  successButton: {
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[500],
+    },
+  },
+
+  buttonProgress: {
+    color: "#26303e",
+    position: "absolute",
+    top: "50%",
+    right: "3%",
+    marginTop: -12,
+    marginLeft: -12,
+  },
+  buttonCheck: {
+    color: "#26303e",
+    position: "absolute",
+    top: "50%",
+    right: "50%",
+    marginTop: -10,
+    marginLeft: -10,
   },
 }));
 
