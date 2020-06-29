@@ -1,5 +1,5 @@
 import { authInitialProps } from "../../lib/auth";
-import NavDrawer from "../../components/NavDrawer";
+import NavDrawer from "../../components/navigationNavDrawer";
 import DashboardPane from "../../components/DashboardPane";
 
 const WarrenAITopCo = (props) => {

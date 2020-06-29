@@ -8,12 +8,13 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import Brand from "./Brand";
+import Brand from "../Brand";
 import { Grid } from "@material-ui/core";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import NavDrawerMenuItem from "./NavDrawerMenuItem";
 
 import ListSubheader from "@material-ui/core/ListSubheader";
 import Collapse from "@material-ui/core/Collapse";
@@ -21,7 +22,6 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import StarBorder from "@material-ui/icons/StarBorder";
 import NavLink from "./NavLink";
-import NavItem from "./NavItem";
 import InputBase from "@material-ui/core/InputBase";
 
 // Icons
@@ -37,7 +37,7 @@ import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import ComputerIcon from "@material-ui/icons/Computer";
 import SearchIcon from "@material-ui/icons/Search";
 
-import AccountMenu from "./AccountMenu";
+import AccountMenu from "../AccountMenu";
 
 const drawerWidth = 300;
 
@@ -262,14 +262,16 @@ const NavDrawer = ({ children, auth }) => {
           }
         >
           {/* My Dashboard */}
-          <ListItem button key={"My Dashboard"} className={classes.listItem}>
+          {/* <ListItem button key={"My Dashboard"} className={classes.listItem}> */}
+          <NavDrawerMenuItem button key={"My Dashboard"}>
             <ListItemIcon>
               <TuneIcon color="secondary" />
             </ListItemIcon>
             <NavLink href="/dashboard">
               <ListItemText primary={"My Dashboard"} />
             </NavLink>
-          </ListItem>
+          </NavDrawerMenuItem>
+          {/* </ListItem> */}
 
           {/* Scanners */}
           <ListItem

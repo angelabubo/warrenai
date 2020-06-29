@@ -1,5 +1,5 @@
 import { authInitialProps } from "../../lib/auth";
-import NavDrawer from "../../components/NavDrawer";
+import NavDrawer from "../../components/navigation/NavDrawer";
 import PriceList from "../../components/subscription/PriceList";
 
 const PricingPlans = (props) => {

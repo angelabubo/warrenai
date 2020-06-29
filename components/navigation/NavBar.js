@@ -6,12 +6,12 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
-import { signoutUser } from "../lib/auth";
+import { signoutUser } from "../../lib/auth";
 import Link from "next/link";
-import Brand from "../components/Brand";
+import Brand from "../Brand";
 import NavBarLink from "./NavBarLink";
 
-import theme from "../pages/theme";
+import theme from "../../pages/theme";
 
 const useStyles = makeStyles((theme) => ({
   root: {

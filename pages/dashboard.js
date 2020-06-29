@@ -1,5 +1,5 @@
 import { authInitialProps } from "../lib/auth";
-import NavDrawer from "../components/NavDrawer";
+import NavDrawer from "../components/navigation/NavDrawer";
 import DashboardPane from "../components/DashboardPane";
 import { getDashboard } from "../lib/api";
 
