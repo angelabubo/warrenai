@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import clsx from "clsx";
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -153,19 +154,54 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NavDrawer = ({ children, auth }) => {
+  const router = useRouter();
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(true);
   const [openScanners, setOpenScanners] = useState(false);
+  const [openScannersByPath, setOpenScannersByPath] = useState(false);
   const [openPortfolio, setOpenPortfolio] = useState(false);
   const {
     user: { name },
   } = auth;
 
-  useEffect(() => {
-    // Update the document title using the browser API
-    document.title = `Hello`;
-  });
+  const scannerMenus = [
+    {
+      primary: "WarrenAi Top Companies",
+      href: "/scanners/warrenai-top-companies",
+    },
+    {
+      primary: "Rank Companies by Sector",
+      href: "/scanners/rank-companies-by-sector",
+    },
+    {
+      primary: "Dividend Scanner",
+      href: "/scanners/dividend",
+    },
+  ];
+
+  const portfolioMenus = [
+    {
+      primary: "My Portfolio",
+      href: "/portfolio/my-portfolio",
+    },
+    {
+      primary: "My Watchlist",
+      href: "/portfolio/my-watchlist",
+    },
+  ];
+
+  const isCurrentHref = (objList) => {
+    return objList.find((obj) => {
+      if (router.pathname === obj.href || router.asPath === obj.href) {
+        return true;
+      }
+    })
+      ? true
+      : false;
+  };
+
+  useEffect(() => {});
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -281,23 +317,25 @@ const NavDrawer = ({ children, auth }) => {
               <TrackChangesIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Scanners"} />
-            {openScanners ? <ExpandLess /> : <ExpandMore />}
+            {openScanners || isCurrentHref(scannerMenus) ? (
+              <ExpandLess />
+            ) : (
+              <ExpandMore />
+            )}
           </ListItem>
-          <Collapse in={openScanners} timeout="auto">
+          <Collapse
+            in={openScanners || isCurrentHref(scannerMenus)}
+            timeout="auto"
+          >
             <List component="div" disablePadding>
-              <NavDrawerMenuItem href="/scanners/warrenai-top-companies">
-                <ListItemIcon></ListItemIcon>
-                <ListItemText primary="WarrenAi Top Companies" />
-              </NavDrawerMenuItem>
-
-              <NavDrawerMenuItem href="/scanners/rank-companies-by-sector">
-                <ListItemIcon></ListItemIcon>
-                <ListItemText primary="Rank Companies by Sector" />
-              </NavDrawerMenuItem>
-              <NavDrawerMenuItem href="">
-                <ListItemIcon></ListItemIcon>
-                <ListItemText primary="Dividend Scanner" />
-              </NavDrawerMenuItem>
+              {scannerMenus.map((menu, index) => {
+                return (
+                  <NavDrawerMenuItem key={index} href={menu.href}>
+                    <ListItemIcon></ListItemIcon>
+                    <ListItemText primary={menu.primary} />
+                  </NavDrawerMenuItem>
+                );
+              })}
             </List>
           </Collapse>
 
@@ -311,18 +349,26 @@ const NavDrawer = ({ children, auth }) => {
               <BuildIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Portfolio"} />
-            {openPortfolio ? <ExpandLess /> : <ExpandMore />}
+            {openPortfolio || isCurrentHref(portfolioMenus) ? (
+              <ExpandLess />
+            ) : (
+              <ExpandMore />
+            )}
           </ListItem>
-          <Collapse in={openPortfolio} timeout="auto" unmountOnExit>
+          <Collapse
+            in={openPortfolio || isCurrentHref(portfolioMenus)}
+            timeout="auto"
+            unmountOnExit
+          >
             <List component="div" disablePadding>
-              <NavDrawerMenuItem href="">
-                <ListItemIcon></ListItemIcon>
-                <ListItemText primary="My Portfolio" />
-              </NavDrawerMenuItem>
-              <NavDrawerMenuItem href="">
-                <ListItemIcon></ListItemIcon>
-                <ListItemText primary="My Watchlist" />
-              </NavDrawerMenuItem>
+              {portfolioMenus.map((menu, index) => {
+                return (
+                  <NavDrawerMenuItem key={index} href={menu.href}>
+                    <ListItemIcon></ListItemIcon>
+                    <ListItemText primary={menu.primary} />
+                  </NavDrawerMenuItem>
+                );
+              })}
             </List>
           </Collapse>
 
