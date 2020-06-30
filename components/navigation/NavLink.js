@@ -13,24 +13,22 @@ const NavLink = ({ router, href, children }) => {
     router.push(href);
   };
 
-  const isCurrentPath = router.pathname === href || router.asPath === href;
-
   return (
-    <div>
-      <a
-        href={href}
-        onClick={handleClick}
-        style={{
-          textDecoration: "none",
-          margin: 0,
-          padding: 0,
-          //   fontWeight: isCurrentPath ? "bold" : "normal",
-          color: "inherit",
-        }}
-      >
-        {children}
-      </a>
-    </div>
+
+    <a
+      href={href}
+      onClick={handleClick}
+      style={{
+        textDecoration: "none",
+        margin: 0,
+        padding: 0,
+        //   fontWeight: isCurrentPath ? "bold" : "normal",
+        color: "inherit",
+      }}
+    >
+      {children}
+    </a>
+
   );
 };
 

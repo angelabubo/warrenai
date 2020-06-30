@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import clsx from "clsx";
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -21,7 +21,6 @@ import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import StarBorder from "@material-ui/icons/StarBorder";
-import NavLink from "./NavLink";
 import InputBase from "@material-ui/core/InputBase";
 
 // Icons
@@ -163,6 +162,10 @@ const NavDrawer = ({ children, auth }) => {
     user: { name },
   } = auth;
 
+  useEffect(() => {
+    // Update the document title using the browser API
+    document.title = `Hello`;
+  });
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -211,12 +214,11 @@ const NavDrawer = ({ children, auth }) => {
                   <SearchIcon />
                 </div>
                 <InputBase
-                  placeholder="Search…"
                   classes={{
                     root: classes.inputRoot,
                     input: classes.inputInput,
                   }}
-                  inputProps={{ "aria-label": "search" }}
+                  placeholder="Search…"
                 />
               </div>
             </Grid>
@@ -262,16 +264,12 @@ const NavDrawer = ({ children, auth }) => {
           }
         >
           {/* My Dashboard */}
-          {/* <ListItem button key={"My Dashboard"} className={classes.listItem}> */}
-          <NavDrawerMenuItem button key={"My Dashboard"}>
+          <NavDrawerMenuItem href="/dashboard">
             <ListItemIcon>
               <TuneIcon color="secondary" />
             </ListItemIcon>
-            <NavLink href="/dashboard">
-              <ListItemText primary={"My Dashboard"} />
-            </NavLink>
+            <ListItemText primary={"My Dashboard"} />
           </NavDrawerMenuItem>
-          {/* </ListItem> */}
 
           {/* Scanners */}
           <ListItem
@@ -285,23 +283,21 @@ const NavDrawer = ({ children, auth }) => {
             <ListItemText primary={"Scanners"} />
             {openScanners ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
-          <Collapse in={openScanners} timeout="auto" unmountOnExit>
+          <Collapse in={openScanners} timeout="auto">
             <List component="div" disablePadding>
-              <ListItem button className={classes.listItem}>
+              <NavDrawerMenuItem href="/scanners/warrenai-top-companies">
                 <ListItemIcon></ListItemIcon>
-                <NavLink href="/scanners/warrenai-top-companies">
-                  <ListItemText primary="WarrenAi Top Companies" />
-                </NavLink>
-              </ListItem>
+                <ListItemText primary="WarrenAi Top Companies" />
+              </NavDrawerMenuItem>
 
-              <ListItem button className={classes.listItem}>
+              <NavDrawerMenuItem href="/scanners/rank-companies-by-sector">
                 <ListItemIcon></ListItemIcon>
                 <ListItemText primary="Rank Companies by Sector" />
-              </ListItem>
-              <ListItem button className={classes.listItem}>
+              </NavDrawerMenuItem>
+              <NavDrawerMenuItem href="">
                 <ListItemIcon></ListItemIcon>
                 <ListItemText primary="Dividend Scanner" />
-              </ListItem>
+              </NavDrawerMenuItem>
             </List>
           </Collapse>
 
@@ -319,32 +315,32 @@ const NavDrawer = ({ children, auth }) => {
           </ListItem>
           <Collapse in={openPortfolio} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem button className={classes.listItem}>
+              <NavDrawerMenuItem href="">
                 <ListItemIcon></ListItemIcon>
                 <ListItemText primary="My Portfolio" />
-              </ListItem>
-              <ListItem button className={classes.listItem}>
+              </NavDrawerMenuItem>
+              <NavDrawerMenuItem href="">
                 <ListItemIcon></ListItemIcon>
                 <ListItemText primary="My Watchlist" />
-              </ListItem>
+              </NavDrawerMenuItem>
             </List>
           </Collapse>
 
           {/* Backtesting */}
-          <ListItem button key={"Backtesting"} className={classes.listItem}>
+          <NavDrawerMenuItem href="">
             <ListItemIcon>
               <FastRewindIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Backtesting"} />
-          </ListItem>
+          </NavDrawerMenuItem>
 
           {/* Learn */}
-          <ListItem button key={"Learn"} className={classes.listItem}>
+          <NavDrawerMenuItem href="">
             <ListItemIcon>
               <ImportContactsIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Learn"} />
-          </ListItem>
+          </NavDrawerMenuItem>
         </List>
 
         <Divider />
@@ -362,24 +358,20 @@ const NavDrawer = ({ children, auth }) => {
           }
         >
           {/* Frequently Asked Questions */}
-          <ListItem
-            button
-            key={"Frequently Asked Questions"}
-            className={classes.listItem}
-          >
+          <NavDrawerMenuItem href="">
             <ListItemIcon>
               <PeopleAltOutlinedIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Frequently Asked Questions"} />
-          </ListItem>
+          </NavDrawerMenuItem>
 
           {/* Contact Us */}
-          <ListItem button key={"Contact Us"} className={classes.listItem}>
+          <NavDrawerMenuItem href="">
             <ListItemIcon>
               <ComputerIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Contact Us"} />
-          </ListItem>
+          </NavDrawerMenuItem>
         </List>
       </Drawer>
 

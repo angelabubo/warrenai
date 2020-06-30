@@ -1,6 +1,9 @@
 import { ListItem, withStyles } from "@material-ui/core";
+import { useRouter } from "next/router";
+import { Fragment } from "react";
+import Link from "next/link";
 
-const NavDrawerMenuItem = withStyles({
+const StyledListItem = withStyles({
   root: {
     color: "white",
     "&:hover": {
@@ -13,5 +16,26 @@ const NavDrawerMenuItem = withStyles({
 
   selected: {},
 })(ListItem);
+
+const NavDrawerMenuItem = (props) => {
+  const router = useRouter();
+  const isCurrentPath =
+    router.pathname === props.href || router.asPath === props.href;
+
+  const handleMenuItemClick = (event) => {
+    event.preventDefault();
+    console.log("Menu Item Clicked");
+  };
+
+  return (
+    <Fragment>
+      <Link href={props.href}>
+        <StyledListItem selected={isCurrentPath} button>
+          {props.children}
+        </StyledListItem>
+      </Link>
+    </Fragment>
+  );
+};
 
 export default NavDrawerMenuItem;
