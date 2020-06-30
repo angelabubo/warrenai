@@ -23,7 +23,6 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Container from "@material-ui/core/Container";
 import { Fragment } from "react";
 import { Grid } from "@material-ui/core";
-import { authInitialProps } from "../lib/auth";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -97,110 +96,108 @@ function Signup() {
     <Fragment>
       <Container maxWidth={false} className={classes.container}>
         <Grid container direction="column" justify="center" alignItems="center">
-          
-            <div className={classes.root}>
-              <Paper className={classes.paper}>
-                <Brand />
-                <ButtonGroup
-                  color="primary"
-                  aria-label="outlined primary button group"
-                  className={classes.buttongroup}
-                >
-                  <Button variant="outlined" onClick={handleSignInClick}>
-                    Sign In
-                  </Button>
-                  <Button variant="contained">Sign Up</Button>
-                </ButtonGroup>
-                <form onSubmit={handleSubmit} className={classes.form}>
-                  <FormControl margin="normal" fullWidth={true}>
-                    <InputLabel>Name</InputLabel>
-                    <Input
-                      name="name"
-                      type="text"
-                      onChange={handleChange}
-                      placeholder="e.g. John"
-                      value={user.name}
-                    />
-                  </FormControl>
-                  <FormControl margin="normal" fullWidth={true}>
-                    <InputLabel>Email</InputLabel>
-                    <Input
-                      name="email"
-                      type="email"
-                      onChange={handleChange}
-                      placeholder="e.g. john@gmail.com"
-                      value={user.email}
-                    />
-                  </FormControl>
-                  <FormControl margin="normal" fullWidth={true}>
-                    <InputLabel>Password</InputLabel>
-                    <Input
-                      name="password"
-                      type="password"
-                      onChange={handleChange}
-                      placeholder="●●●●●●●●"
-                      value={user.password}
-                    />
-                  </FormControl>
-                  <Button
-                    type="submit"
-                    fullWidth={true}
-                    variant="contained"
-                    color="primary"
-                    disabled={isLoading}
-                    className={classes.submit}
-                  >
-                    {isLoading ? "Signing up..." : "Sign up"}
-                  </Button>
-
-                  <Typography
-                    variant="subtitle2"
-                    className={classes.tosContainer}
-                    align="center"
-                  >
-                    By using WarrenAi you are agreeing to our{" "}
-                    <span className={classes.tos}>Terms of Service</span>.
-                    WarrenAi provides general investment advice only.
-                  </Typography>
-                </form>
-
-                {/* Error Snackbar */}
-                {error && (
-                  <Snackbar
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    open={openError}
-                    onClose={handleClose}
-                    autoHideDuration={5000}
-                    message={<span className={classes.snack}>{error}</span>}
-                  />
-                )}
-              </Paper>
-
-              {/* Success Dialog */}
-              <Dialog
-                open={openSuccess}
-                disableBackdropClick={true}
-                TransitionComponent={Transition}
+          <div className={classes.root}>
+            <Paper className={classes.paper}>
+              <Brand />
+              <ButtonGroup
+                color="primary"
+                aria-label="outlined primary button group"
+                className={classes.buttongroup}
               >
-                <DialogTitle>New Account</DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    User {createdUser} successfully created!
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button color="primary" variant="contained">
-                    <Link href="/signin">
-                      <a className={classes.signinLink}>Signin</a>
-                    </Link>
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </div>
-        
+                <Button variant="outlined" onClick={handleSignInClick}>
+                  Sign In
+                </Button>
+                <Button variant="contained">Sign Up</Button>
+              </ButtonGroup>
+              <form onSubmit={handleSubmit} className={classes.form}>
+                <FormControl margin="normal" fullWidth={true}>
+                  <InputLabel>Name</InputLabel>
+                  <Input
+                    name="name"
+                    type="text"
+                    onChange={handleChange}
+                    placeholder="e.g. John"
+                    value={user.name}
+                  />
+                </FormControl>
+                <FormControl margin="normal" fullWidth={true}>
+                  <InputLabel>Email</InputLabel>
+                  <Input
+                    name="email"
+                    type="email"
+                    onChange={handleChange}
+                    placeholder="e.g. john@gmail.com"
+                    value={user.email}
+                  />
+                </FormControl>
+                <FormControl margin="normal" fullWidth={true}>
+                  <InputLabel>Password</InputLabel>
+                  <Input
+                    name="password"
+                    type="password"
+                    onChange={handleChange}
+                    placeholder="●●●●●●●●"
+                    value={user.password}
+                  />
+                </FormControl>
+                <Button
+                  type="submit"
+                  fullWidth={true}
+                  variant="contained"
+                  color="primary"
+                  disabled={isLoading}
+                  className={classes.submit}
+                >
+                  {isLoading ? "Signing up..." : "Sign up"}
+                </Button>
+
+                <Typography
+                  variant="subtitle2"
+                  className={classes.tosContainer}
+                  align="center"
+                >
+                  By using WarrenAi you are agreeing to our{" "}
+                  <span className={classes.tos}>Terms of Service</span>.
+                  WarrenAi provides general investment advice only.
+                </Typography>
+              </form>
+
+              {/* Error Snackbar */}
+              {error && (
+                <Snackbar
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={openError}
+                  onClose={handleClose}
+                  autoHideDuration={5000}
+                  message={<span className={classes.snack}>{error}</span>}
+                />
+              )}
+            </Paper>
+
+            {/* Success Dialog */}
+            <Dialog
+              open={openSuccess}
+              disableBackdropClick={true}
+              TransitionComponent={Transition}
+            >
+              <DialogTitle>New Account</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  User {createdUser} successfully created!
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button color="primary" variant="contained">
+                  <Link href="/signin">
+                    <a className={classes.signinLink}>Signin</a>
+                  </Link>
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
         </Grid>
       </Container>
     </Fragment>

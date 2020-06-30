@@ -20,7 +20,7 @@ import {
   handlePaymentMethodRequired,
   handleCustomerActionRequired,
   processSubscriptionRequest,
-} from "../../lib/subscription";
+} from "./subscriptionHelper";
 import theme from "../../pages/theme";
 
 import CheckCircleOutlineIcon from "@material-ui/icons/Check";
@@ -46,7 +46,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import { makeStyles } from "@material-ui/core/styles";
 //Dialog
 
-const CardPaymentForm = ({ auth, plan }) => {
+const CardPaymentForm = ({ auth, plan, isDisabled, btnName }) => {
   const userId = auth.user.id;
   const elements = useElements();
   const stripe = useStripe();
@@ -272,8 +272,9 @@ const CardPaymentForm = ({ auth, plan }) => {
         variant="contained"
         color="primary"
         onClick={handleClickOpen}
+        disabled={isDisabled ? true : false}
       >
-        Subscribe
+        {btnName}
       </Button>
       <Dialog
         disableBackdropClick

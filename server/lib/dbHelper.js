@@ -29,10 +29,6 @@ exports.getUserByEmail = (email) => {
 };
 
 exports.getUserById = (id) => {
-  console.log("=====CALLED getUserById");
-
-  return exports.getSubscriptionByUserId(id);
-
   let statement = "select * from users where id = ?";
   return dbConnection
     .execute(statement, [id])

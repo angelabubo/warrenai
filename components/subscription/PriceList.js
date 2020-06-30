@@ -1,8 +1,9 @@
 import { Container, Grid } from "@material-ui/core";
 
-import React from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import Subscribe from "./Subscribe";
 import { plans } from "../../data/prices";
+import { getUserInfo } from "../../lib/api";
 
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -10,7 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
+
 import Typography from "@material-ui/core/Typography";
 import CheckIcon from "@material-ui/icons/Check";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -68,21 +69,62 @@ const useStyles = makeStyles({
 
 export default function PriceList(props) {
   const classes = useStyles();
+  const auth = props.auth;
+  const [subscribedTo, setSubscribedTo] = useState(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+
+  useEffect(() => {
+    getUserInfo(auth.user.id).then((user) => {
+      console.log("====Use Effect");
+      console.log(user);
+      if (user) {
+        setSubscribedTo(user.subscription.product_price_id);
+        setSubscriptionStatus(user.subscription.status);
+      }
+    });
+  }, []);
+
+  const getCardAction = (plan) => {
+    let btnName, isDisabled;
+
+    if (subscribedTo && subscriptionStatus === "active") {
+      //With active subscription
+      if (plan.id === "price_free") {
+        return (
+          <Typography align="center" variant="caption" display="block">
+            *Cancel your current plan to avail this free service.
+          </Typography>
+        );
+      } else if (plan.id === subscribedTo) {
+        btnName = "Current Plan";
+        isDisabled = true;
+      } else {
+        btnName = "Subscribe";
+        isDisabled = false;
+      }
+    } else {
+      //No current and active subscription
+      if (plan.id === "price_free") {
+        btnName = "Current Plan";
+        isDisabled = true;
+      } else {
+        btnName = "Subscribe";
+        isDisabled = false;
+      }
+    }
+
+    return (
+      <Subscribe
+        {...props}
+        plan={plan}
+        btnName={btnName}
+        isDisabled={isDisabled}
+      />
+    );
+  };
 
   return (
-    <Container>
-      <h1>Pricing Plans</h1>
-      <div className={classes.header}>
-        <Typography variant="h3" component="h3" align="center">
-          Become a Better Investor
-        </Typography>
-        <Typography variant="h5" component="h5" align="center">
-          Make non-emotional long-term stock picks
-        </Typography>
-      </div>
-
-      {/* Card Basic */}
-      <div className={classes.root}></div>
+    <Fragment>
       <Grid
         container
         direction="row"
@@ -128,12 +170,12 @@ export default function PriceList(props) {
                 </CardContent>
               </CardContent>
               <CardActions className={classes.card_action}>
-                <Subscribe {...props} plan={plan} />
+                {getCardAction(plan)}
               </CardActions>
             </Card>
           </Grid>
         ))}
       </Grid>
-    </Container>
+    </Fragment>
   );
 }

@@ -18,15 +18,12 @@ export default class MyDocument extends Document {
             // href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
             href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap"
           />
-          <link
-            rel="stylesheet"
-            href="/styles/styles.css"
-          />
+          <link rel="stylesheet" href="/styles/styles.css" />
         </Head>
         <body>
           <Main />
           <script dangerouslySetInnerHTML={{ __html: getUserScript(user) }} />
-          <script src="https://js.stripe.com/v3/"/>
+          <script src="https://js.stripe.com/v3/" />
           <NextScript />
         </body>
       </Html>

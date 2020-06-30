@@ -86,13 +86,5 @@ const Index = (props) => {
   );
 };
 
-Index.getInitialProps = authInitialProps(true);
+Index.getInitialProps = authInitialProps();
 export default Index;
-
-// import LoginForm from "../components/LoginForm";
-
-// const signin = () => {
-//   return <LoginForm />;
-// };
-
-// export default signin;

@@ -7,7 +7,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import CardPaymentForm from "./CardPaymentForm";
-import { STRIPE_PUBLIC_KEY } from "../../lib/subscription";
+import { STRIPE_PUBLIC_KEY } from "./subscriptionHelper";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import Typography from "@material-ui/core/Typography";

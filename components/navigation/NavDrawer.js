@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import clsx from "clsx";
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
@@ -158,9 +158,6 @@ const NavDrawer = ({ children, auth }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(true);
-  const [openScanners, setOpenScanners] = useState(false);
-  const [openScannersByPath, setOpenScannersByPath] = useState(false);
-  const [openPortfolio, setOpenPortfolio] = useState(false);
   const {
     user: { name },
   } = auth;
@@ -201,7 +198,11 @@ const NavDrawer = ({ children, auth }) => {
       : false;
   };
 
-  useEffect(() => {});
+  const [openScanners, setOpenScanners] = useState(isCurrentHref(scannerMenus));
+  const [openPortfolio, setOpenPortfolio] = useState(
+    isCurrentHref(portfolioMenus)
+  );
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -317,16 +318,9 @@ const NavDrawer = ({ children, auth }) => {
               <TrackChangesIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Scanners"} />
-            {openScanners || isCurrentHref(scannerMenus) ? (
-              <ExpandLess />
-            ) : (
-              <ExpandMore />
-            )}
+            {openScanners ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
-          <Collapse
-            in={openScanners || isCurrentHref(scannerMenus)}
-            timeout="auto"
-          >
+          <Collapse in={openScanners} timeout="auto">
             <List component="div" disablePadding>
               {scannerMenus.map((menu, index) => {
                 return (
@@ -349,17 +343,9 @@ const NavDrawer = ({ children, auth }) => {
               <BuildIcon color="secondary" />
             </ListItemIcon>
             <ListItemText primary={"Portfolio"} />
-            {openPortfolio || isCurrentHref(portfolioMenus) ? (
-              <ExpandLess />
-            ) : (
-              <ExpandMore />
-            )}
+            {openPortfolio ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
-          <Collapse
-            in={openPortfolio || isCurrentHref(portfolioMenus)}
-            timeout="auto"
-            unmountOnExit
-          >
+          <Collapse in={openPortfolio} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {portfolioMenus.map((menu, index) => {
                 return (
@@ -373,7 +359,7 @@ const NavDrawer = ({ children, auth }) => {
           </Collapse>
 
           {/* Backtesting */}
-          <NavDrawerMenuItem href="">
+          <NavDrawerMenuItem href="/backtesting">
             <ListItemIcon>
               <FastRewindIcon color="secondary" />
             </ListItemIcon>
@@ -381,7 +367,7 @@ const NavDrawer = ({ children, auth }) => {
           </NavDrawerMenuItem>
 
           {/* Learn */}
-          <NavDrawerMenuItem href="">
+          <NavDrawerMenuItem href="/learn">
             <ListItemIcon>
               <ImportContactsIcon color="secondary" />
             </ListItemIcon>
@@ -404,7 +390,7 @@ const NavDrawer = ({ children, auth }) => {
           }
         >
           {/* Frequently Asked Questions */}
-          <NavDrawerMenuItem href="">
+          <NavDrawerMenuItem href="/faq">
             <ListItemIcon>
               <PeopleAltOutlinedIcon color="secondary" />
             </ListItemIcon>
@@ -412,7 +398,7 @@ const NavDrawer = ({ children, auth }) => {
           </NavDrawerMenuItem>
 
           {/* Contact Us */}
-          <NavDrawerMenuItem href="">
+          <NavDrawerMenuItem href="contact">
             <ListItemIcon>
               <ComputerIcon color="secondary" />
             </ListItemIcon>

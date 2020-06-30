@@ -1,26 +1,12 @@
 const dbHelper = require("../lib/dbHelper");
 exports.getUsers = () => {};
 
-exports.getAuthUser = (req, res) => {
-  //Check if user who sent the request is authenticated (signed in)
-  if (!req.isAuthUser) {
-    res.status(403).json({
-      message: "You are unauthenticated. Please sign in or sign up",
-    });
-    return res.redirect("/signin");
-  }
-  res.json(req.user);
-};
-
 //Store the user in req.profile
 exports.getUserById = async (req, res, next, id) => {
   await dbHelper.getUserById(id).then((user) => {
-    console.log("=======USER CONTROLLER");
-    console.log(user);
-
     req.profile = user;
     if (req.profile && req.user && req.profile.id === req.user.id) {
-      //User is authenticated
+      //User retrieved from database matches the user being requested
       req.isAuthUser = true;
       return next();
     }
@@ -35,6 +21,21 @@ exports.getUserProfile = (req, res) => {
   }
 
   res.json(req.profile);
+};
+
+exports.getAuthUser = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+  //Get user info including subscription details
+  const { userId } = req.params;
+  await dbHelper.getSubscriptionByUserId(userId).then((user) => {
+    res.json(user);
+  });
 };
 
 exports.deleteUser = async (req, res) => {

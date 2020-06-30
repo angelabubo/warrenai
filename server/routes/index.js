@@ -28,13 +28,14 @@ router.param("userId", userController.getUserById);
 
 router
   .route("/api/users/:userId")
-  //Get logged in user info
-  .get(userController.getAuthUser)
+  //Get logged in user info (name, id, email, subscription details)
+  .get(authController.checkAuth, userController.getAuthUser)
   //When user wants to delete his account
   .delete(authController.checkAuth, catchErrors(userController.deleteUser));
 
 router.get("/api/users/profile/:userId", userController.getUserProfile);
 
+/////////////////////////////////////////////////////////////////////
 //STRIPE ROUTES: /api/stripe
 router.post(
   "/api/stripe/:userId/create-subscription",

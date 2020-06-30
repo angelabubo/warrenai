@@ -23,7 +23,6 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Container from "@material-ui/core/Container";
 import { Fragment } from "react";
 import { Grid } from "@material-ui/core";
-import { authInitialProps } from "../lib/auth";
 
 function Signin() {
   const classes = useStyles();
