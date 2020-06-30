@@ -1,7 +1,6 @@
 import { authInitialProps } from "../lib/auth";
 import NavDrawer from "../components/navigation/NavDrawer";
 import DashboardPane from "../components/DashboardPane";
-import { getDashboard } from "../lib/api";
 
 const Dashboard = (props) => {
   return (
@@ -13,5 +12,5 @@ const Dashboard = (props) => {
   );
 };
 
-Dashboard.getInitialProps = authInitialProps(true, getDashboard);
+Dashboard.getInitialProps = authInitialProps(true);
 export default Dashboard;

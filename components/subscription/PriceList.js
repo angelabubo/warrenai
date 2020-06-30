@@ -75,8 +75,6 @@ export default function PriceList(props) {
 
   useEffect(() => {
     getUserInfo(auth.user.id).then((user) => {
-      console.log("====Use Effect");
-      console.log(user);
       if (user) {
         setSubscribedTo(user.subscription.product_price_id);
         setSubscriptionStatus(user.subscription.status);

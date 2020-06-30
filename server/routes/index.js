@@ -2,6 +2,7 @@ const express = require("express");
 const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
 const stripeController = require("../controllers/stripeController");
+const premiumController = require("../controllers/premiumController");
 const bodyParser = require("body-parser");
 
 const router = express.Router();
@@ -12,7 +13,7 @@ const catchErrors = (fn) => {
     return fn(req, res, next).catch(next);
   };
 };
-
+/////////////////////////////////////////////////////////////////////
 // AUTH ROUTES: /api/auth
 router.post(
   "/api/auth/signup",
@@ -22,6 +23,7 @@ router.post(
 router.post("/api/auth/signin", authController.signin);
 router.get("/api/auth/signout", authController.signout);
 
+/////////////////////////////////////////////////////////////////////
 //USER ROUTES: /api/users
 //Any route with userId will call the controller
 router.param("userId", userController.getUserById);
@@ -34,6 +36,15 @@ router
   .delete(authController.checkAuth, catchErrors(userController.deleteUser));
 
 router.get("/api/users/profile/:userId", userController.getUserProfile);
+
+/////////////////////////////////////////////////////////////////////
+//PREMIUM ROUTES: /api/premium
+//WarrenAiTopCompanies
+router.get(
+  "/api/premium/warrenaitopco/:userId",
+  authController.checkAuth,
+  premiumController.getWarrenAiTopCompanies
+);
 
 /////////////////////////////////////////////////////////////////////
 //STRIPE ROUTES: /api/stripe
