@@ -42,10 +42,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NavBar({ auth }) {
   const { user = {} } = auth || {};
-  console.log("=====NavBar");
-
-  console.log(user);
-
   const classes = useStyles();
 
   return (
