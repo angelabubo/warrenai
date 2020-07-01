@@ -149,8 +149,6 @@ exports.addSubscription = (sub) => {
 };
 
 exports.getSubscriptionByUserId = (id) => {
-  console.log("=====CALLED getSubscriptionByUserId");
-
   let statement =
     "select users.id, users.name, users.email, subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId and subscriptions.status = 'active') where users.id = ? order by subscriptions.current_period_end desc limit 1";
 
