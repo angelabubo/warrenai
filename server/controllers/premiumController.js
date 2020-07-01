@@ -19,13 +19,9 @@ exports.getWarrenAiTopCompanies = async (req, res) => {
     ) {
       //User has active subscription, return list of warren ai top companies
       //TODO - using dummy data for now
-      res.json({
-        data: dummyData.topCompanies,
-      });
+      res.json(dummyData.topCompanies);
     } else {
-      res.json({
-        data: null,
-      });
+      res.json(null);
     }
   });
 };

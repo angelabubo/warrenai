@@ -9,7 +9,7 @@ const WarrenAITopCo = (props) => {
   const [topCoList, setTopCoList] = useState(null);
 
   useEffect(() => {
-    getWarrenAiTopCompaniesFromServer(auth.user.id).then(({ data }) => {
+    getWarrenAiTopCompaniesFromServer(auth.user.id).then((data) => {
       setTopCoList(data);
     });
   }, []);
