@@ -90,7 +90,7 @@ export default function PriceList(props) {
       if (plan.id === "price_free") {
         return (
           <Typography align="center" variant="caption" display="block">
-            *Cancel your current plan to avail this free service.
+            *Cancel your subscription to avail this free service.
           </Typography>
         );
       } else if (plan.id === subscribedTo) {
@@ -133,7 +133,13 @@ export default function PriceList(props) {
       >
         {plans.map((plan) => (
           <Grid item key={plan.id} md={4}>
-            <Card key={plan.id} className={classes.cardroot} variant="outlined">
+            <Card
+              square
+              key={plan.id}
+              className={classes.cardroot}
+              variant="elevation"
+              elevation={5}
+            >
               <CardContent component="div" className={classes.cardBody}>
                 <CardContent className={classes.card_header}>
                   <Typography variant="h6" component="h6" align="center">

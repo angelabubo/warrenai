@@ -97,7 +97,12 @@ function Signup() {
       <Container maxWidth={false} className={classes.container}>
         <Grid container direction="column" justify="center" alignItems="center">
           <div className={classes.root}>
-            <Paper className={classes.paper}>
+            <Paper
+              className={classes.paper}
+              square
+              variant="elevation"
+              elevation={5}
+            >
               <Brand />
               <ButtonGroup
                 color="primary"

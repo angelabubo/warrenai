@@ -85,7 +85,12 @@ function Signin() {
         <Grid container direction="column" justify="center" alignItems="center">
           <Grid item>
             <div className={classes.root}>
-              <Paper className={classes.paper}>
+              <Paper
+                className={classes.paper}
+                square
+                variant="elevation"
+                elevation={5}
+              >
                 <Brand />
                 <ButtonGroup
                   color="primary"
