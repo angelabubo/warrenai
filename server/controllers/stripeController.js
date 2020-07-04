@@ -119,6 +119,51 @@ exports.updateSubscription = async (req, res) => {
   }
 };
 
+exports.cancelSubscription = async (req, res) => {
+  //Check if user who sent the request is authenticated first(signed in)
+  if (!req.isAuthUser) {
+    console.log("Cancel subscription called but NOT AUTHENTICATED");
+
+    res
+      .status(403)
+      .json({ message: "You are not authenticated. Please signin or signup." });
+
+    return res.redirect("/signin");
+  }
+
+  //User is authenticated
+  const { userId } = req.params;
+
+  try {
+    //Get subscription id of user
+    await dbHelper.getSubscriptionByUserId(userId).then(async (user) => {
+      if (user && user.subscription.id) {
+        // Delete the subscription
+        const deletedSubscription = await stripe.subscriptions.del(
+          user.subscription.id
+        );
+
+        console.log(deletedSubscription);
+
+        //Update database
+        res.send(deletedSubscription);
+      } else {
+        throw new Error("No user found in database");
+      }
+    });
+  } catch (error) {
+    console.error("[SERVER] cancelSubscription");
+    console.error(error);
+
+    return res.status("402").json({
+      error: {
+        message:
+          "There was an error updating your subscription. Please contact WarrenAi.",
+      },
+    });
+  }
+};
+
 exports.stripeWebhookHandler = async (req, res) => {
   // Retrieve the event by verifying the signature using the raw body and secret.
   let event;

@@ -35,7 +35,10 @@ router
   //When user wants to delete his account
   .delete(authController.checkAuth, catchErrors(userController.deleteUser));
 
-router.get("/api/users/profile/:userId", userController.getUserProfile);
+router
+  .route("/api/users/subscription/:userId")
+  //Get logged in user's plan or subscription details
+  .get(authController.checkAuth, userController.getUserPlan);
 
 /////////////////////////////////////////////////////////////////////
 //PREMIUM ROUTES: /api/premium
@@ -55,10 +58,17 @@ router.post(
 );
 
 router.post("/api/stripe/:userId/retry-invoice", stripeController.retryInvoice);
+
 router.post(
   "/api/stripe/:userId/update-subscription",
   authController.checkAuth,
   stripeController.updateSubscription
+);
+
+router.post(
+  "/api/stripe/:userId/cancel-subscription",
+  authController.checkAuth,
+  stripeController.cancelSubscription
 );
 
 //STRIPE WEBHOOK handler for asynchronous events.

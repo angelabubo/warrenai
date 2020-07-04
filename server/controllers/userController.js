@@ -1,4 +1,6 @@
 const dbHelper = require("../lib/dbHelper");
+const productHelper = require("../data/products");
+
 exports.getUsers = () => {};
 
 //Store the user in req.profile
@@ -35,6 +37,36 @@ exports.getAuthUser = async (req, res) => {
   const { userId } = req.params;
   await dbHelper.getSubscriptionByUserId(userId).then((user) => {
     res.json(user);
+  });
+};
+
+exports.getUserPlan = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  //Get user subscription info from database
+  const { userId } = req.params;
+  await dbHelper.getSubscriptionByUserId(userId).then((user) => {
+    if (
+      user &&
+      user.subscription.product_price_id &&
+      user.subscription.status === "active"
+    ) {
+      //User has active subscription
+      const data = productHelper.getProductById(
+        user.subscription.product_price_id
+      );
+      res.json(data);
+    } else {
+      //User has no subscription
+      const data = productHelper.getProductById(productHelper.PROD_ID_FREE);
+      res.json(data);
+    }
   });
 };
 

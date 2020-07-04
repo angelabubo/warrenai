@@ -150,7 +150,7 @@ exports.addSubscription = (sub) => {
 
 exports.getSubscriptionByUserId = (id) => {
   let statement =
-    "select users.id, users.name, users.email, subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId and subscriptions.status = 'active') where users.id = ? order by subscriptions.current_period_end desc limit 1";
+    "select users.id, users.name, users.email, subscriptions.id as subId, subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId and subscriptions.status = 'active') where users.id = ? order by subscriptions.current_period_end desc limit 1";
 
   return dbConnection
     .execute(statement, [id])
@@ -161,6 +161,7 @@ exports.getSubscriptionByUserId = (id) => {
           name: rows[0].name,
           email: rows[0].email,
           subscription: {
+            id: rows[0].subId,
             status: rows[0].status,
             current_period_end: rows[0].current_period_end,
             product_price_id: rows[0].product_price_id,
@@ -178,8 +179,6 @@ exports.getSubscriptionByUserId = (id) => {
 };
 
 exports.updateSubscription = async ({ priceId, data }) => {
-  console.log("INSIDE SERVER dbHelper updateSubscription");
-
   let subId, newData;
   if (data.object === "subscription") {
     subId = data.id;
