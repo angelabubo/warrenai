@@ -44,6 +44,11 @@ export default function AccountMenu({ userName }) {
     Router.push("/account/pricingplans");
   };
 
+  const handleSettings = (event) => {
+    handleClose(event);
+    Router.push("/account/settings");
+  };
+
   function handleListKeyDown(event) {
     if (event.key === "Tab") {
       event.preventDefault();
@@ -87,14 +92,14 @@ export default function AccountMenu({ userName }) {
                 placement === "bottom" ? "center top" : "center bottom",
             }}
           >
-            <Paper>
+            <Paper square variant="elevation" elevation={5}>
               <ClickAwayListener onClickAway={handleClose}>
                 <MenuList
                   autoFocusItem={open}
                   id="menu-list-grow"
                   onKeyDown={handleListKeyDown}
                 >
-                  <MenuItem onClick={handleClose}>Account Settings</MenuItem>
+                  <MenuItem onClick={handleSettings}>Account Settings</MenuItem>
 
                   <MenuItem onClick={handlePricingPlans}>
                     Pricing Plans
