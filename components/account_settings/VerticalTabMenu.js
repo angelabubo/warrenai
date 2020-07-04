@@ -49,6 +49,11 @@ const VerticalTabMenu = (props) => {
     setValue(newValue);
   };
 
+  React.useEffect(() => {
+    const tabNum = parseInt(props.tab, 10);
+    if (props.tab) setValue(tabNum <= 2 ? tabNum : 0);
+  }, []);
+
   return (
     <div className={classes.root}>
       <StyledTabs

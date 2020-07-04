@@ -1,8 +1,7 @@
-import { Container, Divider } from "@material-ui/core";
+import Router from "next/router";
 import { green } from "@material-ui/core/colors";
 import Slide from "@material-ui/core/Slide";
 import {
-  CardElement,
   CardNumberElement,
   CardExpiryElement,
   CardCvcElement,
@@ -12,7 +11,6 @@ import {
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { blue } from "@material-ui/core/colors";
 import Paper from "@material-ui/core/Paper";
-import TextField from "@material-ui/core/TextField";
 import {
   createSubscription,
   retryInvoiceWithNewPaymentMethod,
@@ -56,26 +54,17 @@ const CardPaymentForm = ({ auth, plan, isDisabled, btnName }) => {
     // Payment was successful.
     // Remove invoice from localstorage because payment is now complete.
     localStorage.clear();
-    // Call your backend to grant access to your service based on
-    // the product your customer subscribed to.
-    // Get the product by using result.subscription.price.product
-    // try {
-    //   const serverStatus = await updateSubscription(userId, priceId, result);
-    //   console.log(serverStatus);
-    // } catch (error) {
-    //   console.error("Backend Call error - " + error.message);
-    // }
 
     // Change your UI to show a success message to your customer.
     setProcessing(false);
     setSuccess(true);
 
-    console.log(result);
     setTimeout(() => {
-      //Close the dialog and initialize states
+      //Close the dialog and initialize states after the delay
       initializeStates();
 
-      //Display Account Settings Page
+      //Display Account Settings Page, Plan Details tab
+      Router.replace("/account/settings/1");
     }, 2000);
   };
 
@@ -496,11 +485,6 @@ const CardPaymentForm = ({ auth, plan, isDisabled, btnName }) => {
             </div>
           </div>
         </DialogContent>
-        {/* <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-        </DialogActions> */}
       </Dialog>
     </Fragment>
   );

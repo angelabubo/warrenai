@@ -110,6 +110,13 @@ nextApp.prepare().then(() => {
     res.status(status).json(message);
   });
 
+  //Custom Routes
+  //Route handler after completing subscription payment. The Plan Details tab should be rendered
+  expressApp.get("/account/settings/:tab", (req, res) => {
+    const routeParams = Object.assign({}, req.params, req.query);
+    return nextApp.render(req, res, "/account/settings", routeParams);
+  });
+
   /* default route
      - allows Next to handle all other routes
      - includes the numerous `/_next/...` routes which must be exposedfor the next app to work correctly
