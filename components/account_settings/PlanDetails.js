@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
+import Router from "next/router";
 import { getUserPlan } from "../../lib/api";
 
 import Grid from "@material-ui/core/Grid";
@@ -95,8 +96,12 @@ const PlanDetails = ({ classes, userId }) => {
     setOpenCancelDialog(false);
     setSuccess(true);
   };
-  const handleCancelSubscription = () => {
+  const handleCancelSubscriptionBtnClick = () => {
     setOpenCancelDialog(true);
+  };
+
+  const handleChangePlanBtnClick = () => {
+    Router.push("/account/pricingplans");
   };
 
   const handleSubmitCancel = () => {
@@ -134,7 +139,7 @@ const PlanDetails = ({ classes, userId }) => {
                 </Typography>
                 <Typography color="textSecondary" align="left">
                   {plan.unitprice
-                    ? `$${plan.unitprice / 100} plan.recurring`
+                    ? `$${plan.unitprice / 100} ${plan.recurring}`
                     : "Free"}
                 </Typography>
               </Grid>
@@ -144,6 +149,7 @@ const PlanDetails = ({ classes, userId }) => {
                   fullWidth={true}
                   variant="contained"
                   color="primary"
+                  onClick={handleChangePlanBtnClick}
                 >
                   Change Plan
                 </Button>
@@ -152,7 +158,7 @@ const PlanDetails = ({ classes, userId }) => {
                     fullWidth={true}
                     variant="outlined"
                     color="primary"
-                    onClick={handleCancelSubscription}
+                    onClick={handleCancelSubscriptionBtnClick}
                     disabled={!plan.cancelSubBtn}
                   >
                     Cancel Subscription
