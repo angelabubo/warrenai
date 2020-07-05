@@ -146,6 +146,7 @@ exports.cancelSubscription = async (req, res) => {
         console.log(deletedSubscription);
 
         //Update database
+
         res.send(deletedSubscription);
       } else {
         throw new Error("No user found in database");
@@ -158,7 +159,7 @@ exports.cancelSubscription = async (req, res) => {
     return res.status("402").json({
       error: {
         message:
-          "There was an error updating your subscription. Please contact WarrenAi.",
+          "There was an error cancelling your subscription. Please contact WarrenAi.",
       },
     });
   }
@@ -181,9 +182,12 @@ exports.stripeWebhookHandler = async (req, res) => {
   //Test START
   event = req.body;
   //Test END
+  console.log("WEBHOOOOOOOOOOOOOKKKK Event Object");
+  console.log(event.type);
 
   // Extract the object from the event.
   const data = event.data.object;
+  console.log(data);
 
   // Handle the event
   // Review important events for Billing webhooks
@@ -215,6 +219,8 @@ exports.stripeWebhookHandler = async (req, res) => {
       // or store them locally to reference to avoid hitting Stripe rate limits.
       break;
     case "customer.subscription.deleted":
+      console.log("WEBHOOOOOOOOOOOOOKKKK customer.subscription.deleted");
+      console.log(data);
       if (event.request != null) {
         // handle a subscription cancelled by your request
         // from above.
