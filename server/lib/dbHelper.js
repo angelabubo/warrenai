@@ -12,9 +12,13 @@ exports.getUserByEmail = (email) => {
     .execute(statement, [email])
     .then(([rows, fields]) => {
       if (rows.length > 0) {
+        let fullName = rows[0].fname;
+        if (rows[0].lname) {
+          fullName = `${rows[0].fname} ${rows[0].lname}`;
+        }
         return {
           id: rows[0].id,
-          name: rows[0].name,
+          name: fullName,
           email: rows[0].email,
           password: rows[0].password,
         };
@@ -33,10 +37,15 @@ exports.getUserById = (id) => {
   return dbConnection
     .execute(statement, [id])
     .then(([rows, fields]) => {
+      let fullName = rows[0].fname;
+      if (rows[0].lname) {
+        fullName = `${rows[0].fname} ${rows[0].lname}`;
+      }
+
       if (rows.length > 0) {
         return {
           id: rows[0].id,
-          name: rows[0].name,
+          name: fullName,
           email: rows[0].email,
           // password: rows[0].password,
         };
@@ -73,12 +82,13 @@ exports.registerUser = (name, email, password, callback) => {
     })
     //Insert new user in databse
     .then((stripeCustomerId) => {
-      let statement = "insert into users values (uuid(), ?, ?, ?, ? )";
+      let statement =
+        "insert into users(id, stripeCustomerId, fname, email, password) values (uuid(), ?, ?, ?, ? )";
       return dbConnection.execute(statement, [
+        stripeCustomerId,
         name,
         email,
         hashedPassword,
-        stripeCustomerId,
       ]);
     })
     //Successfully inserted user. Return null errors and row result
@@ -93,6 +103,7 @@ exports.registerUser = (name, email, password, callback) => {
 };
 
 exports.deleteUser = (id) => {
+  //ANGEL TODO - when deleting a user, delete all the other table references
   let statement = "delete from users where id = ?";
   return dbConnection
     .execute(statement, [id])
@@ -150,7 +161,7 @@ exports.addSubscription = (sub) => {
 
 exports.getSubscriptionByUserId = (id) => {
   let statement =
-    "select users.id, users.name, users.email, subscriptions.id as subId, subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId and subscriptions.status = 'active') where users.id = ? order by subscriptions.current_period_end desc limit 1";
+    "select users.id, users.fname, users.lname, users.email, subscriptions.id as subId, subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId) where users.id = ? order by subscriptions.current_period_end desc limit 1";
 
   return dbConnection
     .execute(statement, [id])
@@ -158,7 +169,8 @@ exports.getSubscriptionByUserId = (id) => {
       if (rows.length > 0) {
         return {
           id: rows[0].id,
-          name: rows[0].name,
+          fname: rows[0].fname,
+          lname: rows[0].lname,
           email: rows[0].email,
           subscription: {
             id: rows[0].subId,
@@ -209,7 +221,25 @@ exports.updateSubscription = async ({ priceId, data }) => {
   if (priceId) {
     newData["product_price_id"] = priceId;
   }
+
+  console.log("INSIDE exports.updateSubscription");
+  console.log(newData);
+
   await exports.updateTableRowById("subscriptions", subId, newData);
+};
+
+exports.deleteSubscription = (id) => {
+  let statement = "delete from subscriptions where id = ?";
+  return dbConnection
+    .execute(statement, [id])
+    .then(([rows, fields]) => {
+      console.log(rows);
+      return rows;
+    })
+    .catch((err) => {
+      console.log("[ERROR][deleteSubscription] - " + err.message);
+      return null;
+    });
 };
 
 //Generic Helpers
