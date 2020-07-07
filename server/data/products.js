@@ -36,7 +36,8 @@ const products = [
     inclusions: premium_features,
   },
   {
-    id: "price_1Gu2n8AOCcUhE0MFnYjBUAH9",
+    //TEST id: "price_1Gu2n8AOCcUhE0MFnYjBUAH9",
+    id: "price_1H13YbAOCcUhE0MFst8Wuyxp", //price for 1 day recurring
     unitprice: 8099,
     recurring: "billed yearly",
     main_prod_id: "prod_HSykBxWGIEQGU2",

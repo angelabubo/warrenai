@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Router from "next/router";
-import { getUserPlan } from "../../lib/api";
+import { getUserPlan, cancelSubscription } from "../../lib/api";
 
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -26,48 +26,61 @@ import { green } from "@material-ui/core/colors";
 
 const PlanDetails = ({ classes, userId }) => {
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
-  const [processing, setProcessing] = useState(false);
+  const [processingCancel, setProcessingCancel] = useState(false);
   const [success, setSuccess] = useState(false);
+
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const initializeStates = () => {
-    setOpenCancelDialog(false);
-    setProcessing(false);
-    setSuccess(false);
-    setPlan({});
-    setLoading(true);
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    getUserPlan(userId).then((data) => {
-      if (data) {
-        setPlan(data);
-      }
-      console.log(data);
-      setLoading(false);
-    });
-  }, []);
-
-  const handleClose = () => {
-    setOpenCancelDialog(false);
-    setSuccess(true);
-  };
-  const handleCancelSubscriptionBtnClick = () => {
-    setOpenCancelDialog(true);
-  };
+  const [refresh, setRefresh] = useState(false);
 
   const handleChangePlanBtnClick = () => {
     Router.push("/account/pricingplans");
   };
 
-  const handleSubmitCancel = () => {
-    if (processing) return;
-
-    setProcessing(true);
-
+  const initializeCancelDialogStates = () => {
     setOpenCancelDialog(false);
+    setProcessingCancel(false);
+    setSuccess(false);
+  };
+
+  const handleCancelSubscriptionBtnClick = () => {
+    setOpenCancelDialog(true);
+  };
+
+  useEffect(() => {
+    console.log("useEffect of PlanDetail called");
+
+    setLoading(true);
+    getUserPlan(userId).then((data) => {
+      if (data) {
+        setPlan(data);
+      }
+      setLoading(false);
+    });
+  }, [refresh]);
+
+  //Cancel Subscription Dialog
+  const handleClose = () => {
+    initializeCancelDialogStates();
+  };
+
+  const handleSubmitCancel = async () => {
+    if (processingCancel) return;
+
+    setProcessingCancel(true);
+    cancelSubscription(userId).then((data) => {
+      // Change your UI to show a success to your customer.
+      setSuccess(true);
+      setProcessingCancel(false);
+
+      setTimeout(() => {
+        //Close the dialog and initialize states after the delay
+        handleClose();
+
+        //Trigger update of Plan Details panel
+        setRefresh(!refresh);
+      }, 10000);
+    });
   };
   return (
     <Fragment>
@@ -123,8 +136,8 @@ const PlanDetails = ({ classes, userId }) => {
                     Cancel Subscription
                   </Button>
                   <Dialog
-                    disableBackdropClick
-                    disableEscapeKeyDown
+                    disableBackdropClick={processingCancel}
+                    disableEscapeKeyDown={processingCancel}
                     open={openCancelDialog}
                     onClose={handleClose}
                     fullWidth={true}
@@ -142,7 +155,7 @@ const PlanDetails = ({ classes, userId }) => {
                             edge="end"
                             aria-label="close"
                             onClick={handleClose}
-                            disabled={processing}
+                            disabled={processingCancel}
                           >
                             <CloseIcon />
                           </IconButton>
@@ -158,21 +171,21 @@ const PlanDetails = ({ classes, userId }) => {
                         Are you sure you want to cancel your current
                         Subscription?
                       </Typography>
-                      <Typography variant="h6" align="center">
-                        {plan.name}
-                      </Typography>
-                      <Typography variant="h3" align="center">
-                        {plan.unitprice ? `$${plan.unitprice / 100}` : "Free"}
-                      </Typography>
-                      <Typography
-                        color="textSecondary"
-                        align="center"
-                        gutterBottom
-                      >
-                        {plan.recurring}
-                      </Typography>
-
-                      <div className={classes.section}></div>
+                      <div className={classes.sectionPlan}>
+                        <Typography variant="h6" align="center">
+                          {plan.name}
+                        </Typography>
+                        <Typography variant="h3" align="center">
+                          {plan.unitprice ? `$${plan.unitprice / 100}` : "Free"}
+                        </Typography>
+                        <Typography
+                          color="textSecondary"
+                          align="center"
+                          gutterBottom
+                        >
+                          {plan.recurring}
+                        </Typography>
+                      </div>
                     </DialogContent>
                     <DialogActions className={classes.dialogActionsSection}>
                       <Button
@@ -180,6 +193,7 @@ const PlanDetails = ({ classes, userId }) => {
                         variant="contained"
                         color="primary"
                         className={classes.yesButton}
+                        disabled={processingCancel}
                       >
                         NO
                       </Button>
@@ -192,16 +206,17 @@ const PlanDetails = ({ classes, userId }) => {
                             : clsx(classes.yesButton)
                         }
                         onClick={handleSubmitCancel}
-                        disableFocusRipple={processing}
-                        disableRipple={processing}
-                        disableElevation={processing}
+                        disableFocusRipple={processingCancel}
+                        disableRipple={processingCancel}
+                        disableElevation={processingCancel}
+                        disabled={processingCancel}
                       >
-                        {processing
+                        {processingCancel
                           ? "Processing..."
                           : success
                           ? ""
                           : "Cancel my subscription"}
-                        {processing && (
+                        {processingCancel && (
                           <CircularProgress
                             size={24}
                             className={classes.buttonProgress}
@@ -209,7 +224,7 @@ const PlanDetails = ({ classes, userId }) => {
                         )}
 
                         <Slide
-                          timeout={{ enter: 300, exit: 300 }}
+                          timeout={{ enter: 250, exit: 250 }}
                           direction="left"
                           in={success}
                           mountOnEnter
@@ -287,10 +302,9 @@ const styles = (theme) => ({
     // letterSpacing: "0.025em",
     marginBottom: 7,
   },
-  section: {
-    display: "flex",
-    flexDirection: "column",
-    marginBottom: 23,
+  sectionPlan: {
+    marginTop: 23,
+    marginBottom: 15,
   },
   dialogActionsSection: {
     display: "flex",
@@ -300,6 +314,7 @@ const styles = (theme) => ({
   },
 
   yesButton: {
+    height: 38,
     marginLeft: 20,
     marginRight: 20,
     marginBottom: 20,
