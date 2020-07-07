@@ -8,12 +8,6 @@ create DATABASE db_warrenai;
 
 USE db_warrenai;
 
-create table payment_methods (
-id varchar(36) PRIMARY KEY,
-card_brand varchar(36),
-last4 varchar(5)
-);
-
 create table users (
 id varchar(36) PRIMARY KEY,
 stripeCustomerId varchar(36),
@@ -21,7 +15,9 @@ fname varchar(150) NOT NULL,
 lname varchar(150),
 email varchar(150) UNIQUE,
 password TEXT NOT NULL,
-default_paymentmethod_id varchar(36) references payment_methods(id)
+default_paymentmethod_id varchar(36),
+default_paymentmethod_card_brand varchar(36),
+default_paymentmethod_card_last4 varchar(5)
 );
 
 create table subscriptions(
