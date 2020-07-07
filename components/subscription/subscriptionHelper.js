@@ -54,9 +54,6 @@ export const retryInvoiceWithNewPaymentMethod = async ({
 };
 
 export const updateSubscription = async (userId, priceId, data) => {
-  console.log("BROWSER SIDE updateSubscription");
-  console.log(data);
-
   try {
     const result = await axios.post(
       `/api/stripe/${userId}/update-subscription`,
