@@ -328,7 +328,8 @@ exports.addInvoice = async (invoice) => {
   );
 
   let product = null;
-  if (invoice.lines.data.length > 0) {
+  const withLineItems = invoice.lines.data.length > 0 ? true : false;
+  if (withLineItems) {
     product = getProductById(invoice.lines.data[0].plan.id);
   }
 
@@ -341,8 +342,8 @@ exports.addInvoice = async (invoice) => {
       invoice.customer,
       invoice.created,
       product ? `${product.name} ${product.recurring}` : null,
-      invoice.period_start,
-      invoice.period_end,
+      withLineItems ? invoice.lines.data[0].period.start : invoice.period_start,
+      withLineItems ? invoice.lines.data[0].period.end : invoice.period_end,
       user ? user.default_paymentmethod_card_brand : null,
       user ? user.default_paymentmethod_card_last4 : null,
       invoice.total,
@@ -379,8 +380,9 @@ exports.updateInvoice = async (data) => {
   }
 
   if (data.object === "invoice") {
+    const withLineItems = data.lines.data.length > 0 ? true : false;
     let product = null;
-    if (data.lines.data.length > 0) {
+    if (withLineItems) {
       product = getProductById(data.lines.data[0].plan.id);
     }
 
@@ -390,8 +392,12 @@ exports.updateInvoice = async (data) => {
       product_description: product
         ? `${product.name} ${product.recurring}`
         : null,
-      period_start: data.period_start,
-      period_end: data.period_end,
+      period_start: withLineItems
+        ? data.lines.data[0].period.start
+        : data.period_start,
+      period_end: withLineItems
+        ? data.lines.data[0].period.end
+        : data.period_end,
       total: data.total,
       status: data.status,
       payment_intent_id: data.payment_intent.id
