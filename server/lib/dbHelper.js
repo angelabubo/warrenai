@@ -1,6 +1,10 @@
 const dbConnection = require("./dbConnection");
-const { createStripeCustomer } = require("./stripeHelper");
+const {
+  createStripeCustomer,
+  getDefaultPaymentMethodDetails,
+} = require("./stripeHelper");
 
+const { getProductById } = require("../data/products");
 //Hashing + Salting Passwords
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
@@ -137,8 +141,15 @@ exports.getStripeCustomerId = (userId) => {
     });
 };
 
-exports.addSubscription = (sub) => {
-  let statement = "insert into subscriptions values (?, ?, ?, ?, ?, ?)";
+exports.addSubscription = async (sub) => {
+  const subscription = await exports.getTableRow("subscriptions", "id", sub.id);
+
+  if (subscription) {
+    //Somehow this subscription is already existing
+    return false;
+  }
+
+  let statement = "insert into subscriptions values (?, ?, ?, ?, ?, ?, ?)";
   return dbConnection
     .execute(statement, [
       sub.id,
@@ -147,21 +158,24 @@ exports.addSubscription = (sub) => {
       sub.status,
       sub.items.data[0].price.id,
       sub.items.data[0].price.product,
+      sub.latest_invoice.id,
     ])
     .then(([rows, fields]) => {
       if (rows.length > 0) {
         return true;
       }
+      return false;
     })
     .catch((err) => {
       console.log("[ERROR][addSubscription] - " + err.message);
-      throw err;
+      return false;
     });
 };
 
+//Only returns active subscriptions
 exports.getSubscriptionByUserId = (id) => {
   let statement =
-    "select users.id, users.fname, users.lname, users.email, subscriptions.id as subId, subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId) where users.id = ? order by subscriptions.current_period_end desc limit 1";
+    "select users.id, users.fname, users.lname, users.email, subscriptions.id as subId, subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id, subscriptions.latest_invoice_id from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId and subscriptions.status = 'active') where users.id = ? order by subscriptions.current_period_end desc limit 1";
 
   return dbConnection
     .execute(statement, [id])
@@ -177,6 +191,7 @@ exports.getSubscriptionByUserId = (id) => {
             status: rows[0].status,
             current_period_end: rows[0].current_period_end,
             product_price_id: rows[0].product_price_id,
+            latest_invoice_id: rows[0].latest_invoice_id,
           },
           // password: rows[0].password,
         };
@@ -222,10 +237,25 @@ exports.updateSubscription = async ({ priceId, data }) => {
     newData["product_price_id"] = priceId;
   }
 
-  console.log("INSIDE exports.updateSubscription");
-  console.log(newData);
-
   await exports.updateTableRowById("subscriptions", subId, newData);
+};
+
+exports.updateUserSubscription = async (subscription) => {
+  let latestInvoiceId;
+  if (subscription.latest_invoice.id) {
+    latestInvoiceId = subscription.latest_invoice.id;
+  } else {
+    latestInvoiceId = subscription.latest_invoice;
+  }
+  const newData = {
+    current_period_end: subscription.current_period_end,
+    status: subscription.status,
+    product_price_id: subscription.plan.id,
+    product_id: subscription.plan.product,
+    latest_invoice_id: latestInvoiceId,
+  };
+
+  await exports.updateTableRowById("subscriptions", subscription.id, newData);
 };
 
 exports.deleteSubscription = (id) => {
@@ -242,7 +272,175 @@ exports.deleteSubscription = (id) => {
     });
 };
 
+//Update Customer Payment Details
+const updateCustomerPaymentDetails = async (customer) => {
+  const user = await exports.getTableRow(
+    "users",
+    "stripeCustomerId",
+    customer.id
+  );
+
+  if (
+    user &&
+    user.default_paymentmethod_id !==
+      customer.invoice_settings.default_payment_method
+  ) {
+    //User's default payment method has changed
+    //Retrieve user's default payment method details from stripe
+    const paymentMethodDetails = await getDefaultPaymentMethodDetails(
+      customer.invoice_settings.default_payment_method
+    );
+
+    //Update users table with new info
+    await exports.updateTableRow("users", "stripeCustomerId", customer.id, {
+      default_paymentmethod_id: paymentMethodDetails.id,
+      default_paymentmethod_card_brand: paymentMethodDetails.cardBrand,
+      default_paymentmethod_card_last4: paymentMethodDetails.cardLast4,
+    });
+  }
+};
+
+exports.updateCustomer = async (customer) => {
+  if (customer.object === "customer") {
+    if (customer.invoice_settings) {
+      //Update Customer Payment Details
+      await updateCustomerPaymentDetails(customer);
+    }
+  } else {
+    throw {
+      message: "Unknown data object type in updateCustomer Request",
+    };
+  }
+};
+
+exports.addInvoice = async (invoice) => {
+  const invoiceFromDB = await exports.getTableRow("invoices", "id", invoice.id);
+
+  if (invoiceFromDB) {
+    //Somehow this invoice is already existing
+    return false;
+  }
+
+  const user = await exports.getTableRow(
+    "users",
+    "stripeCustomerId",
+    invoice.customer
+  );
+
+  let product = null;
+  if (invoice.lines.data.length > 0) {
+    product = getProductById(invoice.lines.data[0].plan.id);
+  }
+
+  let statement =
+    "insert into invoices values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  return dbConnection
+    .execute(statement, [
+      invoice.id,
+      invoice.number,
+      invoice.customer,
+      invoice.created,
+      product ? `${product.name} ${product.recurring}` : null,
+      invoice.period_start,
+      invoice.period_end,
+      user ? user.default_paymentmethod_card_brand : null,
+      user ? user.default_paymentmethod_card_last4 : null,
+      invoice.total,
+      invoice.status,
+      invoice.payment_intent.id
+        ? invoice.payment_intent.id
+        : invoice.payment_intent, //payment_intent_id
+      invoice.payment_intent.id ? invoice.payment_intent.status : null, //payment_intent_status
+      null, //receipt_url
+    ])
+    .then(([rows, fields]) => {
+      if (rows.length > 0) {
+        return true;
+      }
+      return false;
+    })
+    .catch((err) => {
+      console.log("[ERROR][addInvoice] - " + err.message);
+      return false;
+    });
+};
+
+exports.updateInvoice = async (data) => {
+  if (data.object === "charge") {
+    const newData = {
+      created_date: data.created,
+      payment_intent_id: data.payment_intent,
+      payment_method_brand: data.payment_method_details.card.brand,
+      payment_method_last4: data.payment_method_details.card.last4,
+      receipt_url: data.receipt_url,
+    };
+
+    await exports.updateTableRowById("invoices", data.invoice, newData);
+  }
+
+  if (data.object === "invoice") {
+    let product = null;
+    if (data.lines.data.length > 0) {
+      product = getProductById(data.lines.data[0].plan.id);
+    }
+
+    let newData = {
+      invoice_number: data.number,
+      created_date: data.created,
+      product_description: product
+        ? `${product.name} ${product.recurring}`
+        : null,
+      period_start: data.period_start,
+      period_end: data.period_end,
+      total: data.total,
+      status: data.status,
+      payment_intent_id: data.payment_intent.id
+        ? data.payment_intent.id
+        : data.payment_intent,
+    };
+
+    if (data.payment_intent.id) {
+      newData["payment_intent_status"] = data.payment_intent.status;
+    }
+
+    await exports.updateTableRowById("invoices", data.id, newData);
+  }
+};
 //Generic Helpers
+exports.getTableRow = (table, colFilter, colFilterValue) => {
+  let statement = `select * from ${table} where ${colFilter} = ?`;
+  return dbConnection
+    .execute(statement, [colFilterValue])
+    .then(([rows, fields]) => {
+      if (rows.length > 0) {
+        return rows[0];
+      }
+      return null;
+    })
+    .catch((err) => {
+      console.log("[ERROR][getTableRow] - " + err.message);
+      console.log(statement);
+      return null;
+    });
+};
+
+exports.getTableRows = (table, colFilter, colFilterValue) => {
+  let statement = `select * from ${table} where ${colFilter} = ?`;
+  return dbConnection
+    .execute(statement, [colFilterValue])
+    .then(([rows, fields]) => {
+      if (rows.length > 0) {
+        return rows;
+      }
+      return null;
+    })
+    .catch((err) => {
+      console.log("[ERROR][getTableRow] - " + err.message);
+      console.log(statement);
+      return null;
+    });
+};
+
 exports.updateTableRowById = (table, id, newData) => {
   console.log("NEW DATA");
   console.log(newData);
@@ -271,6 +469,35 @@ exports.updateTableRowById = (table, id, newData) => {
     })
     .catch((err) => {
       console.log("[ERROR][updateTableRowById] - " + err.message);
+      return false;
+    });
+};
+
+exports.updateTableRow = (table, colFilter, colFilterValue, newData) => {
+  const columns = Object.keys(newData);
+  const values = Object.values(newData);
+
+  let setStatement = "";
+  columns.forEach((column) => {
+    if (setStatement === "") {
+      setStatement = `${column} = ?`;
+    } else {
+      setStatement = `${setStatement}, ${column} = ?`;
+    }
+  });
+
+  let updateStatement = `update ${table} set ${setStatement} where ${colFilter} = ?`;
+  console.log(updateStatement);
+  return dbConnection
+    .execute(updateStatement, [...values, colFilterValue])
+    .then(([rows, fields]) => {
+      if (rows.affectedRows > 0) {
+        console.log(`${table} table was updated in row id ${colFilterValue}`);
+      }
+      return true;
+    })
+    .catch((err) => {
+      console.log("[ERROR][updateTableRow] - " + err.message);
       return false;
     });
 };

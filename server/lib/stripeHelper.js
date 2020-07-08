@@ -78,6 +78,31 @@ const attachPaymentToCustomer = async (customerId, paymentMethodId) => {
   }
 };
 
+exports.getDefaultPaymentMethodDetails = async (paymentMethodId) => {
+  // Request Payment Method details from stripe
+  const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
+
+  const paymentMethodDetails = {
+    id: paymentMethod.id,
+    cardBrand: paymentMethod.card.brand,
+    cardLast4: paymentMethod.card.last4,
+  };
+  return Promise.resolve(paymentMethodDetails);
+};
+
+exports.cancelSubscription = async (subscriptionId) => {
+  try {
+    // Delete the subscription
+    const deletedSubscription = await stripe.subscriptions.del(subscriptionId);
+    return deletedSubscription;
+  } catch (error) {
+    console.error(
+      "Stripe error call when attempting to cancel the subscription"
+    );
+    throw error;
+  }
+};
+
 exports.constructWebhookEvent = (req) => {
   try {
     return stripe.webhooks.constructEvent(

@@ -52,7 +52,6 @@ exports.getProductById = (id) => {
   });
 
   if (product) {
-    //User has active subscription
     const data = {
       name: product.main_prod_name,
       unitprice: product.unitprice,

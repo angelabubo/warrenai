@@ -25,8 +25,11 @@ exports.createSubscription = async (req, res) => {
       priceId
     );
 
-    //Create entry subscriptions table
+    //Create entry in subscriptions table
     await dbHelper.addSubscription(subscription);
+
+    //Create the latest invoice associcated with the subscription
+    await dbHelper.addInvoice(subscription.latest_invoice);
 
     //Send response
     return res.send(subscription);
@@ -67,8 +70,8 @@ exports.retryInvoice = async (req, res) => {
       invoiceId
     );
 
-    console.log("RETRY INVOICE ROUTE");
-    console.log(invoice);
+    //Update the invoice in the database
+    await dbHelper.updateInvoice(invoice);
 
     //Send response
     return res.send(invoice);
@@ -133,27 +136,36 @@ exports.cancelSubscription = async (req, res) => {
 
   //User is authenticated
   const { userId } = req.params;
-
   try {
-    //Get subscription id of user
-    await dbHelper.getSubscriptionByUserId(userId).then(async (user) => {
-      if (user && user.subscription.id) {
-        // Delete the subscription
-        const deletedSubscription = await stripe.subscriptions.del(
-          user.subscription.id
-        );
+    //Get subscription id of user with active subscription
+    const userWithSubscription = await dbHelper
+      .getSubscriptionByUserId(userId)
+      .then(async (user) => {
+        if (
+          user &&
+          user.subscription.id &&
+          user.subscription.status === "active"
+        ) {
+          return user;
+        } else {
+          throw new Error("No user found in database");
+        }
+      });
 
-        console.log(deletedSubscription);
+    //Request stripe to cancel subscription
+    const deletedSubscription = await stripeHelper.cancelSubscription(
+      userWithSubscription.subscription.id
+    );
+    console.log("=====STRIPE CALL TO Cancel Sub result");
+    console.log(deletedSubscription);
 
-        //Update database
+    //Update subscriptions table to reflect new status
+    //ANGEL TODO
 
-        res.send(deletedSubscription);
-      } else {
-        throw new Error("No user found in database");
-      }
-    });
+    //Send result to client
+    res.send(deletedSubscription);
   } catch (error) {
-    console.error("[SERVER] cancelSubscription");
+    console.error("[SERVER] cancelSubscription controller");
     console.error(error);
 
     return res.status("402").json({
@@ -187,24 +199,56 @@ exports.stripeWebhookHandler = async (req, res) => {
 
   // Extract the object from the event.
   const data = event.data.object;
-  console.log(data);
 
-  // Handle the event
   // Review important events for Billing webhooks
   // https://stripe.com/docs/billing/webhooks
   // Remove comment to see the various objects sent for this sample
 
   switch (event.type) {
+    case "customer.updated":
+      //Used to update customer or user's data in the database table users
+      //such as default payment method details
+      try {
+        dbHelper.updateCustomer(data);
+      } catch (error) {
+        console.log("====STRIPE WEBHOOK : customer.updated");
+        console.error(error);
+      }
+      break;
+    case "customer.subscription.updated":
+      try {
+        dbHelper.updateUserSubscription(data);
+      } catch (error) {
+        console.log("====STRIPE WEBHOOK : customer.subscription.updated");
+        console.error(error);
+      }
+      break;
+    case "customer.subscription.deleted":
+      if (event.request != null) {
+        // handle a subscription cancelled by your request
+        // from above.
+      } else {
+        // handle subscription cancelled automatically based
+        // upon your subscription settings.
+      }
+      break;
+    case "invoice.finalized":
+      // For recurring charges. Create a new entry in invoices table
+      try {
+        dbHelper.addInvoice(data);
+      } catch (error) {
+        console.log("====STRIPE WEBHOOK : invoice.finalized");
+        console.error(error);
+      }
+      break;
     case "invoice.payment_succeeded":
       // Used to provision services after the trial has ended.
       // The status of the invoice will show up as paid. Store the status in your
       // database to reference when a user accesses your service to avoid hitting rate limits.
-      console.log("WEBHOOOOOOOOOOOOOKKKK invoice.payment_succeeded");
-      console.log(data);
-      //Update subscription for current customer
       try {
-        dbHelper.updateSubscription({ data });
+        dbHelper.updateInvoice(data);
       } catch (error) {
+        console.log("====STRIPE WEBHOOK : invoice.payment_succeeded");
         console.error(error);
       }
       break;
@@ -213,29 +257,20 @@ exports.stripeWebhookHandler = async (req, res) => {
       // an invoice.payment_failed event is sent, the subscription becomes past_due.
       // Use this webhook to notify your user that their payment has
       // failed and to retrieve new card details.
-      break;
-    case "invoice.finalized":
-      // If you want to manually send out invoices to your customers
-      // or store them locally to reference to avoid hitting Stripe rate limits.
-      break;
-    case "customer.subscription.deleted":
-      console.log("WEBHOOOOOOOOOOOOOKKKK customer.subscription.deleted");
-      console.log(data);
-      if (event.request != null) {
-        // handle a subscription cancelled by your request
-        // from above.
-      } else {
-        // handle subscription cancelled automatically based
-        // upon your subscription settings.
+      try {
+        dbHelper.updateInvoice(data);
+      } catch (error) {
+        console.log("====STRIPE WEBHOOK : invoice.payment_failed");
+        console.error(error);
       }
       break;
-    case "customer.subscription.trial_will_end":
-      if (event.request != null) {
-        // handle a subscription cancelled by your request
-        // from above.
-      } else {
-        // handle subscription cancelled automatically based
-        // upon your subscription settings.
+    case "charge.succeeded":
+      // Update the corresponding invoice
+      try {
+        dbHelper.updateInvoice(data);
+      } catch (error) {
+        console.log("====STRIPE WEBHOOK : charge.succeeded");
+        console.error(error);
       }
       break;
     default:
