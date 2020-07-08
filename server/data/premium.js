@@ -6,7 +6,7 @@ exports.topCompanies = [
   },
   {
     id: 2,
-    name: "Jollibee",
+    name: "Bell",
     value: 800,
   },
   {

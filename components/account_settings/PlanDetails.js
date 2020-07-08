@@ -79,7 +79,7 @@ const PlanDetails = ({ classes, userId }) => {
 
         //Trigger update of Plan Details panel
         setRefresh(!refresh);
-      }, 10000);
+      }, 1000);
     });
   };
   return (

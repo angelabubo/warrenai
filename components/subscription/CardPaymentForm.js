@@ -65,7 +65,7 @@ const CardPaymentForm = ({ auth, plan, isDisabled, btnName }) => {
 
       //Display Account Settings Page, Plan Details tab
       Router.replace("/account/settings/1");
-    }, 2000);
+    }, 1000);
   };
 
   const handleSubmit = async (event) => {

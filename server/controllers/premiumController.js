@@ -21,6 +21,7 @@ exports.getWarrenAiTopCompanies = async (req, res) => {
       //TODO - using dummy data for now
       res.json(dummyData.topCompanies);
     } else {
+      //Handle canceled subscription that has not reached the current period end
       res.json(null);
     }
   });
