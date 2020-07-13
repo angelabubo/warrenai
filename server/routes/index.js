@@ -37,8 +37,13 @@ router
 
 router
   .route("/api/users/subscription/:userId")
-  //Get logged in user's plan or subscription details
+  //Get logged in user's ACTIVE plan or subscription details
   .get(authController.checkAuth, userController.getUserPlan);
+
+router
+  .route("/api/users/subscription/:userId/get-any-subscription")
+  //Get logged in user's ANY one plan or subscription details
+  .get(authController.checkAuth, userController.getUserSubscription);
 
 /////////////////////////////////////////////////////////////////////
 //PREMIUM ROUTES: /api/premium

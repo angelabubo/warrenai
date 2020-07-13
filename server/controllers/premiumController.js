@@ -10,7 +10,9 @@ const dummyData = require("../data/premium");
 // 	- if none canceled, do not provision service
 exports.userHasPremiumAccess = async (userId) => {
   //Check if user has subscription with status "active"
-  const userWithActiveSub = await dbHelper.getSubscriptionByUserId(userId);
+  const userWithActiveSub = await dbHelper.getActiveSubscriptionByUserId(
+    userId
+  );
   if (userWithActiveSub) {
     return true;
   } else {
@@ -46,7 +48,7 @@ exports.getWarrenAiTopCompanies = async (req, res) => {
   }
   //Check whether user has active subscription first
   const { userId } = req.params;
-  await dbHelper.getSubscriptionByUserId(userId).then((user) => {
+  await dbHelper.getActiveSubscriptionByUserId(userId).then((user) => {
     if (
       user &&
       user.subscription.product_price_id &&

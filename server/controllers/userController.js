@@ -34,7 +34,7 @@ exports.getAuthUser = async (req, res) => {
     return res.redirect("/signin");
   }
 
-  //Get user info including subscription details
+  //Get user info
   const { userId } = req.params;
   await dbHelper.getUserById(userId).then((user) => {
     if (req.user && user.id === req.user.id) {
@@ -60,7 +60,7 @@ exports.getUserPlan = async (req, res) => {
 
   //Get user subscription info from database
   const { userId } = req.params;
-  await dbHelper.getSubscriptionByUserId(userId).then((user) => {
+  await dbHelper.getActiveSubscriptionByUserId(userId).then((user) => {
     if (
       user &&
       user.subscription.product_price_id &&
@@ -77,6 +77,30 @@ exports.getUserPlan = async (req, res) => {
       res.json(data);
     }
   });
+};
+
+exports.getUserSubscription = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  //Get user subscription info from database
+  const { userId } = req.params;
+  await dbHelper
+    .getSubscriptionByUserId(userId)
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((error) => {
+      console.log("exports.getUserSubscription error");
+      console.log(error);
+
+      return res.status(404).json({ message: error.message });
+    });
 };
 
 exports.deleteUser = async (req, res) => {

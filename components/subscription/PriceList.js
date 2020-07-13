@@ -3,7 +3,7 @@ import { Container, Grid } from "@material-ui/core";
 import React, { Fragment, useState, useEffect } from "react";
 import Subscribe from "./Subscribe";
 import { plans } from "../../data/prices";
-import { getUserInfo } from "../../lib/api";
+import { getUserSubscription } from "../../lib/api";
 
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -74,7 +74,7 @@ export default function PriceList(props) {
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
 
   useEffect(() => {
-    getUserInfo(auth.user.id).then((user) => {
+    getUserSubscription(auth.user.id).then((user) => {
       if (user) {
         setSubscribedTo(user.subscription.product_price_id);
         setSubscriptionStatus(user.subscription.status);

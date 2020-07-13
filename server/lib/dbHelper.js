@@ -172,10 +172,12 @@ exports.addSubscription = async (sub) => {
     });
 };
 
-//Only returns active subscriptions
-exports.getSubscriptionByUserId = (id) => {
+exports.getActiveSubscriptionByUserId = (id) => {
   let statement =
-    "select users.id, users.fname, users.lname, users.email, subscriptions.id as subId, subscriptions.status, subscriptions.current_period_end, subscriptions.product_price_id, subscriptions.latest_invoice_id from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId and subscriptions.status = 'active') where users.id = ? order by subscriptions.current_period_end desc limit 1";
+    "select users.id, users.fname, users.lname, users.email, subscriptions.id as subId, subscriptions.status, subscriptions.current_period_end, " +
+    "subscriptions.product_price_id, subscriptions.latest_invoice_id, subscriptions.cancel_at_period_end, subscriptions.cancel_at " +
+    "from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId and subscriptions.status = 'active') " +
+    "where users.id = ? order by subscriptions.current_period_end desc limit 1";
 
   return dbConnection
     .execute(statement, [id])
@@ -192,8 +194,42 @@ exports.getSubscriptionByUserId = (id) => {
             current_period_end: rows[0].current_period_end,
             product_price_id: rows[0].product_price_id,
             latest_invoice_id: rows[0].latest_invoice_id,
+            cancel_at_period_end: rows[0].cancel_at_period_end,
+            cancel_at: rows[0].cancel_at,
           },
-          // password: rows[0].password,
+        };
+      } else {
+        return null;
+      }
+    })
+    .catch((err) => {
+      console.log("[ERROR][getActiveSubscriptionByUserId] - " + err.message);
+      return null;
+    });
+};
+
+exports.getSubscriptionByUserId = (id) => {
+  let statement =
+    "select users.id, subscriptions.id as subId, subscriptions.status, subscriptions.current_period_end, " +
+    "subscriptions.product_price_id, subscriptions.latest_invoice_id, subscriptions.cancel_at_period_end, subscriptions.cancel_at " +
+    "from users left join subscriptions on ( users.stripeCustomerId = subscriptions.stripeCustomerId) " +
+    "where users.id = ? order by subscriptions.current_period_end desc limit 1";
+
+  return dbConnection
+    .execute(statement, [id])
+    .then(([rows, fields]) => {
+      if (rows.length > 0) {
+        return {
+          id: rows[0].id,
+          subscription: {
+            id: rows[0].subId,
+            status: rows[0].status,
+            current_period_end: rows[0].current_period_end,
+            product_price_id: rows[0].product_price_id,
+            latest_invoice_id: rows[0].latest_invoice_id,
+            cancel_at_period_end: rows[0].cancel_at_period_end,
+            cancel_at: rows[0].cancel_at,
+          },
         };
       } else {
         return null;
@@ -259,12 +295,16 @@ exports.updateSubscription = async (subscription) => {
       product_price_id: subscription.plan.id,
       product_id: subscription.plan.product,
       latest_invoice_id: latestInvoiceId,
+      cancel_at_period_end: subscription.cancel_at_period_end,
+      cancel_at: subscription.cancel_at,
     };
 
     await exports.updateTableRowById("subscriptions", subscription.id, newData);
   } else {
-    //Add the subscription in databse
-    await exports.addSubscription(subscription);
+    console.error(
+      "=====updateSubscription subscription does not exists: " + subscription.id
+    );
+    //await exports.addSubscription(subscription);
   }
 };
 
