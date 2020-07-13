@@ -149,7 +149,8 @@ exports.addSubscription = async (sub) => {
     return false;
   }
 
-  let statement = "insert into subscriptions values (?, ?, ?, ?, ?, ?, ?)";
+  let statement =
+    "insert into subscriptions values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
   return dbConnection
     .execute(statement, [
       sub.id,
@@ -159,6 +160,8 @@ exports.addSubscription = async (sub) => {
       sub.items.data[0].price.id,
       sub.items.data[0].price.product,
       sub.latest_invoice.id,
+      sub.cancel_at_period_end,
+      sub.cancel_at,
     ])
     .then(([rows, fields]) => {
       if (rows.length > 0) {
@@ -237,39 +240,6 @@ exports.getSubscriptionByUserId = (id) => {
     })
     .catch((err) => {
       console.log("[ERROR][getSubscriptionByUserId] - " + err.message);
-      return null;
-    });
-};
-
-exports.getSubscriptionByUserIdFromCanceledSubscriptionsTable = (userId) => {
-  let statement =
-    "select users.id, users.stripeCustomerId, canceled_subscriptions.id as subId, " +
-    "canceled_subscriptions.current_period_end, canceled_subscriptions.product_price_id " +
-    "from users left join canceled_subscriptions on ( users.stripeCustomerId = canceled_subscriptions.stripeCustomerId) " +
-    "where users.id = ? order by canceled_subscriptions.current_period_end desc limit 1";
-
-  return dbConnection
-    .execute(statement, [userId])
-    .then(([rows, fields]) => {
-      if (rows.length > 0) {
-        return {
-          id: rows[0].id,
-          stripeCustomerId: rows[0].stripeCustomerId,
-          subscription: {
-            id: rows[0].subId,
-            current_period_end: rows[0].current_period_end,
-            product_price_id: rows[0].product_price_id,
-          },
-        };
-      } else {
-        return null;
-      }
-    })
-    .catch((err) => {
-      console.log(
-        "[ERROR][getSubscriptionByUserIdFromCanceledSubscriptionsTable] - " +
-          err.message
-      );
       return null;
     });
 };
@@ -556,6 +526,22 @@ exports.updateTableRow = (table, colFilter, colFilterValue, newData) => {
     })
     .catch((err) => {
       console.log("[ERROR][updateTableRow] - " + err.message);
+      return false;
+    });
+};
+
+exports.deleteTableRowById = (table, id) => {
+  let statement = `delete from ${table} where id = ?`;
+  return dbConnection
+    .execute(statement, [id])
+    .then(([rows, fields]) => {
+      if (rows.affectedRows > 0) {
+        console.log(`${table} table at id ${id} was deleted.`);
+      }
+      return true;
+    })
+    .catch((err) => {
+      console.log("[ERROR][deleteTableRowById] - " + err.message);
       return false;
     });
 };

@@ -134,33 +134,27 @@ exports.cancelSubscription = async (req, res) => {
   //User is authenticated
   const { userId } = req.params;
   try {
-    //Get subscription id of user with active subscription
+    //Get active subscription id of user with active subscription
     const userWithSubscription = await dbHelper
-      .getSubscriptionByUserId(userId)
+      .getActiveSubscriptionByUserId(userId)
       .then(async (user) => {
-        if (
-          user &&
-          user.subscription.id &&
-          user.subscription.status === "active"
-        ) {
+        if (user) {
           return user;
         } else {
-          throw new Error("No user found in database");
+          throw new Error("No user with active subscription found in database");
         }
       });
 
     //Request stripe to cancel subscription
-    const deletedSubscription = await stripeHelper.cancelSubscription(
+    const canceledSubscription = await stripeHelper.cancelSubscription(
       userWithSubscription.subscription.id
     );
-    console.log("=====STRIPE CALL TO Cancel Sub result");
-    console.log(deletedSubscription);
 
     //Update subscriptions table to reflect new status
-    //ANGEL TODO
+    await dbHelper.updateSubscription(canceledSubscription);
 
-    //Send result to client
-    res.send(deletedSubscription);
+    //Send success result to client
+    res.sendStatus(200);
   } catch (error) {
     console.error("[SERVER] cancelSubscription controller");
     console.error(error);
@@ -221,12 +215,12 @@ exports.stripeWebhookHandler = async (req, res) => {
       }
       break;
     case "customer.subscription.deleted":
-      if (event.request != null) {
-        // handle a subscription cancelled by your request
-        // from above.
-      } else {
-        // handle subscription cancelled automatically based
-        // upon your subscription settings.
+      try {
+        //Subscription was set to canceled state. Delete it from the database.
+        dbHelper.deleteTableRowById("subscriptions", data.id);
+      } catch (error) {
+        console.log("====STRIPE WEBHOOK : customer.subscription.deleted");
+        console.error(error);
       }
       break;
     case "invoice.payment_succeeded":

@@ -1,7 +1,6 @@
 DATABASE SETUP
 These are the scripts to prepare the database and initialize the table with values
 
-
 drop DATABASE if EXISTS db_warrenai;
 
 create DATABASE db_warrenai;
@@ -27,15 +26,9 @@ current_period_end BIGINT,
 status varchar(30),
 product_price_id varchar(36),
 product_id varchar(36),
-latest_invoice_id varchar(36)
-);
-
-
-create table canceled_subscriptions(
-id varchar(36) PRIMARY KEY,
-stripeCustomerId varchar(36) NOT NULL references users(stripeCustomerId),
-current_period_end BIGINT,
-product_price_id varchar(36)
+latest_invoice_id varchar(36),
+cancel_at_period_end BOOLEAN,
+cancel_at BIGINT
 );
 
 create table invoices (

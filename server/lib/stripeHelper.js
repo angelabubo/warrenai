@@ -96,12 +96,30 @@ exports.getDefaultPaymentMethodDetails = async (paymentMethodId) => {
 
 exports.cancelSubscription = async (subscriptionId) => {
   try {
-    // Delete the subscription
+    // Cancel the subscription via update
+    const canceledSubscription = await stripe.subscriptions.update(
+      subscriptionId,
+      {
+        cancel_at_period_end: true,
+      }
+    );
+    return canceledSubscription;
+  } catch (error) {
+    console.error(
+      "Stripe error call when attempting to cancel the subscription"
+    );
+    throw error;
+  }
+};
+
+exports.deleteSubscription = async (subscriptionId) => {
+  try {
+    // Delete the subscription. status will become canceled
     const deletedSubscription = await stripe.subscriptions.del(subscriptionId);
     return deletedSubscription;
   } catch (error) {
     console.error(
-      "Stripe error call when attempting to cancel the subscription"
+      "Stripe error call when attempting to delete the subscription"
     );
     throw error;
   }
