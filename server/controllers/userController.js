@@ -33,10 +33,19 @@ exports.getAuthUser = async (req, res) => {
     });
     return res.redirect("/signin");
   }
+
   //Get user info including subscription details
   const { userId } = req.params;
-  await dbHelper.getSubscriptionByUserId(userId).then((user) => {
-    res.json(user);
+  await dbHelper.getUserById(userId).then((user) => {
+    if (req.user && user.id === req.user.id) {
+      //User retrieved from database matches the user being requested
+      res.json(user);
+    } else {
+      res.status(403).json({
+        message: "You have no access to the requested resource.",
+      });
+      return res.redirect("/signin");
+    }
   });
 };
 

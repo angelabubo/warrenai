@@ -52,7 +52,6 @@ exports.getUserById = (id) => {
           id: rows[0].id,
           name: fullName,
           email: rows[0].email,
-          // password: rows[0].password,
         };
       } else {
         return null;
