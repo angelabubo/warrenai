@@ -30,6 +30,14 @@ product_id varchar(36),
 latest_invoice_id varchar(36)
 );
 
+
+create table canceled_subscriptions(
+id varchar(36) PRIMARY KEY,
+stripeCustomerId varchar(36) NOT NULL references users(stripeCustomerId),
+current_period_end BIGINT,
+product_price_id varchar(36)
+);
+
 create table invoices (
 id varchar(36) PRIMARY KEY,
 invoice_number varchar(36),
