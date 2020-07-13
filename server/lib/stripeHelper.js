@@ -35,11 +35,11 @@ exports.retrieveSubscription = async (subscriptionId) => {
   try {
     // Create the subscription
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-
     return subscription;
   } catch (error) {
     console.error("Error retrieving the subscription");
-    throw error;
+    console.log(error);
+    return null;
   }
 };
 
