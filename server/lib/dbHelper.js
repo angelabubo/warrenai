@@ -125,6 +125,7 @@ exports.deleteUser = (id) => {
 exports.userHasPremiumAccess = async (userId) => {
   //Check if user has subscription with status "active"
   const userWithActiveSub = await exports.getActiveSubscriptionByUserId(userId);
+
   if (userWithActiveSub) {
     if (userWithActiveSub.subscription.cancel_at_period_end === 1) {
       //User recently canceled the subscription. Check if past due the period end
@@ -238,24 +239,26 @@ exports.getActiveSubscriptionByUserId = (id) => {
     .execute(statement, [id])
     .then(([rows, fields]) => {
       if (rows.length > 0) {
-        return {
-          id: rows[0].id,
-          fname: rows[0].fname,
-          lname: rows[0].lname,
-          email: rows[0].email,
-          subscription: {
-            id: rows[0].subId,
-            status: rows[0].status,
-            current_period_end: rows[0].current_period_end,
-            product_price_id: rows[0].product_price_id,
-            latest_invoice_id: rows[0].latest_invoice_id,
-            cancel_at_period_end: rows[0].cancel_at_period_end,
-            cancel_at: rows[0].cancel_at,
-          },
-        };
-      } else {
-        return null;
+        if (rows[0].subId && rows[0].status === "active") {
+          return {
+            id: rows[0].id,
+            fname: rows[0].fname,
+            lname: rows[0].lname,
+            email: rows[0].email,
+            subscription: {
+              id: rows[0].subId,
+              status: rows[0].status,
+              current_period_end: rows[0].current_period_end,
+              product_price_id: rows[0].product_price_id,
+              latest_invoice_id: rows[0].latest_invoice_id,
+              cancel_at_period_end: rows[0].cancel_at_period_end,
+              cancel_at: rows[0].cancel_at,
+            },
+          };
+        }
       }
+
+      return null;
     })
     .catch((err) => {
       console.log("[ERROR][getActiveSubscriptionByUserId] - " + err.message);

@@ -60,23 +60,39 @@ exports.getUserPlan = async (req, res) => {
 
   //Get user subscription info from database
   const { userId } = req.params;
-  await dbHelper.getActiveSubscriptionByUserId(userId).then((user) => {
-    if (
-      user &&
-      user.subscription.product_price_id &&
-      user.subscription.status === "active"
-    ) {
-      //User has active subscription
-      const data = productHelper.getProductById(
-        user.subscription.product_price_id
-      );
-      res.json(data);
-    } else {
-      //User has no subscription
-      const data = productHelper.getProductById(productHelper.PROD_ID_FREE);
-      res.json(data);
-    }
-  });
+  const hasPremiumAccess = await dbHelper.userHasPremiumAccess(userId);
+  if (hasPremiumAccess) {
+    //Get the subscription from database
+    await dbHelper.getActiveSubscriptionByUserId(userId).then((user) => {
+      if (user) {
+        //User has active subscription
+        const data = productHelper.getProductById(
+          user.subscription.product_price_id
+        );
+
+        if (user.subscription.cancel_at_period_end === 1) {
+          //User recently canceled the subscription
+          const periodEnd = new Date(user.subscription.cancel_at * 1000);
+          data[
+            "cancelMessage"
+          ] = `You canceled this subscription. You have access to WarrenAi Premium until ${periodEnd.toDateString()}.`;
+          //Disable cancel button
+          data.cancelSubBtn = false;
+        }
+
+        res.json(data);
+      } else {
+        //User has no subscription
+        const data = productHelper.getProductById(productHelper.PROD_ID_FREE);
+        res.json(data);
+      }
+    });
+  } else {
+    const data = productHelper.getProductById(productHelper.PROD_ID_FREE);
+    console.log(data);
+
+    res.json(data);
+  }
 };
 
 exports.getUserSubscription = async (req, res) => {

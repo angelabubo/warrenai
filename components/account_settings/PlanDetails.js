@@ -48,8 +48,6 @@ const PlanDetails = ({ classes, userId }) => {
   };
 
   useEffect(() => {
-    console.log("useEffect of PlanDetail called");
-
     setLoading(true);
     getUserPlan(userId).then((data) => {
       if (data) {
@@ -113,6 +111,11 @@ const PlanDetails = ({ classes, userId }) => {
                   {plan.unitprice
                     ? `$${plan.unitprice / 100} ${plan.recurring}`
                     : "Free"}
+                </Typography>
+                <Typography variant="caption" color="error" align="left">
+                  <div className={classes.cancelMessage}>
+                    {plan.cancelMessage ? plan.cancelMessage : ""}
+                  </div>
                 </Typography>
               </Grid>
               <Grid item>
@@ -276,6 +279,9 @@ const styles = (theme) => ({
   },
   colContainer: {
     height: "100%",
+  },
+  cancelMessage: {
+    maxWidth: "325px",
   },
   btn: {
     marginBottom: 10,
