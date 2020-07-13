@@ -3,7 +3,6 @@ import axios from "axios";
 export const STRIPE_PUBLIC_KEY =
   "pk_test_51GtbV6AOCcUhE0MFvAWMLeKwzSng9HKU4TVeTAyLo9yTdB0NNPDRDINgrMlW2NmxJe5Y4vzGITvmcavcElXpEpXD00tsidmwlf";
 
-//test1 user cus_HT4gEtc9Zy8ndM
 export const createSubscription = async ({
   userId,
   paymentMethodId,
@@ -46,22 +45,6 @@ export const retryInvoiceWithNewPaymentMethod = async ({
       // The card had an error when trying to attach it to a customer.
       throw result;
     }
-
-    return result;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const updateSubscription = async (userId, priceId, data) => {
-  try {
-    const result = await axios.post(
-      `/api/stripe/${userId}/update-subscription`,
-      {
-        priceId,
-        data,
-      }
-    );
 
     return result;
   } catch (error) {

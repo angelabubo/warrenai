@@ -70,9 +70,6 @@ exports.retryInvoice = async (req, res) => {
       invoiceId
     );
 
-    //Update the invoice in the database
-    await dbHelper.updateInvoice(invoice);
-
     //Send response
     return res.send(invoice);
   } catch (error) {
@@ -101,11 +98,11 @@ exports.updateSubscription = async (req, res) => {
   }
 
   //User is authenticated
-  const { priceId, data } = req.body;
+  const { subscription } = req.body;
 
   //Update subscription for current customer
   try {
-    await dbHelper.updateSubscription({ priceId, data });
+    await dbHelper.updateSubscription(subscription);
 
     //Send response
     res.sendStatus(200);
@@ -217,7 +214,7 @@ exports.stripeWebhookHandler = async (req, res) => {
       break;
     case "customer.subscription.updated":
       try {
-        dbHelper.updateUserSubscription(data);
+        dbHelper.updateSubscription(data);
       } catch (error) {
         console.log("====STRIPE WEBHOOK : customer.subscription.updated");
         console.error(error);
@@ -230,15 +227,6 @@ exports.stripeWebhookHandler = async (req, res) => {
       } else {
         // handle subscription cancelled automatically based
         // upon your subscription settings.
-      }
-      break;
-    case "invoice.finalized":
-      // For recurring charges. Create a new entry in invoices table
-      try {
-        dbHelper.addInvoice(data);
-      } catch (error) {
-        console.log("====STRIPE WEBHOOK : invoice.finalized");
-        console.error(error);
       }
       break;
     case "invoice.payment_succeeded":
@@ -261,15 +249,6 @@ exports.stripeWebhookHandler = async (req, res) => {
         dbHelper.updateInvoice(data);
       } catch (error) {
         console.log("====STRIPE WEBHOOK : invoice.payment_failed");
-        console.error(error);
-      }
-      break;
-    case "charge.succeeded":
-      // Update the corresponding invoice
-      try {
-        dbHelper.updateInvoice(data);
-      } catch (error) {
-        console.log("====STRIPE WEBHOOK : charge.succeeded");
         console.error(error);
       }
       break;

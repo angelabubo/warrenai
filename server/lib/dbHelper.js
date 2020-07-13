@@ -2,6 +2,7 @@ const dbConnection = require("./dbConnection");
 const {
   createStripeCustomer,
   getDefaultPaymentMethodDetails,
+  retrieveCharge,
 } = require("./stripeHelper");
 
 const { getProductById } = require("../data/products");
@@ -205,57 +206,34 @@ exports.getSubscriptionByUserId = (id) => {
     });
 };
 
-exports.updateSubscription = async ({ priceId, data }) => {
-  let subId, newData;
-  if (data.object === "subscription") {
-    subId = data.id;
-    newData = {
-      current_period_end: data.current_period_end,
-      status: data.status,
-      product_id: data.items.data[0].price.product,
-    };
-  } else if (data.object === "invoice") {
-    subId = data.subscription;
-    if (data.status === "paid") {
-      newData = {
-        status: "active",
-      };
+exports.updateSubscription = async (subscription) => {
+  const subscriptionFromDb = await exports.getTableRow(
+    "subscriptions",
+    "id",
+    subscription.id
+  );
+
+  if (subscriptionFromDb) {
+    let latestInvoiceId;
+    if (subscription.latest_invoice.id) {
+      latestInvoiceId = subscription.latest_invoice.id;
     } else {
-      newData = {
-        status: data.status,
-      };
+      latestInvoiceId = subscription.latest_invoice;
     }
-    console.log("Inside Invoice");
-    console.log(newData);
-  } else {
-    throw {
-      message: "Unknown data object type in updateSubscription Request",
+
+    const newData = {
+      current_period_end: subscription.current_period_end,
+      status: subscription.status,
+      product_price_id: subscription.plan.id,
+      product_id: subscription.plan.product,
+      latest_invoice_id: latestInvoiceId,
     };
-  }
 
-  if (priceId) {
-    newData["product_price_id"] = priceId;
-  }
-
-  await exports.updateTableRowById("subscriptions", subId, newData);
-};
-
-exports.updateUserSubscription = async (subscription) => {
-  let latestInvoiceId;
-  if (subscription.latest_invoice.id) {
-    latestInvoiceId = subscription.latest_invoice.id;
+    await exports.updateTableRowById("subscriptions", subscription.id, newData);
   } else {
-    latestInvoiceId = subscription.latest_invoice;
+    //Add the subscription in databse
+    await exports.addSubscription(subscription);
   }
-  const newData = {
-    current_period_end: subscription.current_period_end,
-    status: subscription.status,
-    product_price_id: subscription.plan.id,
-    product_id: subscription.plan.product,
-    latest_invoice_id: latestInvoiceId,
-  };
-
-  await exports.updateTableRowById("subscriptions", subscription.id, newData);
 };
 
 exports.deleteSubscription = (id) => {
@@ -321,11 +299,7 @@ exports.addInvoice = async (invoice) => {
     return false;
   }
 
-  const user = await exports.getTableRow(
-    "users",
-    "stripeCustomerId",
-    invoice.customer
-  );
+  const charge = invoice.charge ? await retrieveCharge(invoice.charge) : null;
 
   let product = null;
   const withLineItems = invoice.lines.data.length > 0 ? true : false;
@@ -334,7 +308,7 @@ exports.addInvoice = async (invoice) => {
   }
 
   let statement =
-    "insert into invoices values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "insert into invoices values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   return dbConnection
     .execute(statement, [
       invoice.id,
@@ -344,15 +318,16 @@ exports.addInvoice = async (invoice) => {
       product ? `${product.name} ${product.recurring}` : null,
       withLineItems ? invoice.lines.data[0].period.start : invoice.period_start,
       withLineItems ? invoice.lines.data[0].period.end : invoice.period_end,
-      user ? user.default_paymentmethod_card_brand : null,
-      user ? user.default_paymentmethod_card_last4 : null,
+      charge ? charge.payment_method_details.card.brand : null,
+      charge ? charge.payment_method_details.card.last4 : null,
       invoice.total,
       invoice.status,
       invoice.payment_intent.id
         ? invoice.payment_intent.id
         : invoice.payment_intent, //payment_intent_id
       invoice.payment_intent.id ? invoice.payment_intent.status : null, //payment_intent_status
-      null, //receipt_url
+      charge ? charge.receipt_url : null, //receipt_url
+      invoice.charge,
     ])
     .then(([rows, fields]) => {
       if (rows.length > 0) {
@@ -366,50 +341,55 @@ exports.addInvoice = async (invoice) => {
     });
 };
 
-exports.updateInvoice = async (data) => {
-  if (data.object === "charge") {
-    const newData = {
-      created_date: data.created,
-      payment_intent_id: data.payment_intent,
-      payment_method_brand: data.payment_method_details.card.brand,
-      payment_method_last4: data.payment_method_details.card.last4,
-      receipt_url: data.receipt_url,
-    };
+exports.updateInvoice = async (invoice) => {
+  const invoiceFromDB = await exports.getTableRow("invoices", "id", invoice.id);
 
-    await exports.updateTableRowById("invoices", data.invoice, newData);
-  }
-
-  if (data.object === "invoice") {
-    const withLineItems = data.lines.data.length > 0 ? true : false;
-    let product = null;
-    if (withLineItems) {
-      product = getProductById(data.lines.data[0].plan.id);
-    }
-
+  if (invoiceFromDB) {
+    const withLineItems = invoice.lines.data.length > 0 ? true : false;
     let newData = {
-      invoice_number: data.number,
-      created_date: data.created,
-      product_description: product
-        ? `${product.name} ${product.recurring}`
-        : null,
+      invoice_number: invoice.number,
+      created_date: invoice.created,
       period_start: withLineItems
-        ? data.lines.data[0].period.start
-        : data.period_start,
+        ? invoice.lines.data[0].period.start
+        : invoice.period_start,
       period_end: withLineItems
-        ? data.lines.data[0].period.end
-        : data.period_end,
-      total: data.total,
-      status: data.status,
-      payment_intent_id: data.payment_intent.id
-        ? data.payment_intent.id
-        : data.payment_intent,
+        ? invoice.lines.data[0].period.end
+        : invoice.period_end,
+      total: invoice.total,
+      status: invoice.status,
+      payment_intent_id: invoice.payment_intent.id
+        ? invoice.payment_intent.id
+        : invoice.payment_intent,
     };
 
-    if (data.payment_intent.id) {
-      newData["payment_intent_status"] = data.payment_intent.status;
+    if (withLineItems) {
+      const product = getProductById(invoice.lines.data[0].plan.id);
+
+      if (product) {
+        newData["product_description"] = `${product.name} ${product.recurring}`;
+      }
     }
 
-    await exports.updateTableRowById("invoices", data.id, newData);
+    const charge = invoice.charge ? await retrieveCharge(invoice.charge) : null;
+    if (charge) {
+      newData["payment_method_brand"] =
+        charge.payment_method_details.card.brand;
+
+      newData["payment_method_last4"] =
+        charge.payment_method_details.card.last4;
+
+      newData["receipt_url"] = charge.receipt_url;
+      newData["charge_id"] = invoice.charge;
+    }
+
+    if (invoice.payment_intent.id) {
+      newData["payment_intent_status"] = invoice.payment_intent.status;
+    }
+
+    await exports.updateTableRowById("invoices", invoice.id, newData);
+  } else {
+    //Invoice is not yet existing, add it in the database instead
+    await exports.addInvoice(invoice);
   }
 };
 //Generic Helpers

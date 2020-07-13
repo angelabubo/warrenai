@@ -19,6 +19,7 @@ import {
   handleCustomerActionRequired,
   processSubscriptionRequest,
 } from "./subscriptionHelper";
+
 import theme from "../../pages/theme";
 
 import CheckCircleOutlineIcon from "@material-ui/icons/Check";
@@ -65,7 +66,7 @@ const CardPaymentForm = ({ auth, plan, isDisabled, btnName }) => {
 
       //Display Account Settings Page, Plan Details tab
       Router.replace("/account/settings/1");
-    }, 1000);
+    }, 2000);
   };
 
   const handleSubmit = async (event) => {

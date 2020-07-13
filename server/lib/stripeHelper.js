@@ -1,4 +1,5 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const dbHelper = require("./dbHelper");
 
 exports.createStripeCustomer = async (email) => {
   // Create a new customer object
@@ -67,11 +68,14 @@ const attachPaymentToCustomer = async (customerId, paymentMethodId) => {
     });
 
     // Change the default invoice settings on the customer to the new payment method
-    await stripe.customers.update(customerId, {
+    const customer = await stripe.customers.update(customerId, {
       invoice_settings: {
         default_payment_method: paymentMethodId,
       },
     });
+
+    //Update customer information in database with the new payment method
+    dbHelper.updateCustomer(customer);
   } catch (error) {
     console.error("Error attaching payment method to customer");
     throw error;
@@ -100,6 +104,16 @@ exports.cancelSubscription = async (subscriptionId) => {
       "Stripe error call when attempting to cancel the subscription"
     );
     throw error;
+  }
+};
+
+exports.retrieveCharge = async (chargeId) => {
+  try {
+    const charge = await stripe.charges.retrieve(chargeId);
+    return charge;
+  } catch (error) {
+    console.error("Error retrieving the charge " + chargeId);
+    return null;
   }
 };
 
