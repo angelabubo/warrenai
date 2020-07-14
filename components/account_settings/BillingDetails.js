@@ -88,7 +88,7 @@ const BillingDetails = (props) => {
                     style={{ fontWeight: "bold" }}
                   >
                     {billingInfo.cardBrand && billingInfo.cardLast4
-                      ? `${billingInfo.cardBrand} **** **** ${billingInfo.cardLast4}`
+                      ? `${billingInfo.cardBrand} **** **** **** ${billingInfo.cardLast4}`
                       : "None"}
 
                     <UpdatePaymentMethodForm
