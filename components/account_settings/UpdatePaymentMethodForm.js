@@ -57,9 +57,9 @@ const UpdatePaymentMethodForm = ({ auth, plan, isDisabled, btnName }) => {
       //Close the dialog and initialize states after the delay
       initializeStates();
 
-      //Display Account Settings Page, Plan Details tab
-      //Router.replace("/account/settings/1");
-    }, 2000);
+      //Display Account Settings Page, Billing Details tab
+      Router.replace("/account/settings/2");
+    }, 1500);
   };
 
   const handleSubmit = async (event) => {
