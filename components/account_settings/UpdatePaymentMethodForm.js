@@ -11,14 +11,6 @@ import {
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { blue } from "@material-ui/core/colors";
 import Paper from "@material-ui/core/Paper";
-import {
-  createSubscription,
-  retryInvoiceWithNewPaymentMethod,
-  createPaymentMethod,
-  handlePaymentMethodRequired,
-  handleCustomerActionRequired,
-  processSubscriptionRequest,
-} from "../subscription/subscriptionHelper";
 
 import theme from "../../pages/theme";
 
@@ -45,17 +37,18 @@ import CloseIcon from "@material-ui/icons/Close";
 import { makeStyles } from "@material-ui/core/styles";
 //Dialog
 
+import {
+  updatePaymentMethod,
+  createPaymentMethod,
+} from "../subscription/subscriptionHelper";
+
 const UpdatePaymentMethodForm = ({ auth, plan, isDisabled, btnName }) => {
   const userId = auth.user.id;
   const elements = useElements();
   const stripe = useStripe();
   const classes = useStyles();
 
-  const handleSubscriptionComplete = async (userId, priceId, result) => {
-    // Payment was successful.
-    // Remove invoice from localstorage because payment is now complete.
-    localStorage.clear();
-
+  const handleUpdateComplete = async () => {
     // Change your UI to show a success message to your customer.
     setProcessing(false);
     setSuccess(true);
@@ -65,7 +58,7 @@ const UpdatePaymentMethodForm = ({ auth, plan, isDisabled, btnName }) => {
       initializeStates();
 
       //Display Account Settings Page, Plan Details tab
-      Router.replace("/account/settings/1");
+      //Router.replace("/account/settings/1");
     }, 2000);
   };
 
@@ -81,53 +74,19 @@ const UpdatePaymentMethodForm = ({ auth, plan, isDisabled, btnName }) => {
     setProcessing(true);
 
     try {
-      //Get user's payment method id from backend
-
       //Create a payment method
-      const paymentMethod = await createPaymentMethod(
+      const { paymentMethod } = await createPaymentMethod(
         stripe,
         elements.getElement(CardNumberElement),
         billingDetails.name
         // billingDetails.postalCode
       );
 
-      //Process Subscription Request
-      const subscription = await processSubscriptionRequest(
-        userId,
-        plan.id,
-        paymentMethod
-      );
+      //Call backend to update the customer's payment method to the new one
+      await updatePaymentMethod(userId, paymentMethod.id);
 
-      // Some payment methods require a customer to be on session
-      // to complete the payment process or do additional
-      // authentication with their financial institution.
-      // Eg: 2FA for cards.
-      // Check the status of the
-      // payment intent to handle these actions.
-      const result = await handleCustomerActionRequired(stripe, subscription);
-
-      // You will get a requires_payment_method error if attempt
-      // to charge the card for the subscription failed.
-      if (result.subscription) {
-        const { subscription, priceId } = await handlePaymentMethodRequired(
-          result
-        );
-        // No more actions required. Provision your service for the user.
-        await handleSubscriptionComplete(userId, priceId, subscription);
-      } else if (result.invoice) {
-        // No more actions required. Provision your service for the user.
-        await handleSubscriptionComplete(
-          userId,
-          result.priceId,
-          result.invoice
-        );
-      } else {
-        throw {
-          error: {
-            message: "Unknown result object. Neither subscription nor invoice",
-          },
-        };
-      }
+      //Complete the process
+      await handleUpdateComplete();
     } catch (error) {
       //Normalize the error as data object for cases of 40x/50x status code.
       const data = clientlogger("err", error);

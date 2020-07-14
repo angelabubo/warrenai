@@ -168,6 +168,47 @@ exports.cancelSubscription = async (req, res) => {
   }
 };
 
+exports.updatePaymentMethod = async (req, res) => {
+  //Check if user who sent the request is authenticated first(signed in)
+  if (!req.isAuthUser) {
+    console.log("Update subscription called but NOT AUTHENTICATED");
+
+    res
+      .status(403)
+      .json({ message: "You are not authenticated. Please signin or signup." });
+
+    return res.redirect("/signin");
+  }
+
+  //User is authenticated
+  const { paymentMethodId } = req.body;
+  const { userId } = req.params;
+
+  try {
+    //Get user's stripe customer id and old paymentMethodId
+    const user = await dbHelper.getUserByIdVerbose(userId);
+
+    await stripeHelper.updatePaymentMethod(
+      user.stripeCustomerId,
+      user.default_paymentmethod_id,
+      paymentMethodId
+    );
+
+    //Send response
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("[SERVER] updatePaymentMethod");
+    console.error(error);
+
+    return res.status("402").json({
+      error: {
+        message:
+          "There was an error updating your payment method. Please contact WarrenAi.",
+      },
+    });
+  }
+};
+
 exports.stripeWebhookHandler = async (req, res) => {
   // Retrieve the event by verifying the signature using the raw body and secret.
   let event;

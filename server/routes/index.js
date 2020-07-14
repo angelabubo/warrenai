@@ -39,8 +39,6 @@ router
   .route("/api/users/:userId/billing")
   //Get logged in user's billing information
   .get(authController.checkAuth, userController.getUserBillingInfo);
-//When user wants to update billing information
-//.post(authController.checkAuth, catchErrors());
 
 router
   .route("/api/users/subscription/:userId")
@@ -81,6 +79,12 @@ router.post(
   "/api/stripe/:userId/cancel-subscription",
   authController.checkAuth,
   stripeController.cancelSubscription
+);
+
+router.post(
+  "/api/stripe/:userId/update-payment-method",
+  authController.checkAuth,
+  stripeController.updatePaymentMethod
 );
 
 //STRIPE WEBHOOK handler for asynchronous events.

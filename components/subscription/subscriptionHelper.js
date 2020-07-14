@@ -74,8 +74,6 @@ export const createPaymentMethod = async (
       throw result;
     }
 
-    console.log(result);
-
     return result;
   } catch (error) {
     console.error("Error Creating Payment Method");
@@ -230,6 +228,25 @@ export const processSubscriptionRequest = async (
         priceId: priceId,
       };
     }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updatePaymentMethod = async (userId, paymentMethodId) => {
+  try {
+    const result = await axios.post(
+      `/api/stripe/${userId}/update-payment-method`,
+      {
+        paymentMethodId,
+      }
+    );
+
+    if (result.error) {
+      throw result;
+    }
+
+    return result;
   } catch (error) {
     throw error;
   }

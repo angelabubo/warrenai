@@ -44,12 +44,11 @@ exports.getUserById = (id) => {
   return dbConnection
     .execute(statement, [id])
     .then(([rows, fields]) => {
-      let fullName = rows[0].fname;
-      if (rows[0].lname) {
-        fullName = `${rows[0].fname} ${rows[0].lname}`;
-      }
-
       if (rows.length > 0) {
+        let fullName = rows[0].fname;
+        if (rows[0].lname) {
+          fullName = `${rows[0].fname} ${rows[0].lname}`;
+        }
         return {
           id: rows[0].id,
           name: fullName,

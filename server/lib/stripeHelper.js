@@ -94,6 +94,26 @@ exports.getDefaultPaymentMethodDetails = async (paymentMethodId) => {
   return Promise.resolve(paymentMethodDetails);
 };
 
+exports.updatePaymentMethod = async (
+  customerId,
+  oldPaymentMethodId,
+  newPaymentMethodId
+) => {
+  try {
+    //Detach the old payment method from the customer first
+    const detachResult = await stripe.paymentMethods.detach(oldPaymentMethodId);
+    if (detachResult.error) {
+      throw detachResult.error;
+    }
+
+    //Attach the new payment method to the user
+    await attachPaymentToCustomer(customerId, newPaymentMethodId);
+  } catch (error) {
+    console.error("Error updating new payment method to customer");
+    throw error;
+  }
+};
+
 exports.cancelSubscription = async (subscriptionId) => {
   try {
     // Cancel the subscription via update
