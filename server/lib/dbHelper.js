@@ -38,6 +38,7 @@ exports.getUserByEmail = (email) => {
     });
 };
 
+//Returns basic user information (id, fullname, email)
 exports.getUserById = (id) => {
   let statement = "select * from users where id = ?";
   return dbConnection
@@ -60,6 +61,24 @@ exports.getUserById = (id) => {
     })
     .catch((err) => {
       console.log("[ERROR][getUserById] - " + err.message);
+      return null;
+    });
+};
+
+//Returns complete user information
+exports.getUserByIdVerbose = (id) => {
+  let statement = "select * from users where id = ?";
+  return dbConnection
+    .execute(statement, [id])
+    .then(([rows, fields]) => {
+      if (rows.length > 0) {
+        return rows[0];
+      } else {
+        return null;
+      }
+    })
+    .catch((err) => {
+      console.log("[ERROR][getUserByIdVerbose] - " + err.message);
       return null;
     });
 };

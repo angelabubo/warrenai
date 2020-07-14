@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core";
 
 import PlanDetails from "./PlanDetails";
+import BillingDetails from "./BillingDetails";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -72,10 +73,10 @@ const VerticalTabMenu = (props) => {
         Profile
       </TabPanel>
       <TabPanel title="Plan Details" value={value} index={1}>
-        <PlanDetails userId={userId} />
+        <PlanDetails {...props} />
       </TabPanel>
       <TabPanel title="Billing Details" value={value} index={2}>
-        Billing
+        <BillingDetails {...props} />
       </TabPanel>
     </div>
   );

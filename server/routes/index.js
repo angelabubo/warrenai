@@ -36,6 +36,13 @@ router
   .delete(authController.checkAuth, catchErrors(userController.deleteUser));
 
 router
+  .route("/api/users/:userId/billing")
+  //Get logged in user's billing information
+  .get(authController.checkAuth, userController.getUserBillingInfo);
+//When user wants to update billing information
+//.post(authController.checkAuth, catchErrors());
+
+router
   .route("/api/users/subscription/:userId")
   //Get logged in user's ACTIVE plan or subscription details
   .get(authController.checkAuth, userController.getUserPlan);

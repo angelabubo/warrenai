@@ -24,7 +24,9 @@ import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { green } from "@material-ui/core/colors";
 
-const PlanDetails = ({ classes, userId }) => {
+const PlanDetails = (props) => {
+  const classes = props.classes;
+  const userId = props.auth.user.id;
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
   const [processingCancel, setProcessingCancel] = useState(false);
   const [success, setSuccess] = useState(false);

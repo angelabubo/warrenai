@@ -95,6 +95,38 @@ exports.getUserPlan = async (req, res) => {
   }
 };
 
+exports.getUserBillingInfo = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  //Get user subscription info from database
+  const { userId } = req.params;
+  const user = await dbHelper.getUserByIdVerbose(userId);
+  const activeSubscription = await dbHelper.getActiveSubscriptionByUserId(
+    userId
+  );
+
+  if (user && activeSubscription) {
+    const data = {
+      cardBrand: user.default_paymentmethod_card_brand,
+      cardLast4: user.default_paymentmethod_card_last4,
+      cancel_at_period_end:
+        activeSubscription.subscription.cancel_at_period_end,
+      cancel_at: activeSubscription.subscription.cancel_at,
+      current_period_end: activeSubscription.subscription.current_period_end,
+    };
+    res.json(data);
+  } else {
+    //Return null billing information
+    res.json(null);
+  }
+};
+
 exports.getUserSubscription = async (req, res) => {
   //Check if user who sent the request is authenticated (signed in)
   if (!req.isAuthUser) {
