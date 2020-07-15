@@ -76,6 +76,12 @@ router.post(
 );
 
 router.post(
+  "/api/stripe/:userId/change-subscription",
+  authController.checkAuth,
+  stripeController.changeSubscription
+);
+
+router.post(
   "/api/stripe/:userId/cancel-subscription",
   authController.checkAuth,
   stripeController.cancelSubscription

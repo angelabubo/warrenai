@@ -2,6 +2,7 @@ import { Container, Grid } from "@material-ui/core";
 
 import React, { Fragment, useState, useEffect } from "react";
 import Subscribe from "./Subscribe";
+import ChangeSubscription from "./ChangeSubscription";
 import { plans } from "../../data/prices";
 import { getUserSubscription } from "../../lib/api";
 
@@ -114,38 +115,44 @@ export default function PriceList(props) {
           </Typography>
         );
       } else if (plan.id === subscribedTo) {
-        if (subscriptionWasCanceled) {
-          btnName = "Subscribe";
-          isDisabled = false;
-        } else {
-          btnName = "Current Plan";
-          isDisabled = true;
-        }
+        btnName = subscriptionWasCanceled ? "Subscribe" : "Current Plan";
+        isDisabled = subscriptionWasCanceled ? false : true;
       } else {
-        btnName = "Subscribe";
+        btnName = subscriptionWasCanceled ? "Subscribe" : "Change Plan";
         isDisabled = false;
       }
     } else {
       //No current and active subscription
-      if (plan.id === "price_free") {
-        btnName = "Current Plan";
-        isDisabled = true;
-      } else {
-        btnName = "Subscribe";
-        isDisabled = false;
-      }
+      btnName = plan.id === "price_free" ? "Current Plan" : "Subscribe";
+      isDisabled = plan.id === "price_free" ? true : false;
     }
 
-    return (
-      <Fragment>
+    if (
+      subscribedTo &&
+      subscriptionStatus === "active" &&
+      !subscriptionCanceled
+    ) {
+      //With active subscription that is NOT recently canceled
+      return (
+        <ChangeSubscription
+          {...props}
+          plan={plan}
+          btnName={btnName}
+          isDisabled={isDisabled}
+        />
+      );
+      return;
+    } else {
+      //No active subscription OR with active subscription that is recently canceled
+      return (
         <Subscribe
           {...props}
           plan={plan}
           btnName={btnName}
           isDisabled={isDisabled}
         />
-      </Fragment>
-    );
+      );
+    }
   };
 
   return (

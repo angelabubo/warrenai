@@ -119,6 +119,69 @@ exports.updateSubscription = async (req, res) => {
   }
 };
 
+exports.changeSubscription = async (req, res) => {
+  //Check if user who sent the request is authenticated first(signed in)
+  if (!req.isAuthUser) {
+    console.log("Change subscription called but NOT AUTHENTICATED");
+
+    res
+      .status(403)
+      .json({ message: "You are not authenticated. Please signin or signup." });
+
+    return res.redirect("/signin");
+  }
+
+  //User is authenticated
+  const { userId } = req.params;
+  const { priceId } = req.body;
+  try {
+    //Get active subscription id of user with active subscription
+    const userWithSubscription = await dbHelper
+      .getActiveSubscriptionByUserId(userId)
+      .then(async (user) => {
+        if (user) {
+          return user;
+        } else {
+          throw new Error("No user with active subscription found in database");
+        }
+      });
+
+    //Request stripe to change subscription
+    const newSubscription = await stripeHelper.changeSubscriptionPlan(
+      userWithSubscription.subscription.id,
+      priceId
+    );
+
+    //Update subscriptions table to reflect changes
+    await dbHelper.updateSubscription(newSubscription);
+
+    //When changing subscription plans from yearly to monthly, there is a possibility
+    //that stripe will not send out a webhook for the invoice created. Manually
+    //retrieve the invoice from stripe if new invoice is not yet in the database
+    if (newSubscription.latest_invoice) {
+      const invoice = await stripeHelper.retrieveInvoice(
+        newSubscription.latest_invoice
+      );
+      if (invoice) {
+        dbHelper.updateInvoice(invoice);
+      }
+    }
+
+    //Send success result to client
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("[SERVER] changeSubscription controller");
+    console.error(error);
+
+    return res.status("402").json({
+      error: {
+        message:
+          "There was an error changing your subscription. Please contact WarrenAi.",
+      },
+    });
+  }
+};
+
 exports.cancelSubscription = async (req, res) => {
   //Check if user who sent the request is authenticated first(signed in)
   if (!req.isAuthUser) {

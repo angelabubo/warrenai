@@ -1,6 +1,7 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const dbHelper = require("./dbHelper");
 
+//Customers
 exports.createStripeCustomer = async (email) => {
   // Create a new customer object
   const customer = await stripe.customers.create({
@@ -12,6 +13,7 @@ exports.createStripeCustomer = async (email) => {
   return Promise.resolve(customer.id);
 };
 
+//Subscriptions
 exports.createSubscription = async (customerId, paymentMethodId, priceId) => {
   try {
     // Set the new payment method as the default for the customer
@@ -43,6 +45,67 @@ exports.retrieveSubscription = async (subscriptionId) => {
   }
 };
 
+exports.cancelSubscription = async (subscriptionId) => {
+  try {
+    // Cancel the subscription via update
+    const canceledSubscription = await stripe.subscriptions.update(
+      subscriptionId,
+      {
+        cancel_at_period_end: true,
+      }
+    );
+    return canceledSubscription;
+  } catch (error) {
+    console.error(
+      "Stripe error call when attempting to cancel the subscription"
+    );
+    throw error;
+  }
+};
+
+exports.deleteSubscription = async (subscriptionId) => {
+  try {
+    // Delete the subscription. status will become canceled
+    const deletedSubscription = await stripe.subscriptions.del(subscriptionId);
+    return deletedSubscription;
+  } catch (error) {
+    console.error(
+      "Stripe error call when attempting to delete the subscription"
+    );
+    throw error;
+  }
+};
+
+exports.changeSubscriptionPlan = async (subscriptionId, priceId) => {
+  try {
+    //TODO : instead of having this stripe call, consider saving the items.data[0].id
+    //in database
+    //Retrieve current subscription from stripe
+    const currentSubscription = await exports.retrieveSubscription(
+      subscriptionId
+    );
+
+    //Update subscription to the new price ID
+    const newSubscription = await stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: false,
+      items: [
+        {
+          id: currentSubscription.items.data[0].id,
+          price: priceId,
+        },
+      ],
+    });
+
+    return newSubscription;
+  } catch (error) {
+    console.error(
+      "Stripe error call when attempting to change the subscription"
+    );
+    throw error;
+  }
+};
+
+//Invoice
 exports.retryInvoice = async (customerId, paymentMethodId, invoiceId) => {
   try {
     // Set the new payment method as the default for the customer
@@ -60,6 +123,17 @@ exports.retryInvoice = async (customerId, paymentMethodId, invoiceId) => {
   }
 };
 
+exports.retrieveInvoice = async (invoiceId) => {
+  try {
+    const invoice = await stripe.invoices.retrieve(invoiceId);
+    return invoice;
+  } catch (error) {
+    console.error("Error retrieving the invoice " + invoiceId);
+    return null;
+  }
+};
+
+//Payment Methods
 const attachPaymentToCustomer = async (customerId, paymentMethodId) => {
   // Attach the payment method to the customer
   try {
@@ -114,37 +188,6 @@ exports.updatePaymentMethod = async (
   }
 };
 
-exports.cancelSubscription = async (subscriptionId) => {
-  try {
-    // Cancel the subscription via update
-    const canceledSubscription = await stripe.subscriptions.update(
-      subscriptionId,
-      {
-        cancel_at_period_end: true,
-      }
-    );
-    return canceledSubscription;
-  } catch (error) {
-    console.error(
-      "Stripe error call when attempting to cancel the subscription"
-    );
-    throw error;
-  }
-};
-
-exports.deleteSubscription = async (subscriptionId) => {
-  try {
-    // Delete the subscription. status will become canceled
-    const deletedSubscription = await stripe.subscriptions.del(subscriptionId);
-    return deletedSubscription;
-  } catch (error) {
-    console.error(
-      "Stripe error call when attempting to delete the subscription"
-    );
-    throw error;
-  }
-};
-
 exports.retrieveCharge = async (chargeId) => {
   try {
     const charge = await stripe.charges.retrieve(chargeId);
@@ -155,6 +198,7 @@ exports.retrieveCharge = async (chargeId) => {
   }
 };
 
+//Webhook
 exports.constructWebhookEvent = (req) => {
   try {
     return stripe.webhooks.constructEvent(
