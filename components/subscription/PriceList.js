@@ -72,30 +72,55 @@ export default function PriceList(props) {
   const auth = props.auth;
   const [subscribedTo, setSubscribedTo] = useState(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+  const [subscriptionCanceled, setSubscriptionCanceled] = useState(null);
 
   useEffect(() => {
     getUserSubscription(auth.user.id).then((user) => {
       if (user) {
         setSubscribedTo(user.subscription.product_price_id);
         setSubscriptionStatus(user.subscription.status);
+        if (user.subscription.cancel_at_period_end === 1) {
+          setSubscriptionCanceled({
+            cancel_at_period_end: user.subscription.cancel_at_period_end,
+            cancel_at: user.subscription.cancel_at,
+          });
+        }
       }
     });
   }, []);
 
   const getCardAction = (plan) => {
     let btnName, isDisabled;
+    let subscriptionWasCanceled =
+      subscriptionCanceled && subscriptionCanceled.cancel_at_period_end === 1
+        ? true
+        : false;
 
     if (subscribedTo && subscriptionStatus === "active") {
       //With active subscription
       if (plan.id === "price_free") {
         return (
-          <Typography align="center" variant="caption" display="block">
-            *Cancel your subscription to avail this free service.
+          <Typography
+            align="center"
+            variant="caption"
+            display="block"
+            color={subscriptionWasCanceled ? "error" : "initial"}
+          >
+            {subscriptionWasCanceled
+              ? `*You will revert to the free service after ${new Date(
+                  subscriptionCanceled.cancel_at * 1000
+                ).toDateString()}.`
+              : "*Cancel your subscription to avail this free service."}
           </Typography>
         );
       } else if (plan.id === subscribedTo) {
-        btnName = "Current Plan";
-        isDisabled = true;
+        if (subscriptionWasCanceled) {
+          btnName = "Subscribe";
+          isDisabled = false;
+        } else {
+          btnName = "Current Plan";
+          isDisabled = true;
+        }
       } else {
         btnName = "Subscribe";
         isDisabled = false;
@@ -112,12 +137,14 @@ export default function PriceList(props) {
     }
 
     return (
-      <Subscribe
-        {...props}
-        plan={plan}
-        btnName={btnName}
-        isDisabled={isDisabled}
-      />
+      <Fragment>
+        <Subscribe
+          {...props}
+          plan={plan}
+          btnName={btnName}
+          isDisabled={isDisabled}
+        />
+      </Fragment>
     );
   };
 
