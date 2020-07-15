@@ -416,11 +416,25 @@ exports.addInvoice = async (invoice) => {
 
   const charge = invoice.charge ? await retrieveCharge(invoice.charge) : null;
 
-  let product = null;
-  const withLineItems = invoice.lines.data.length > 0 ? true : false;
-  if (withLineItems) {
-    product = getProductById(invoice.lines.data[0].plan.id);
+  let productItemSubscription = null;
+  if (invoice.lines.data.length > 0) {
+    productItemSubscription = invoice.lines.data.find((item) => {
+      if (item.object === "line_item" && !item.proration) {
+        //item.type should be "subscription"
+        return true;
+      }
+    });
+
+    if (typeof productItemSubscription === "undefined") {
+      productItemSubscription = invoice.lines.data[0];
+    } else if (productItemSubscription) {
+      //Do nothing
+    } else {
+      productItemSubscription = invoice.lines.data[0];
+    }
   }
+  console.log("========ADD INVOICE LINE ITEM");
+  console.log(productItemSubscription);
 
   let statement =
     "insert into invoices values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -430,18 +444,24 @@ exports.addInvoice = async (invoice) => {
       invoice.number,
       invoice.customer,
       invoice.created,
-      product ? `${product.name} ${product.recurring}` : null,
-      withLineItems ? invoice.lines.data[0].period.start : invoice.period_start,
-      withLineItems ? invoice.lines.data[0].period.end : invoice.period_end,
+      productItemSubscription ? productItemSubscription.plan.nickname : null,
+      productItemSubscription
+        ? productItemSubscription.period.start
+        : invoice.period_start,
+      productItemSubscription
+        ? productItemSubscription.period.end
+        : invoice.period_end,
       charge ? charge.payment_method_details.card.brand : null,
       charge ? charge.payment_method_details.card.last4 : null,
       invoice.total,
       invoice.status,
-      invoice.payment_intent.id
+      invoice.payment_intent
         ? invoice.payment_intent.id
-        : invoice.payment_intent, //payment_intent_id
-      invoice.payment_intent.id ? invoice.payment_intent.status : null, //payment_intent_status
-      charge ? charge.receipt_url : null, //receipt_url
+          ? invoice.payment_intent.id
+          : invoice.payment_intent
+        : null, //payment_intent_id
+      invoice.payment_intent ? invoice.payment_intent.status : null, //payment_intent_status
+      charge ? charge.receipt_url : invoice.hosted_invoice_url,
       invoice.charge,
     ])
     .then(([rows, fields]) => {
@@ -460,29 +480,47 @@ exports.updateInvoice = async (invoice) => {
   const invoiceFromDB = await exports.getTableRow("invoices", "id", invoice.id);
 
   if (invoiceFromDB) {
+    let productItemSubscription = null;
+    if (invoice.lines.data.length > 0) {
+      productItemSubscription = invoice.lines.data.find((item) => {
+        if (item.object === "line_item" && !item.proration) {
+          //item.type should be "subscription"
+          return true;
+        }
+      });
+
+      if (typeof productItemSubscription === "undefined") {
+        productItemSubscription = invoice.lines.data[0];
+      } else if (productItemSubscription) {
+        //Do nothing
+      } else {
+        productItemSubscription = invoice.lines.data[0];
+      }
+    }
+    console.log("========UPDATE INVOICE LINE ITEM");
+    console.log(productItemSubscription);
+
     const withLineItems = invoice.lines.data.length > 0 ? true : false;
+
     let newData = {
       invoice_number: invoice.number,
       created_date: invoice.created,
-      period_start: withLineItems
-        ? invoice.lines.data[0].period.start
+      period_start: productItemSubscription
+        ? productItemSubscription.period.start
         : invoice.period_start,
-      period_end: withLineItems
-        ? invoice.lines.data[0].period.end
+      period_end: productItemSubscription
+        ? productItemSubscription.period.end
         : invoice.period_end,
       total: invoice.total,
       status: invoice.status,
-      payment_intent_id: invoice.payment_intent.id
-        ? invoice.payment_intent.id
-        : invoice.payment_intent,
+      payment_intent_id:
+        invoice.payment_intent && invoice.payment_intent.id
+          ? invoice.payment_intent.id
+          : invoice.payment_intent,
     };
 
-    if (withLineItems) {
-      const product = getProductById(invoice.lines.data[0].plan.id);
-
-      if (product) {
-        newData["product_description"] = `${product.name} ${product.recurring}`;
-      }
+    if (productItemSubscription) {
+      newData["product_description"] = productItemSubscription.plan.nickname;
     }
 
     const charge = invoice.charge ? await retrieveCharge(invoice.charge) : null;
@@ -492,12 +530,14 @@ exports.updateInvoice = async (invoice) => {
 
       newData["payment_method_last4"] =
         charge.payment_method_details.card.last4;
-
-      newData["receipt_url"] = charge.receipt_url;
       newData["charge_id"] = invoice.charge;
     }
 
-    if (invoice.payment_intent.id) {
+    newData["receipt_url"] = charge
+      ? charge.receipt_url
+      : invoice.hosted_invoice_url;
+
+    if (invoice.payment_intent && invoice.payment_intent.id) {
       newData["payment_intent_status"] = invoice.payment_intent.status;
     }
 
