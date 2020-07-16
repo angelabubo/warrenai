@@ -53,6 +53,8 @@ exports.getUserById = (id) => {
           id: rows[0].id,
           name: fullName,
           email: rows[0].email,
+          fname: rows[0].fname,
+          lname: rows[0].lname,
         };
       } else {
         return null;

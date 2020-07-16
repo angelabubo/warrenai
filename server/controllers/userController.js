@@ -49,6 +49,35 @@ exports.getAuthUser = async (req, res) => {
   });
 };
 
+exports.updateAuthUser = async (req, res) => {
+  //TODO apply express-validator for updating user names
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  //Get user info
+  const { userId } = req.params;
+  const { fName, lName } = req.body;
+
+  await dbHelper
+    .updateTableRowById("users", userId, { fname: fName, lname: lName })
+    .then((result) => {
+      if (result) {
+        res.sendStatus(200);
+      } else {
+        return res
+          .status(400)
+          .send(
+            "There was an error processing your request. Please contact WarreAi."
+          );
+      }
+    });
+};
+
 exports.getUserPlan = async (req, res) => {
   //Check if user who sent the request is authenticated (signed in)
   if (!req.isAuthUser) {

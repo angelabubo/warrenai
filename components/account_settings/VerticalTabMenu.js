@@ -5,6 +5,7 @@ import TabPanel from "./TabPanel";
 import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core";
 
+import ProfileDetails from "./ProfileDetails";
 import PlanDetails from "./PlanDetails";
 import BillingDetails from "./BillingDetails";
 
@@ -69,7 +70,7 @@ const VerticalTabMenu = (props) => {
         <StyledTab label="Billing" id="vertical-tab-billing" />
       </StyledTabs>
       <TabPanel title="Profile Details" value={value} index={0}>
-        Profile
+        <ProfileDetails {...props} />
       </TabPanel>
       <TabPanel title="Plan Details" value={value} index={1}>
         <PlanDetails {...props} />
