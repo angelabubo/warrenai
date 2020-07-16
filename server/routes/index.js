@@ -32,8 +32,12 @@ router
   .route("/api/users/:userId")
   //Get logged in user info (name, id, email, subscription details)
   .get(authController.checkAuth, userController.getAuthUser)
-  //Get logged in user info (name, id, email, subscription details)
-  .post(authController.checkAuth, userController.updateAuthUser)
+  //Update logged in user info (name, id, email, subscription details)
+  .post(
+    authController.checkAuth,
+    userController.validateUpdateProfile,
+    catchErrors(userController.updateAuthUser)
+  )
   //When user wants to delete his account
   .delete(authController.checkAuth, catchErrors(userController.deleteUser));
 

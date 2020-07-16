@@ -130,7 +130,11 @@ const ProfileDetails = ({ classes, auth }) => {
     const errorFromServer = (err.response && err.response.data) || err.message;
     setErrorFromServer(errorFromServer);
     setOpenError(true);
+
     setLoading(false);
+    setUpdatingDetails(false);
+    setDeleting(false);
+    setChangingPassword(false);
   };
 
   const handleCloseError = () => setOpenError(false);
@@ -298,7 +302,9 @@ const ProfileDetails = ({ classes, auth }) => {
           open={openError}
           onClose={handleCloseError}
           autoHideDuration={5000}
-          message={<span className={classes.snack}>{errorFromServer}</span>}
+          message={
+            <span className={classes.snackMessage}>{errorFromServer}</span>
+          }
         />
       )}
     </Fragment>
@@ -336,8 +342,7 @@ const styles = (theme) => ({
   changeHeading: {
     marginBottom: 15,
   },
-  snack: {
-    backgroundColor: "white",
+  snackMessage: {
     color: theme.palette.error.main,
   },
 });

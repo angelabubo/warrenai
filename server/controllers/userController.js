@@ -1,5 +1,6 @@
 const dbHelper = require("../lib/dbHelper");
 const productHelper = require("../data/products");
+const { check, validationResult } = require("express-validator");
 
 exports.getUsers = () => {};
 
@@ -49,6 +50,27 @@ exports.getAuthUser = async (req, res) => {
   });
 };
 
+//middleware function to validate signup fields
+exports.validateUpdateProfile = [
+  [
+    //First Name should not be null and between 4-50 characters
+    check("fName", "Enter a name.").notEmpty(),
+    check("fName", "Name must be between 3 and 50 characters.").isLength({
+      min: 3,
+      max: 50,
+    }),
+  ],
+  (req, res, next) => {
+    // Finds the validation errors in this request and wraps them in an object with handy functions
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const firstError = errors.array().map((error) => error.msg)[0];
+      return res.status(400).send(firstError);
+    }
+
+    next();
+  },
+];
 exports.updateAuthUser = async (req, res) => {
   //TODO apply express-validator for updating user names
   //Check if user who sent the request is authenticated (signed in)
