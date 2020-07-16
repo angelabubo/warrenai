@@ -27,6 +27,8 @@ exports.getUserByEmail = (email) => {
           name: fullName,
           email: rows[0].email,
           password: rows[0].password,
+          fname: rows[0].fname,
+          lname: rows[0].lname,
         };
       } else {
         return null;
@@ -462,7 +464,9 @@ exports.addInvoice = async (invoice) => {
           ? invoice.payment_intent.id
           : invoice.payment_intent
         : null, //payment_intent_id
-      invoice.payment_intent ? invoice.payment_intent.status : null, //payment_intent_status
+      invoice.payment_intent && invoice.payment_intent.status
+        ? invoice.payment_intent.status
+        : null, //payment_intent_status
       charge ? charge.receipt_url : invoice.hosted_invoice_url,
       invoice.charge,
     ])
