@@ -65,8 +65,10 @@ exports.signin = (req, res, next) => {
       //Return User Information
       const loggedInUser = {
         id: user.id,
-        name: user.name,
+        name: user.fname,
         email: user.email,
+        fname: user.fname,
+        lname: user.lname,
       };
       res.json(loggedInUser);
     });

@@ -15,6 +15,8 @@ function initialize(passport, getUserByEmail, getUserById) {
           id: user.id,
           name: user.name,
           email: user.email,
+          fname: user.fname,
+          lname: user.lname,
         };
         return done(null, authenticatedUser);
       } else {
