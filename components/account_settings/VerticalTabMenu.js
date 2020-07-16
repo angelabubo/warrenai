@@ -10,7 +10,6 @@ import BillingDetails from "./BillingDetails";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
     display: "flex",
     minHeight: 300,

@@ -56,7 +56,7 @@ const BillingDetails = (props) => {
             justify="space-between"
             alignContent="flex-start"
             className={classes.colContainer}
-            spacing={5}
+            spacing={2}
             wrap="nowrap"
           >
             {billingInfo ? (
@@ -68,7 +68,7 @@ const BillingDetails = (props) => {
                   <Typography
                     variant="h5"
                     align="left"
-                    style={{ fontWeight: "bold" }}
+                    style={{ fontWeight: "bold", marginBottom: "30px" }}
                   >
                     {billingInfo.cancel_at_period_end === 1
                       ? "Not applicable"
@@ -90,17 +90,19 @@ const BillingDetails = (props) => {
                     {billingInfo.cardBrand && billingInfo.cardLast4
                       ? `${billingInfo.cardBrand} **** **** **** ${billingInfo.cardLast4}`
                       : "None"}
-
-                    <UpdatePaymentMethodForm
-                      btnName="Change Payment Information"
-                      isDisabled={
-                        billingInfo.cardBrand && billingInfo.cardLast4
-                          ? false
-                          : true
-                      }
-                      {...props}
-                    />
                   </Typography>
+                </Grid>
+
+                <Grid item>
+                  <UpdatePaymentMethodForm
+                    btnName="Update"
+                    isDisabled={
+                      billingInfo.cardBrand && billingInfo.cardLast4
+                        ? false
+                        : true
+                    }
+                    {...props}
+                  />
                 </Grid>
               </Fragment>
             ) : (

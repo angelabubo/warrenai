@@ -27,7 +27,7 @@ const TabPanel = (props) => {
             <Typography variant="h6" align="left" gutterBottom>
               {title}
             </Typography>
-            <Divider />
+            <Divider variant="fullWidth" />
           </Grid>
           <Grid item>{children}</Grid>
         </Grid>
@@ -38,6 +38,7 @@ const TabPanel = (props) => {
 
 const styles = (theme) => ({
   tabPanel: {
+    flexGrow: 1,
     padding: "20px 35px",
   },
 });

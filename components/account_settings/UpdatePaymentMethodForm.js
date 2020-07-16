@@ -224,6 +224,7 @@ const UpdatePaymentMethodForm = ({ auth, plan, isDisabled, btnName }) => {
         color="primary"
         onClick={handleClickOpen}
         disabled={isDisabled ? true : false}
+        style={{ maxWidth: "320px" }}
       >
         {btnName}
       </Button>
