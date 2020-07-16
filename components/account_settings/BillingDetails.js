@@ -44,6 +44,10 @@ const BillingDetails = (props) => {
     });
   }, [refresh]);
 
+  const callbackAfterUpdate = () => {
+    setRefresh(!refresh);
+  };
+
   return (
     <Elements stripe={stripePromise}>
       <Fragment>
@@ -101,6 +105,7 @@ const BillingDetails = (props) => {
                         ? false
                         : true
                     }
+                    callback={callbackAfterUpdate}
                     {...props}
                   />
                 </Grid>

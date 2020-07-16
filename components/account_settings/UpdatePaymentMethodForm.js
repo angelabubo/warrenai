@@ -42,7 +42,13 @@ import {
   createPaymentMethod,
 } from "../subscription/subscriptionHelper";
 
-const UpdatePaymentMethodForm = ({ auth, plan, isDisabled, btnName }) => {
+const UpdatePaymentMethodForm = ({
+  auth,
+  plan,
+  isDisabled,
+  btnName,
+  callback,
+}) => {
   const userId = auth.user.id;
   const elements = useElements();
   const stripe = useStripe();
@@ -57,8 +63,8 @@ const UpdatePaymentMethodForm = ({ auth, plan, isDisabled, btnName }) => {
       //Close the dialog and initialize states after the delay
       initializeStates();
 
-      //Display Account Settings Page, Billing Details tab
-      Router.replace("/account/settings/2");
+      //Refresh Account Settings Page, Billing Details tab
+      callback();
     }, 1500);
   };
 
