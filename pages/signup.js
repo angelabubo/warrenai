@@ -1,3 +1,4 @@
+import { checkNotAuth } from "../lib/auth";
 import {
   Typography,
   FormControl,
@@ -266,4 +267,5 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+Signup.getInitialProps = checkNotAuth;
 export default Signup;
