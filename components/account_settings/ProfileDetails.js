@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import Router from "next/router";
 import { withStyles } from "@material-ui/core";
 
-import { updateProfile } from "../../lib/api";
+import { updateProfile, updatePassword } from "../../lib/api";
 
 import { FormControl, Snackbar } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
@@ -16,12 +16,6 @@ const ProfileDetails = ({ classes, auth }) => {
 
   const [errorFromServer, setErrorFromServer] = useState("");
   const [openError, setOpenError] = useState(false);
-  const [error, setError] = useState({
-    error: "",
-    oldPasswordError: "",
-    newPasswordError: "",
-    confirmNewPasswordError: "",
-  });
   const [updatingDetails, setUpdatingDetails] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
@@ -31,9 +25,9 @@ const ProfileDetails = ({ classes, auth }) => {
     lName: user.lname ? user.lname : "",
   });
   const [password, setPassword] = useState({
-    oldPassword: "randompassword",
-    password: "randompassword",
-    confirmPassword: "randompassword",
+    oldPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
   });
 
   const handleChange = (evt) => {
@@ -62,12 +56,6 @@ const ProfileDetails = ({ classes, auth }) => {
     evt.preventDefault();
 
     setLoading(true);
-    setError((prev) => {
-      return {
-        ...prev,
-        error: "",
-      };
-    });
     setErrorFromServer("");
     setUpdatingDetails(true);
 
@@ -75,10 +63,10 @@ const ProfileDetails = ({ classes, auth }) => {
     updateProfile(user.id, profile)
       .then((result) => {
         setTimeout(() => {
+          Router.reload();
           setLoading(false);
           setUpdatingDetails(false);
-          Router.reload();
-        }, 1000);
+        }, 800);
       })
       .catch((err) => {
         showError(err);
@@ -90,12 +78,7 @@ const ProfileDetails = ({ classes, auth }) => {
     evt.preventDefault();
 
     setLoading(true);
-    setError((prev) => {
-      return {
-        ...prev,
-        error: "",
-      };
-    });
+    setErrorFromServer("");
     setDeleting(true);
 
     //Call backend
@@ -109,21 +92,21 @@ const ProfileDetails = ({ classes, auth }) => {
     evt.preventDefault();
 
     setLoading(true);
-    setError((prev) => {
-      return {
-        ...prev,
-        oldPasswordError: "",
-        newPasswordError: "",
-        confirmNewPasswordError: "",
-      };
-    });
+    setErrorFromServer("");
     setChangingPassword(true);
 
     //Call backend
-    setTimeout(() => {
-      setLoading(false);
-      setChangingPassword(false);
-    }, 5000);
+    updatePassword(user.id, password)
+      .then((result) => {
+        setTimeout(() => {
+          setLoading(false);
+          setChangingPassword(false);
+          Router.reload();
+        }, 1000);
+      })
+      .catch((err) => {
+        showError(err);
+      });
   };
 
   const showError = (err) => {
@@ -240,8 +223,6 @@ const ProfileDetails = ({ classes, auth }) => {
               type="password"
               onChange={handleChangePassword}
               value={password.oldPassword}
-              error={error.oldPasswordError === "" ? false : true}
-              helperText={error.oldPasswordError}
             />
           </FormControl>
           <FormControl margin="normal" fullWidth={true}>
@@ -250,12 +231,10 @@ const ProfileDetails = ({ classes, auth }) => {
               size="small"
               label="New Password"
               disabled={loading}
-              name="password"
+              name="newPassword"
               type="password"
               onChange={handleChangePassword}
-              value={password.password}
-              error={error.newPasswordError === "" ? false : true}
-              helperText={error.newPasswordError}
+              value={password.newPassword}
             />
           </FormControl>
           <FormControl margin="normal" fullWidth={true}>
@@ -264,12 +243,10 @@ const ProfileDetails = ({ classes, auth }) => {
               size="small"
               label="Confirm New Password"
               disabled={loading}
-              name="confirmPassword"
+              name="confirmNewPassword"
               type="password"
               onChange={handleChangePassword}
-              value={password.confirmPassword}
-              error={error.confirmNewPasswordError === "" ? false : true}
-              helperText={error.confirmNewPasswordError}
+              value={password.confirmNewPassword}
             />
           </FormControl>
           <div className={classes.profileActions}>

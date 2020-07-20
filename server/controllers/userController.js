@@ -1,6 +1,7 @@
 const dbHelper = require("../lib/dbHelper");
 const productHelper = require("../data/products");
 const { check, validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
 
 exports.getUsers = () => {};
 
@@ -50,7 +51,7 @@ exports.getAuthUser = async (req, res) => {
   });
 };
 
-//middleware function to validate signup fields
+//middleware function to validate profile details fields
 exports.validateUpdateProfile = [
   [
     //First Name should not be null and between 4-50 characters
@@ -72,7 +73,6 @@ exports.validateUpdateProfile = [
   },
 ];
 exports.updateAuthUser = async (req, res) => {
-  //TODO apply express-validator for updating user names
   //Check if user who sent the request is authenticated (signed in)
   if (!req.isAuthUser) {
     res.status(403).json({
@@ -98,6 +98,82 @@ exports.updateAuthUser = async (req, res) => {
           );
       }
     });
+};
+
+//middleware function to validate password update
+exports.validateUpdatePassword = [
+  [
+    //Old Password should not be null or empty
+    check("oldPassword", "Enter old password.").notEmpty(),
+    //New Password should not be null and between 8 to 20 characters
+    check("newPassword", "Enter new password.").notEmpty(),
+    check(
+      "newPassword",
+      "Password must be between 8 and 20 characters."
+    ).isLength({
+      min: 4, //TODO
+      max: 20,
+    }),
+    //Confirmation Password should be the same as new password
+    check("newPassword").exists(),
+    check("confirmNewPassword", "Confirmation password does not match.")
+      .exists()
+      .custom((value, { req }) => value === req.body.newPassword),
+  ],
+  (req, res, next) => {
+    // Finds the validation errors in this request and wraps them in an object with handy functions
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const firstError = errors.array().map((error) => error.msg)[0];
+      return res.status(400).send(firstError);
+    }
+
+    next();
+  },
+];
+exports.updateAuthUserPassword = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  //Get user info
+  const { userId } = req.params;
+  const { oldPassword, newPassword } = req.body;
+
+  if (req.user && req.user.id === userId) {
+    //Currently logged on user is the same user requesting to change password
+    const user = await dbHelper.getUserByIdVerbose(userId);
+
+    //Check that old password matches what is in the database
+    if (bcrypt.compareSync(oldPassword, user.password)) {
+      const updateResult = await dbHelper.updateUserPassword(
+        userId,
+        newPassword
+      );
+
+      if (updateResult) {
+        //Password update successful!
+        res.sendStatus(200);
+      } else {
+        return res
+          .status(400)
+          .send(
+            "There was an error processing your request. Please contact WarreAi."
+          );
+      }
+    } else {
+      return res.status(400).send("Old password is incorrect.");
+    }
+  } else {
+    res.status(403).json({
+      message: "You are not authorized to change the password.",
+    });
+    return res.redirect("/signin");
+  }
 };
 
 exports.getUserPlan = async (req, res) => {

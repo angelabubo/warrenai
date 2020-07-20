@@ -159,8 +159,10 @@ const NavDrawer = ({ children, auth }) => {
   const theme = useTheme();
   const [open, setOpen] = useState(true);
   const {
-    user: { name },
+    user: { name, fname },
   } = auth;
+
+  const displayName = fname ? fname : name;
 
   const scannerMenus = [
     {
@@ -260,7 +262,7 @@ const NavDrawer = ({ children, auth }) => {
               </div>
             </Grid>
             <Grid item>
-              <AccountMenu userName={name} />
+              <AccountMenu userName={displayName} />
             </Grid>
           </Grid>
         </Toolbar>

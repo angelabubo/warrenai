@@ -129,6 +129,14 @@ exports.registerUser = (name, email, password, callback) => {
     });
 };
 
+exports.updateUserPassword = async (userId, newPassword) => {
+  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+  const result = await exports.updateTableRowById("users", userId, {
+    password: hashedPassword,
+  });
+  return result;
+};
+
 exports.deleteUser = (id) => {
   //ANGEL TODO - when deleting a user, delete all the other table references
   let statement = "delete from users where id = ?";

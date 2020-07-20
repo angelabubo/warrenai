@@ -41,6 +41,13 @@ router
   //When user wants to delete his account
   .delete(authController.checkAuth, catchErrors(userController.deleteUser));
 
+router.post(
+  "/api/users/:userId/password",
+  authController.checkAuth,
+  userController.validateUpdatePassword,
+  catchErrors(userController.updateAuthUserPassword)
+);
+
 router
   .route("/api/users/:userId/billing")
   //Get logged in user's billing information
