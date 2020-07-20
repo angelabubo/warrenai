@@ -3,6 +3,9 @@ import Router from "next/router";
 import { withStyles } from "@material-ui/core";
 
 import { updateProfile, updatePassword } from "../../lib/api";
+import { signoutUser } from "../../lib/auth";
+
+import ConfirmationDialog from "../ConfirmationDialog";
 
 import { FormControl, Snackbar } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
@@ -17,7 +20,6 @@ const ProfileDetails = ({ classes, auth }) => {
   const [errorFromServer, setErrorFromServer] = useState("");
   const [openError, setOpenError] = useState(false);
   const [updatingDetails, setUpdatingDetails] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
@@ -73,19 +75,14 @@ const ProfileDetails = ({ classes, auth }) => {
       });
   };
 
-  const handleDeleteAccount = (evt) => {
-    //Should display a confirmation dialog
-    evt.preventDefault();
+  const handleDeleteAccount = () => {
+    //Call backend to delete user account record
+    return true;
+  };
 
-    setLoading(true);
-    setErrorFromServer("");
-    setDeleting(true);
-
-    //Call backend
-    setTimeout(() => {
-      setLoading(false);
-      setDeleting(false);
-    }, 5000);
+  const handleDeleteComplete = () => {
+    //Signout the user
+    signoutUser();
   };
 
   const handleUpdatePassword = (evt) => {
@@ -116,7 +113,6 @@ const ProfileDetails = ({ classes, auth }) => {
 
     setLoading(false);
     setUpdatingDetails(false);
-    setDeleting(false);
     setChangingPassword(false);
   };
 
@@ -184,23 +180,33 @@ const ProfileDetails = ({ classes, auth }) => {
                 />
               )}
             </Button>
-            <Button
-              type="button"
-              fullWidth
-              variant="outlined"
-              color="primary"
+            <ConfirmationDialog
               disabled={loading}
-              className={classes.btn}
-              onClick={handleDeleteAccount}
+              btnName="Delete Account"
+              variant="outlined"
+              btnDlgCancelName="Cancel"
+              btnDlgConfirmName="Confirm"
+              dlgTitle="Confirm Delete of User Account"
+              confirmCallback={handleDeleteAccount}
+              onDlgCloseCallback={handleDeleteComplete}
+              btnStyle={{ maxWidth: 185 }}
             >
-              {deleting ? "Deleting..." : "Delete Account"}
-              {deleting && (
-                <CircularProgress
-                  size={24}
-                  className={classes.buttonProgress}
-                />
-              )}
-            </Button>
+              <div className={classes.deleteConfirmSection}>
+                <Typography variant="body1" align="left" gutterBottom={true}>
+                  Are you sure you want to delete your user account and
+                  subscription (if applicable)?
+                </Typography>
+                <Typography
+                  variant="body1"
+                  align="left"
+                  gutterBottom={true}
+                  className={classes.deleteConfirmMessage}
+                >
+                  ⚠️ You will lose all your settings and portfolio data. This
+                  action is not reversible.
+                </Typography>
+              </div>
+            </ConfirmationDialog>
           </div>
         </form>
       </div>
@@ -320,6 +326,16 @@ const styles = (theme) => ({
     marginBottom: 15,
   },
   snackMessage: {
+    color: theme.palette.error.main,
+  },
+  deleteConfirmSection: {
+    paddingLeft: 30,
+    paddingRight: 30,
+  },
+  deleteConfirmMessage: {
+    fontWeight: "bold",
+    paddingTop: 30,
+    paddingBottom: 30,
     color: theme.palette.error.main,
   },
 });
