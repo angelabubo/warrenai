@@ -36,11 +36,13 @@ const ConfirmationDialog = ({
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
 
   const initializeStates = () => {
     setLoading(false);
     setOpenDialog(false);
     setSuccess(false);
+    setError(false);
   };
 
   const handleClick = (evt) => {
@@ -55,20 +57,26 @@ const ConfirmationDialog = ({
     if (loading) return;
 
     setLoading(true);
+    setError(false);
+
     const result = await confirmCallback();
-    // Change UI to show a success to your customer.
-    setSuccess(true);
-    setLoading(false);
+    if (result) {
+      // Change UI to show a success to your customer.
+      setSuccess(true);
+      setLoading(false);
 
-    setTimeout(() => {
-      //Close the dialog and initialize states after the delay
-      handleClose();
+      setTimeout(() => {
+        //Close the dialog and initialize states after the delay
+        handleClose();
 
-      //Call parent's handler when confirmation dialog completes
-      if (onDlgCloseCallback) {
-        onDlgCloseCallback();
-      }
-    }, 5000);
+        //Call parent's handler when confirmation dialog completes
+        if (onDlgCloseCallback) {
+          onDlgCloseCallback();
+        }
+      }, 1000);
+    } else {
+      setError(false);
+    }
   };
 
   return (
@@ -108,7 +116,19 @@ const ConfirmationDialog = ({
             </div>
           </div>
         </DialogTitle>
-        <DialogContent>{children}</DialogContent>
+        <DialogContent>
+          {children}
+          {error && (
+            <Typography
+              variant="caption"
+              align="center"
+              gutterBottom={true}
+              className={classes.error}
+            >
+              There was an error processing request. Please contact WarrenAi.
+            </Typography>
+          )}
+        </DialogContent>
         <DialogActions className={classes.dialogActionsSection}>
           <Button
             onClick={handleClose}
@@ -209,6 +229,11 @@ const styles = (theme) => ({
     right: "50%",
     marginTop: -10,
     marginLeft: -10,
+  },
+  error: {
+    paddingTop: 15,
+    paddingBottom: 10,
+    color: theme.palette.error.main,
   },
 });
 

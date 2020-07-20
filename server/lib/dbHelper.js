@@ -137,19 +137,23 @@ exports.updateUserPassword = async (userId, newPassword) => {
   return result;
 };
 
-exports.deleteUser = (id) => {
-  //ANGEL TODO - when deleting a user, delete all the other table references
-  let statement = "delete from users where id = ?";
-  return dbConnection
-    .execute(statement, [id])
-    .then(([rows, fields]) => {
-      console.log(rows);
-      return rows;
-    })
-    .catch((err) => {
-      console.log("[ERROR][deleteUser] - " + err.message);
-      return null;
-    });
+exports.deleteUser = async (id, stripeCustomerId) => {
+  //Delete user records from invoices table
+  await exports.deleteTableRow(
+    "invoices",
+    "stripeCustomerId",
+    stripeCustomerId
+  );
+
+  //Delete user records from subscriptions table
+  await exports.deleteTableRow(
+    "subscriptions",
+    "stripeCustomerId",
+    stripeCustomerId
+  );
+
+  //Delete user records from users table
+  await exports.deleteTableRow("users", "id", id);
 };
 
 exports.userHasPremiumAccess = async (userId) => {
@@ -669,6 +673,22 @@ exports.deleteTableRowById = (table, id) => {
     })
     .catch((err) => {
       console.log("[ERROR][deleteTableRowById] - " + err.message);
+      return false;
+    });
+};
+
+exports.deleteTableRow = (table, colFilter, colFilterValue) => {
+  let statement = `delete from ${table} where ${colFilter} = ?`;
+  return dbConnection
+    .execute(statement, [colFilterValue])
+    .then(([rows, fields]) => {
+      console.log(
+        `${rows.affectedRows} rows(s) at ${table} table were deleted.`
+      );
+      return true;
+    })
+    .catch((err) => {
+      console.log("[ERROR][deleteTableRow] - " + err.message);
       return false;
     });
 };

@@ -1,4 +1,5 @@
 const dbHelper = require("../lib/dbHelper");
+const stripeHelper = require("../lib/stripeHelper");
 const productHelper = require("../data/products");
 const { check, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
@@ -279,8 +280,6 @@ exports.getUserSubscription = async (req, res) => {
 };
 
 exports.deleteUser = async (req, res) => {
-  const { userId } = req.params;
-
   //Check if user who sent the request is authenticated (signed in)
   if (!req.isAuthUser) {
     return res
@@ -288,8 +287,33 @@ exports.deleteUser = async (req, res) => {
       .json({ message: "You are not authorized to perform this action." });
   }
 
-  const deletedUser = await dbHelper.deleteUser(userId);
-  res.json(deletedUser);
+  const { userId } = req.params;
+  if (req.user && req.user.id === userId) {
+    //Currently logged on user is the same user requesting to delete account
+    const user = await dbHelper.getUserByIdVerbose(userId);
+
+    //Delete user from stripe Customer's list
+    const response = await stripeHelper.deleteStripeCustomer(
+      user.stripeCustomerId
+    );
+
+    if (response && response.deleted) {
+      //Delete user from database tables
+      await dbHelper.deleteUser(user.id, user.stripeCustomerId);
+      res.sendStatus(200);
+    } else {
+      return res
+        .status(400)
+        .send(
+          "There was an error deleting your account. Please contact WarreAi."
+        );
+    }
+  } else {
+    res.status(403).json({
+      message: "You are not authorized to delete the account.",
+    });
+    return res.redirect("/signin");
+  }
 };
 
 exports.getUsersTest = (req, res) => {

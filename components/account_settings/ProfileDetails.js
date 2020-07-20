@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import Router from "next/router";
 import { withStyles } from "@material-ui/core";
 
-import { updateProfile, updatePassword } from "../../lib/api";
+import { updateProfile, updatePassword, deleteProfile } from "../../lib/api";
 import { signoutUser } from "../../lib/auth";
 
 import ConfirmationDialog from "../ConfirmationDialog";
@@ -68,16 +68,18 @@ const ProfileDetails = ({ classes, auth }) => {
           Router.reload();
           setLoading(false);
           setUpdatingDetails(false);
-        }, 800);
+        }, 1000);
       })
       .catch((err) => {
         showError(err);
       });
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     //Call backend to delete user account record
-    return true;
+    return await deleteProfile(user.id)
+      .then(() => true)
+      .catch((err) => false);
   };
 
   const handleDeleteComplete = () => {
@@ -193,8 +195,8 @@ const ProfileDetails = ({ classes, auth }) => {
             >
               <div className={classes.deleteConfirmSection}>
                 <Typography variant="body1" align="left" gutterBottom={true}>
-                  Are you sure you want to delete your user account and
-                  subscription (if applicable)?
+                  Are you sure you want to permanently delete your user account
+                  and subscription (if applicable)?
                 </Typography>
                 <Typography
                   variant="body1"
@@ -203,7 +205,8 @@ const ProfileDetails = ({ classes, auth }) => {
                   className={classes.deleteConfirmMessage}
                 >
                   ⚠️ You will lose all your settings and portfolio data. This
-                  action is not reversible.
+                  action will immediately cancel any active subscription and it
+                  cannot be undone.
                 </Typography>
               </div>
             </ConfirmationDialog>

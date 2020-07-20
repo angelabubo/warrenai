@@ -13,6 +13,17 @@ exports.createStripeCustomer = async (email) => {
   return Promise.resolve(customer.id);
 };
 
+exports.deleteStripeCustomer = async (customerId) => {
+  try {
+    const response = await stripe.customers.del(customerId);
+    return response;
+  } catch (error) {
+    console.error("Error deleting customer " + customerId);
+    console.log(error);
+    return null;
+  }
+};
+
 //Subscriptions
 exports.createSubscription = async (customerId, paymentMethodId, priceId) => {
   try {
