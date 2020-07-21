@@ -1,9 +1,8 @@
 import { checkNotAuth } from "../lib/auth";
+import TextField from "@material-ui/core/TextField";
 import {
   Typography,
   FormControl,
-  InputLabel,
-  Input,
   Paper,
   Snackbar,
   Dialog,
@@ -117,8 +116,10 @@ function Signup() {
               </ButtonGroup>
               <form onSubmit={handleSubmit} className={classes.form}>
                 <FormControl margin="normal" fullWidth={true}>
-                  <InputLabel>Name</InputLabel>
-                  <Input
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    label="Name"
                     name="name"
                     type="text"
                     onChange={handleChange}
@@ -127,8 +128,10 @@ function Signup() {
                   />
                 </FormControl>
                 <FormControl margin="normal" fullWidth={true}>
-                  <InputLabel>Email</InputLabel>
-                  <Input
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    label="Email"
                     name="email"
                     type="email"
                     onChange={handleChange}
@@ -137,8 +140,10 @@ function Signup() {
                   />
                 </FormControl>
                 <FormControl margin="normal" fullWidth={true}>
-                  <InputLabel>Password</InputLabel>
-                  <Input
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    label="Password"
                     name="password"
                     type="password"
                     onChange={handleChange}
