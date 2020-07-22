@@ -182,7 +182,7 @@ const NavDrawer = ({ children, auth }) => {
   const portfolioMenus = [
     {
       primary: "My Portfolio",
-      href: "/portfolio/my-portfolio",
+      href: "/portfolio/myportfolio",
     },
     {
       primary: "My Watchlist",

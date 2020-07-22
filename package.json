@@ -25,6 +25,7 @@
     "express-validator": "^6.5.0",
     "helmet": "^3.22.0",
     "jquery": "^3.5.1",
+    "material-table": "^1.66.0",
     "morgan": "^1.10.0",
     "mysql2": "^2.1.0",
     "next": "^9.4.4",
