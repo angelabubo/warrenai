@@ -35,20 +35,22 @@ const GenericDialog = ({
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const initializeStates = () => {
     setLoading(false);
     setSuccess(false);
     setError(false);
+    setErrorMsg("");
   };
 
   const handleClose = () => {
-    initializeStates();
-
     //Call parent's handler when confirmation dialog completes
     if (onDlgCloseCallback) {
       onDlgCloseCallback();
     }
+
+    initializeStates();
   };
 
   const handleConfirm = async () => {
@@ -58,7 +60,13 @@ const GenericDialog = ({
     setError(false);
 
     const result = await confirmCallback();
-    if (result) {
+
+    if (result.error) {
+      setSuccess(false);
+      setLoading(false);
+      setError(true);
+      setErrorMsg(result.error);
+    } else {
       // Change UI to show a success to your customer.
       setSuccess(true);
       setLoading(false);
@@ -67,10 +75,6 @@ const GenericDialog = ({
         //Close the dialog and initialize states after the delay
         handleClose();
       }, 1000);
-    } else {
-      setSuccess(false);
-      setLoading(false);
-      setError(true);
     }
   };
 
@@ -104,14 +108,11 @@ const GenericDialog = ({
         <DialogContent dividers>
           {children}
           {error && (
-            <Typography
-              variant="caption"
-              align="center"
-              gutterBottom={true}
-              className={classes.error}
-            >
-              There was an error processing request. Please contact WarrenAi.
-            </Typography>
+            <div className={classes.error}>
+              <Typography variant="caption" align="center" gutterBottom={true}>
+                {errorMsg}
+              </Typography>
+            </div>
           )}
         </DialogContent>
         <DialogActions className={classes.dialogActionsSection}>
@@ -185,6 +186,7 @@ const styles = (theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingTop: 20,
   },
   yesButton: {
     height: 38,
@@ -216,9 +218,9 @@ const styles = (theme) => ({
     marginLeft: -10,
   },
   error: {
-    paddingTop: 15,
-    paddingBottom: 10,
     color: theme.palette.error.main,
+    paddingTop: 13,
+    textAlign: "center",
   },
 });
 
