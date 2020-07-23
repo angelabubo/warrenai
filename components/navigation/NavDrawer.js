@@ -17,6 +17,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import NavDrawerMenuItem from "./NavDrawerMenuItem";
 
+import StocksSearchBar from "../stocks/StocksSearchBar";
+
 import ListSubheader from "@material-ui/core/ListSubheader";
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
@@ -248,18 +250,7 @@ const NavDrawer = ({ children, auth }) => {
             justify="space-between"
           >
             <Grid item>
-              <div className={classes.search}>
-                <div className={classes.searchIcon}>
-                  <SearchIcon />
-                </div>
-                <InputBase
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput,
-                  }}
-                  placeholder="Search…"
-                />
-              </div>
+              <StocksSearchBar />
             </Grid>
             <Grid item>
               <AccountMenu userName={displayName} />
