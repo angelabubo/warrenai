@@ -7,17 +7,21 @@ import SearchIcon from "@material-ui/icons/Search";
 
 import { us_stock_symbols } from "../../data/stocks_us";
 
-const StocksSearchBar = (props) => {
+const StocksSearchBar = ({ onSelectCallback, minWidth, maxWidth }) => {
   const onChange = (event, value, reason) => {
-    if (value && reason && reason === "select-option") {
+    if (value && reason && reason === "select-option" && onSelectCallback) {
       console.log(value);
+      onSelectCallback(value);
     }
   };
 
   return (
     <Fragment>
       <Autocomplete
-        style={{ maxWidth: 350, minWidth: 300 }}
+        style={{
+          minWidth: minWidth ? minWidth : 250,
+          maxWidth: maxWidth ? maxWidth : 300,
+        }}
         selectOnFocus
         clearOnBlur
         handleHomeEndKeys
@@ -42,7 +46,6 @@ const StocksSearchBar = (props) => {
         onChange={onChange}
         renderInput={(params) => (
           <TextField
-            style={{ maxWidth: 300 }}
             {...params}
             label="Search Ticker or Company"
             margin="normal"

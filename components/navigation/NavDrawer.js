@@ -250,7 +250,7 @@ const NavDrawer = ({ children, auth }) => {
             justify="space-between"
           >
             <Grid item>
-              <StocksSearchBar />
+              <StocksSearchBar minWidth={330} maxWidth={400} />
             </Grid>
             <Grid item>
               <AccountMenu userName={displayName} />
