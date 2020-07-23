@@ -3,6 +3,7 @@ const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
 const stripeController = require("../controllers/stripeController");
 const premiumController = require("../controllers/premiumController");
+const freemiumController = require("../controllers/freemiumController");
 const bodyParser = require("body-parser");
 
 const router = express.Router();
@@ -62,6 +63,20 @@ router
   .route("/api/users/subscription/:userId/get-any-subscription")
   //Get logged in user's ANY one plan or subscription details
   .get(authController.checkAuth, userController.getUserSubscription);
+
+/////////////////////////////////////////////////////////////////////
+//FREE ROUTES: /api/free/:userId
+router
+  .route("/api/free/:userId/portfolio")
+  //Get portfolio
+  .get(authController.checkAuth, catchErrors(freemiumController.getPortfolio))
+  //Add portfolio
+  .post(authController.checkAuth, freemiumController.addPortfolio)
+  //Delete portfolio
+  .delete(
+    authController.checkAuth,
+    catchErrors(freemiumController.deletePortfolio)
+  );
 
 /////////////////////////////////////////////////////////////////////
 //PREMIUM ROUTES: /api/premium

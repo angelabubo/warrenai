@@ -2,29 +2,35 @@ import React, { useState, useEffect, forwardRef, Fragment } from "react";
 import MaterialTable from "material-table";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "../../pages/theme";
+import { addPortolio } from "../../lib/api";
+
+//Custom Components
+import GenericDialog from "../dialog/GenericDialog";
+import StocksSearchBar from "../stocks/StocksSearchBar";
 
 import { data1, data2 } from "./data";
 import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
+//Icons
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
 import ChevronRight from "@material-ui/icons/ChevronRight";
 import Clear from "@material-ui/icons/Clear";
 import DeleteOutline from "@material-ui/icons/DeleteOutline";
-
 import FirstPage from "@material-ui/icons/FirstPage";
 import LastPage from "@material-ui/icons/LastPage";
-
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
-
 import RefreshIcon from "@material-ui/icons/Refresh";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
-
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 const PortfolioTable = (props) => {
+  const userId = props.auth.user.id;
+
   const tableIcons = {
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
     Refresh: forwardRef((props, ref) => <RefreshIcon {...props} ref={ref} />),
@@ -45,6 +51,13 @@ const PortfolioTable = (props) => {
 
   const [data, setData] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
+
+  const [openAddDlg, setOpenAddDlg] = useState(false);
+  const [portfolio, setPortfolio] = useState({
+    ticker: null,
+    qty: null,
+    cost_per_share: null,
+  });
 
   useEffect(() => {
     setData(data2);
@@ -82,14 +95,54 @@ const PortfolioTable = (props) => {
           </Grid>
           <Grid item>{`${rowData.change.toFixed(2)}%`}</Grid>
         </Grid>
-        {/* <span
-        style={{
-          color: isNegative ? "red" : "green",
-        }}
-      >            
-      </span> */}
       </Fragment>
     );
+  };
+
+  const closeDialog = () => {
+    setOpenAddDlg(false);
+    setPortfolio({
+      ticker: null,
+      qty: null,
+      cost_per_share: null,
+    });
+  };
+
+  const handleChange = (evt) => {
+    const { name, value } = evt.target;
+    setPortfolio((prevValue) => {
+      return {
+        ...prevValue,
+        [name]: value,
+      };
+    });
+  };
+
+  const addPortfolio = () => {
+    //Validate Data
+    if (!portfolio.ticker) {
+      return { error: "Specify ticker or company" };
+    }
+
+    if (!portfolio.qty || parseInt(portfolio.qty, 10) <= 0) {
+      return { error: "Specify number of shares." };
+    }
+
+    if (
+      !portfolio.cost_per_share ||
+      parseFloat(portfolio.cost_per_share, 10) <= 0
+    ) {
+      return { error: "Specify cost of shares." };
+    }
+
+    //Call backend to add portfolio
+    return addPortolio(userId, portfolio)
+      .then((data) => {
+        return { error: null };
+      })
+      .catch((err) => {
+        return { error: err.message };
+      });
   };
 
   return (
@@ -126,7 +179,7 @@ const PortfolioTable = (props) => {
             icon: tableIcons.Add,
             tooltip: "Add to Portfolio",
             isFreeAction: true,
-            onClick: (event) => alert("You want to add a new row"),
+            onClick: (event) => setOpenAddDlg(true),
           },
         ]}
         onRowClick={(evt, selectedRow) =>
@@ -146,6 +199,77 @@ const PortfolioTable = (props) => {
         }}
       />
       {/* </MuiThemeProvider> */}
+
+      {/* Add Portfolio Dialog */}
+      <GenericDialog
+        open={openAddDlg}
+        btnDlgCancelName="Cancel"
+        btnDlgConfirmName="Add"
+        dlgTitle="Add Portfolio"
+        confirmCallback={addPortfolio}
+        onDlgCloseCallback={closeDialog}
+      >
+        <Grid
+          container
+          direction="column"
+          justify="space-between"
+          alignItems="stretch"
+          spacing={3}
+        >
+          <Grid item>
+            <StocksSearchBar
+              onSelectCallback={(option) =>
+                setPortfolio((prevValue) => {
+                  return {
+                    ...prevValue,
+                    ticker: option.ticker,
+                  };
+                })
+              }
+              maxWidth="inherit"
+            />
+          </Grid>
+          <Grid item>
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="center"
+              spacing={2}
+            >
+              <Grid item>
+                <TextField
+                  style={{ width: 250 }}
+                  variant="outlined"
+                  size="small"
+                  label="Number of shares"
+                  name="qty"
+                  onChange={handleChange}
+                  value={portfolio.qty}
+                  autoComplete="off"
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  style={{ width: 250 }}
+                  variant="outlined"
+                  size="small"
+                  label="Cost per share"
+                  name="cost_per_share"
+                  onChange={handleChange}
+                  value={portfolio.cost_per_share}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">$</InputAdornment>
+                    ),
+                  }}
+                  autoComplete="off"
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </GenericDialog>
     </div>
   );
 };

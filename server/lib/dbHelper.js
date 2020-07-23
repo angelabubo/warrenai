@@ -565,6 +565,29 @@ exports.updateInvoice = async (invoice) => {
     await exports.addInvoice(invoice);
   }
 };
+
+//Stocks
+exports.addPortfolio = (userId, portfolio, callback) => {
+  const { ticker, qty, cost_per_share } = portfolio;
+
+  let statement = "insert into portfolio values (uuid(), ?, ?, ?, ?)";
+
+  dbConnection
+    .execute(statement, [userId, ticker, qty, cost_per_share])
+    .then(([rows, fields]) => {
+      if (rows.affectedRows > 0) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    })
+    //Return error to the caller
+    .catch((err) => {
+      console.log("[ERROR][addPortfolio] - " + err.message);
+      callback(err, null);
+    });
+};
+
 //Generic Helpers
 exports.getTableRow = (table, colFilter, colFilterValue) => {
   let statement = `select * from ${table} where ${colFilter} = ?`;
