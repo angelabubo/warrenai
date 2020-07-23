@@ -49,3 +49,17 @@ receipt_url TEXT,
 charge_id varchar(36)
 );
 
+create table portfolio (
+id varchar(36) PRIMARY KEY,
+userId varchar(36),
+ticker varchar(15),
+qty INT,
+cost_per_share FLOAT
+);
+
+create table watchlist (
+id varchar(36) PRIMARY KEY,
+userId varchar(36),
+ticker varchar(15)
+);
+
