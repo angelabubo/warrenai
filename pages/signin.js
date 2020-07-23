@@ -123,7 +123,6 @@ function Signin() {
                       name="password"
                       type="password"
                       onChange={handleChange}
-                      placeholder="●●●●●●●●"
                       value={user.password}
                     />
                   </FormControl>
