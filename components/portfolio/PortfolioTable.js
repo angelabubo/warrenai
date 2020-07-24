@@ -13,6 +13,7 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 //Icons
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
@@ -50,6 +51,7 @@ const PortfolioTable = (props) => {
   };
 
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [openAddDlg, setOpenAddDlg] = useState(false);
   const [portfolio, setPortfolio] = useState({
@@ -61,12 +63,15 @@ const PortfolioTable = (props) => {
   const [refreshTable, setRefreshTable] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     getPortfolio(userId)
       .then((data) => {
+        setLoading(false);
         setData(data);
       })
       .catch((err) => {
         console.log(err.message);
+        setLoading(false);
         setData([]);
       });
   }, [refreshTable]);
@@ -224,6 +229,21 @@ const PortfolioTable = (props) => {
             backgroundColor:
               selectedRow === rowData.tableData.id ? "#EEE" : "#FFF",
           }),
+        }}
+        localization={{
+          body: {
+            emptyDataSourceMessage: loading ? (
+              <CircularProgress size={70} style={{ color: "#26303e" }} />
+            ) : (
+              <label
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                No records to display
+              </label>
+            ),
+          },
         }}
       />
       {/* </MuiThemeProvider> */}
