@@ -110,7 +110,13 @@ exports.deletePortfolio = async (req, res) => {
     return res.redirect("/signin");
   }
 
-  //Check whether user has active subscription first
-  const { userId } = req.params;
-  res.json(null);
+  const { userId, ticker } = req.params;
+
+  //Persist data in database
+  await dbHelper.deletePortfolio(userId, ticker, (err, result) => {
+    if (err) {
+      return res.status(500).send(err.message);
+    }
+    res.json(result);
+  });
 };

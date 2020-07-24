@@ -2,18 +2,18 @@ import React, { useState, useEffect, forwardRef, Fragment } from "react";
 import MaterialTable from "material-table";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "../../pages/theme";
-import { addPortfolio, getPortfolio } from "../../lib/api";
+import { addPortfolio, getPortfolio, deletePortfolio } from "../../lib/api";
 
 //Custom Components
 import GenericDialog from "../dialog/GenericDialog";
 import StocksSearchBar from "../stocks/StocksSearchBar";
 
-import { data1, data2 } from "./data";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Typography from "@material-ui/core/Typography";
 
 //Icons
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
@@ -61,6 +61,9 @@ const PortfolioTable = (props) => {
   });
 
   const [refreshTable, setRefreshTable] = useState(false);
+
+  const [openDelDlg, setOpenDelDlg] = useState(false);
+  const [rowToDelete, setRowToDelete] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -127,6 +130,8 @@ const PortfolioTable = (props) => {
 
   const closeDialog = () => {
     setOpenAddDlg(false);
+    setOpenDelDlg(false);
+    setRowToDelete(null);
     setPortfolio({
       ticker: null,
       qty: null,
@@ -172,6 +177,17 @@ const PortfolioTable = (props) => {
       });
   };
 
+  const deleteSelectedPortfolio = () => {
+    //Call backend to delete portfolio
+    return deletePortfolio(userId, rowToDelete.ticker)
+      .then((data) => {
+        return { error: null };
+      })
+      .catch((err) => {
+        return { error: err.message };
+      });
+  };
+
   return (
     <div style={{ maxWidth: "100%" }}>
       {/* <MuiThemeProvider theme={theme}> */}
@@ -206,7 +222,10 @@ const PortfolioTable = (props) => {
           {
             icon: tableIcons.Delete,
             tooltip: "Delete",
-            onClick: (event, rowData) => alert("You delete " + rowData.name),
+            onClick: (event, rowData) => {
+              setOpenDelDlg(true);
+              setRowToDelete(rowData);
+            },
           },
           {
             icon: tableIcons.Add,
@@ -315,6 +334,44 @@ const PortfolioTable = (props) => {
                 />
               </Grid>
             </Grid>
+          </Grid>
+        </Grid>
+      </GenericDialog>
+
+      {/* Delete Portfolio Dialog */}
+      <GenericDialog
+        open={openDelDlg}
+        btnDlgCancelName="Cancel"
+        btnDlgConfirmName="Delete"
+        dlgTitle="Delete Portfolio"
+        confirmCallback={deleteSelectedPortfolio}
+        onDlgCloseCallback={closeDialog}
+      >
+        <Grid
+          container
+          direction="column"
+          justify="flex-start"
+          alignItems="stretch"
+        >
+          <Grid item>
+            <Typography gutterBottom align="left">
+              Are you sure you want to delete this portfolio?
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="h4" align="center">
+              {rowToDelete && rowToDelete.ticker}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="subtitle2" align="center">
+              {rowToDelete && `${rowToDelete.qty} shares`}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="subtitle2" gutterBottom align="center">
+              {rowToDelete && `US$${rowToDelete.avgCost} per share (avg)`}
+            </Typography>
           </Grid>
         </Grid>
       </GenericDialog>

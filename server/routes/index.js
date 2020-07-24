@@ -71,12 +71,14 @@ router
   //Get portfolio
   .get(authController.checkAuth, freemiumController.getPortfolio)
   //Add portfolio
-  .post(authController.checkAuth, freemiumController.addPortfolio)
-  //Delete portfolio
-  .delete(
-    authController.checkAuth,
-    catchErrors(freemiumController.deletePortfolio)
-  );
+  .post(authController.checkAuth, freemiumController.addPortfolio);
+
+//Delete portfolio
+router.delete(
+  "/api/free/:userId/portfolio/:ticker",
+  authController.checkAuth,
+  catchErrors(freemiumController.deletePortfolio)
+);
 
 /////////////////////////////////////////////////////////////////////
 //PREMIUM ROUTES: /api/premium

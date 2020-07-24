@@ -588,6 +588,23 @@ exports.addPortfolio = (userId, portfolio, callback) => {
     });
 };
 
+exports.deletePortfolio = (userId, ticker, callback) => {
+  let statement = `delete from portfolio where userId = ? and ticker = ?`;
+  dbConnection
+    .execute(statement, [userId, ticker])
+    .then(([rows, fields]) => {
+      console.log(
+        `${rows.affectedRows} rows(s) at portfolio table were deleted.`
+      );
+      callback(null, rows.affectedRows);
+    })
+    //Return error to the caller
+    .catch((err) => {
+      console.log("[ERROR][deletePortfolio] - " + err.message);
+      callback(err, null);
+    });
+};
+
 //Generic Helpers
 exports.getTableRow = (table, colFilter, colFilterValue) => {
   let statement = `select * from ${table} where ${colFilter} = ?`;
