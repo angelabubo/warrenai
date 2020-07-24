@@ -86,22 +86,35 @@ const PortfolioTable = (props) => {
           }}
           wrap="nowrap"
         >
-          <Grid item>
-            {isNegative ? (
-              <ArrowDropDownIcon
-                style={{
-                  marginBottom: "-5px",
-                }}
-              />
-            ) : (
-              <ArrowDropUpIcon
-                style={{
-                  marginBottom: "-5px",
-                }}
-              />
-            )}
-          </Grid>
-          <Grid item>{`${rowData.change.toFixed(2)}%`}</Grid>
+          {rowData.change ? (
+            <Fragment>
+              <Grid item>
+                {isNegative ? (
+                  <ArrowDropDownIcon
+                    style={{
+                      marginBottom: "-5px",
+                    }}
+                  />
+                ) : (
+                  <ArrowDropUpIcon
+                    style={{
+                      marginBottom: "-5px",
+                    }}
+                  />
+                )}
+              </Grid>
+              <Grid item>{`${rowData.change.toFixed(2)}%`}</Grid>
+            </Fragment>
+          ) : (
+            <Grid
+              item
+              style={{
+                color: "black",
+              }}
+            >
+              Data not available
+            </Grid>
+          )}
         </Grid>
       </Fragment>
     );
@@ -173,9 +186,15 @@ const PortfolioTable = (props) => {
           {
             title: "Price",
             field: "price",
-            render: (rowData) => rowData.price.toFixed(2),
+            render: (rowData) =>
+              rowData.price ? rowData.price.toFixed(2) : "Data not available",
           },
-          { title: "Date", field: "date" },
+          {
+            title: "Date",
+            field: "date",
+            render: (rowData) =>
+              rowData.date ? rowData.date : "Data not available",
+          },
         ]}
         data={data}
         actions={[
