@@ -145,7 +145,7 @@ const PortfolioTable = (props) => {
     });
   };
 
-  const addPortfolio = () => {
+  const addNewPortfolio = () => {
     //Validate Data
     if (!portfolio.ticker) {
       return { error: "Specify ticker or company" };
@@ -254,7 +254,7 @@ const PortfolioTable = (props) => {
         btnDlgCancelName="Cancel"
         btnDlgConfirmName="Add"
         dlgTitle="Add Portfolio"
-        confirmCallback={addPortfolio}
+        confirmCallback={addNewPortfolio}
         onDlgCloseCallback={closeDialog}
       >
         <Grid
