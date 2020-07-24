@@ -2,7 +2,7 @@ import React, { useState, useEffect, forwardRef, Fragment } from "react";
 import MaterialTable from "material-table";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "../../pages/theme";
-import { addPortolio } from "../../lib/api";
+import { addPortfolio, getPortfolio } from "../../lib/api";
 
 //Custom Components
 import GenericDialog from "../dialog/GenericDialog";
@@ -51,7 +51,6 @@ const PortfolioTable = (props) => {
 
   const [data, setData] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
-
   const [openAddDlg, setOpenAddDlg] = useState(false);
   const [portfolio, setPortfolio] = useState({
     ticker: null,
@@ -59,9 +58,18 @@ const PortfolioTable = (props) => {
     cost_per_share: null,
   });
 
+  const [refreshTable, setRefreshTable] = useState(false);
+
   useEffect(() => {
-    setData(data2);
-  }, []);
+    getPortfolio(userId)
+      .then((data) => {
+        setData(data);
+      })
+      .catch((err) => {
+        console.log(err.message);
+        setData([]);
+      });
+  }, [refreshTable]);
 
   const renderChange = (rowData) => {
     const isNegative =
@@ -106,6 +114,7 @@ const PortfolioTable = (props) => {
       qty: null,
       cost_per_share: null,
     });
+    setRefreshTable(!refreshTable);
   };
 
   const handleChange = (evt) => {
@@ -136,7 +145,7 @@ const PortfolioTable = (props) => {
     }
 
     //Call backend to add portfolio
-    return addPortolio(userId, portfolio)
+    return addPortfolio(userId, portfolio)
       .then((data) => {
         return { error: null };
       })

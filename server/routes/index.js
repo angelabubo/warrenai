@@ -69,7 +69,7 @@ router
 router
   .route("/api/free/:userId/portfolio")
   //Get portfolio
-  .get(authController.checkAuth, catchErrors(freemiumController.getPortfolio))
+  .get(authController.checkAuth, freemiumController.getPortfolio)
   //Add portfolio
   .post(authController.checkAuth, freemiumController.addPortfolio)
   //Delete portfolio
