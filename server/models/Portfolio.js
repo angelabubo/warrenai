@@ -8,9 +8,9 @@ class Portfolio {
     this.ticker = ticker;
     this.qty = 0;
     this.avgCost = 0;
-    this.change = 0;
+    this.change = null;
     this.price = currentPrice;
-    this.date = ticksToDateTimeString(dateInTicks);
+    this.date = dateInTicks ? ticksToDateTimeString(dateInTicks) : null;
     this.totalCost = 0;
   }
 
@@ -23,7 +23,9 @@ class Portfolio {
 
   //change = ((price - avgCost)/avgCost) * 100
   computePercentChange() {
-    this.change = ((this.price - this.avgCost) / this.avgCost) * 100;
+    if (this.price) {
+      this.change = ((this.price - this.avgCost) / this.avgCost) * 100;
+    }
   }
 
   compute(numShares, costPerShare) {

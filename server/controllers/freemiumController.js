@@ -19,8 +19,8 @@ const processTickers = async (tickers, portfoliosFromDB) => {
     if (tickersData[i]) {
       let portfolio = new Portfolio(
         tickersData[i].ticker,
-        tickersData[i].c,
-        tickersData[i].t * 1000
+        tickersData[i].c ? tickersData[i].c : null,
+        tickersData[i].t ? tickersData[i].t * 1000 : null
       );
 
       //Compute the portfolio based on data from database
@@ -37,7 +37,6 @@ const processTickers = async (tickers, portfoliosFromDB) => {
       portfolioList.push(jsonObj);
     }
   }
-
   return portfolioList;
 };
 

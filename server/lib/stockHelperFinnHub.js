@@ -12,8 +12,6 @@ exports.getQuote = async (ticker) => {
       baseURL + `/quote?symbol=${ticker}` + suffixURL
     );
 
-    if (Object.keys(data).length <= 0) return null;
-
     data["ticker"] = ticker;
     return data;
   } catch (error) {
