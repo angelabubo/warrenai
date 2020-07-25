@@ -25,6 +25,7 @@
     "express-session": "^1.17.1",
     "express-validator": "^6.5.0",
     "helmet": "^3.22.0",
+    "infinite-react-carousel": "^1.2.11",
     "jquery": "^3.5.1",
     "material-table": "^1.66.0",
     "morgan": "^1.10.0",
