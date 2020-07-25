@@ -1,6 +1,8 @@
 const dbHelper = require("../lib/dbHelper");
 const stockHelperFh = require("../lib/stockHelperFinnHub");
+const stockHelperUni = require("../lib/stockHelperUnibit");
 const Portfolio = require("../models/Portfolio");
+const Watchlist = require("../models/Watchlist");
 
 const processTickers = async (tickers, portfoliosFromDB) => {
   let promises = [];
@@ -53,7 +55,6 @@ exports.getPortfolio = async (req, res) => {
     return res.redirect("/signin");
   }
 
-  //Check whether user has active subscription first
   const { userId } = req.params;
 
   //Get list of portfolio from database
@@ -132,7 +133,6 @@ exports.addWatchlist = async (req, res) => {
 
   const { userId } = req.params;
   const { ticker } = req.body;
-  console.log(ticker);
 
   //Persist data in database
   await dbHelper.addWatchlist(userId, ticker, (err, result) => {
@@ -141,4 +141,75 @@ exports.addWatchlist = async (req, res) => {
     }
     res.json(result);
   });
+};
+
+const processWatchlist = async (tickers) => {
+  let promises = [];
+  let watchlist = [];
+
+  //Request all ticker data
+  //Get stock quote from FinnHub
+  for (let i = 0; i < tickers.length; i++) {
+    promises.push(stockHelperFh.getQuote(tickers[i]));
+  }
+  const tickersQuote = await Promise.all(promises);
+
+  //Get stock volume from Unibit
+  const tickersVolume = await stockHelperUni.getVolume(tickers);
+
+  watchlist = tickersQuote.map((quote) => {
+    const tickerVolume = tickersVolume[quote.ticker];
+    const volume =
+      tickerVolume && tickerVolume.length > 0 ? tickerVolume[0].volume : null;
+    const watchlist = new Watchlist(
+      quote.ticker,
+      quote.o,
+      quote.h,
+      quote.l,
+      quote.c,
+      quote.pc,
+      volume,
+      quote.t ? quote.t * 1000 : null
+    );
+
+    const jsonStr = JSON.stringify(watchlist);
+    return JSON.parse(jsonStr);
+  });
+
+  return watchlist;
+};
+
+const doGetWatchlist = async (tickers) => {
+  return await processWatchlist(tickers);
+};
+
+exports.getWatchlist = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  const { userId } = req.params;
+
+  //Get list of tickers watchlisted by user from database
+  const cols = ["ticker"];
+  const datarows = await dbHelper.getTableRowsWithSelectColumns(
+    cols,
+    "watchlist",
+    "userId",
+    userId
+  );
+
+  if (datarows) {
+    //Extract tickers
+    const tickers = datarows.map((element) => element.ticker);
+
+    const watchlist = await doGetWatchlist(tickers);
+    res.json(watchlist);
+  } else {
+    res.json([]);
+  }
 };

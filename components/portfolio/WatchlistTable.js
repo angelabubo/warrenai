@@ -2,12 +2,7 @@ import React, { useState, useEffect, forwardRef, Fragment } from "react";
 import MaterialTable from "material-table";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "../../pages/theme";
-import {
-  addPortfolio,
-  getPortfolio,
-  deletePortfolio,
-  addWatchlist,
-} from "../../lib/api";
+import { deletePortfolio, addWatchlist, getWatchlist } from "../../lib/api";
 
 import { dataWatchlist } from "./data";
 //Custom Components
@@ -69,17 +64,17 @@ const WatchlistTable = (props) => {
 
   useEffect(() => {
     setLoading(true);
-    // getPortfolio(userId)
-    //   .then((data) => {
-    //     setLoading(false);
-    //     setData(data);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err.message);
-    //     setLoading(false);
-    //     setData([]);
-    //   });
-    setData(dataWatchlist);
+    getWatchlist(userId)
+      .then((data) => {
+        setLoading(false);
+        setData(data);
+      })
+      .catch((err) => {
+        console.log(err.message);
+        setLoading(false);
+        setData([]);
+      });
+    //setData(dataWatchlist);
   }, [refreshTable]);
 
   const renderChange = (rowData) => {

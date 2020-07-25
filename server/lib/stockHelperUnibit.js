@@ -10,12 +10,10 @@ exports.getVolume = async (tickers) => {
   try {
     const { data } = await axios.get(
       baseURL +
-        `/stock/historical/?tickers=${tickers}&selectedFields=volume` +
+        `/stock/historical/?tickers=${tickers.join()}&selectedFields=volume` +
         suffixURL
     );
-
-    console.log(data);
-    return data;
+    return data.result_data;
   } catch (error) {
     console.log(error);
     return null;

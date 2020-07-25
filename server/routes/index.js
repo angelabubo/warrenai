@@ -83,8 +83,8 @@ router.delete(
 //Watchlist
 router
   .route("/api/free/:userId/watchlist")
-  // //Get watchlist
-  // .get(authController.checkAuth, freemiumController.getPortfolio)
+  //Get watchlist
+  .get(authController.checkAuth, freemiumController.getWatchlist)
   //Add watchlist
   .post(authController.checkAuth, freemiumController.addWatchlist);
 // //Delete watchlist
