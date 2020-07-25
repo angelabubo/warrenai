@@ -2,7 +2,7 @@ import React, { useState, useEffect, forwardRef, Fragment } from "react";
 import MaterialTable from "material-table";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "../../pages/theme";
-import { deletePortfolio, addWatchlist, getWatchlist } from "../../lib/api";
+import { deleteWatchlist, addWatchlist, getWatchlist } from "../../lib/api";
 
 import { dataWatchlist } from "./data";
 //Custom Components
@@ -157,9 +157,9 @@ const WatchlistTable = (props) => {
       });
   };
 
-  const deleteSelectedPortfolio = () => {
+  const deleteSelectedTicker = () => {
     //Call backend to delete portfolio
-    return deletePortfolio(userId, rowToDelete.ticker)
+    return deleteWatchlist(userId, rowToDelete.ticker)
       .then((data) => {
         return { error: null };
       })
@@ -274,13 +274,13 @@ const WatchlistTable = (props) => {
         </Grid>
       </GenericDialog>
 
-      {/* Delete Portfolio Dialog */}
+      {/* Delete Watchlist Dialog */}
       <GenericDialog
         open={openDelDlg}
         btnDlgCancelName="Cancel"
         btnDlgConfirmName="Delete"
-        dlgTitle="Delete Portfolio"
-        confirmCallback={deleteSelectedPortfolio}
+        dlgTitle="Delete from Watchlist"
+        confirmCallback={deleteSelectedTicker}
         onDlgCloseCallback={closeDialog}
       >
         <Grid
@@ -291,22 +291,12 @@ const WatchlistTable = (props) => {
         >
           <Grid item>
             <Typography gutterBottom align="left">
-              Are you sure you want to delete this portfolio?
+              Are you sure you want to delete this ticker from your watchlist?
             </Typography>
           </Grid>
           <Grid item>
             <Typography variant="h4" align="center">
               {rowToDelete && rowToDelete.ticker}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Typography variant="subtitle2" align="center">
-              {rowToDelete && `${rowToDelete.qty} shares`}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Typography variant="subtitle2" gutterBottom align="center">
-              {rowToDelete && `US$${rowToDelete.avgCost} per share (avg)`}
             </Typography>
           </Grid>
         </Grid>

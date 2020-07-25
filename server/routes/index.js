@@ -87,12 +87,12 @@ router
   .get(authController.checkAuth, freemiumController.getWatchlist)
   //Add watchlist
   .post(authController.checkAuth, freemiumController.addWatchlist);
-// //Delete watchlist
-// router.delete(
-//   "/api/free/:userId/watchlist/:ticker",
-//   authController.checkAuth,
-//   catchErrors(freemiumController.deletePortfolio)
-// );
+//Delete watchlist
+router.delete(
+  "/api/free/:userId/watchlist/:ticker",
+  authController.checkAuth,
+  catchErrors(freemiumController.deleteWatchlist)
+);
 
 /////////////////////////////////////////////////////////////////////
 //PREMIUM ROUTES: /api/premium
