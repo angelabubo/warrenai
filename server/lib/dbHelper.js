@@ -1,4 +1,5 @@
 const dbConnection = require("./dbConnection");
+const errorConverter = require("./dbErrorConverter");
 const {
   createStripeCustomer,
   getDefaultPaymentMethodDetails,
@@ -620,7 +621,7 @@ exports.addWatchlist = (userId, ticker, callback) => {
     //Return error to the caller
     .catch((err) => {
       console.log("[ERROR][addWatchlist] - " + err.message);
-      callback(err, null);
+      callback(errorConverter(err), null);
     });
 };
 
@@ -644,6 +645,28 @@ exports.getTableRow = (table, colFilter, colFilterValue) => {
 
 exports.getTableRows = (table, colFilter, colFilterValue) => {
   let statement = `select * from ${table} where ${colFilter} = ?`;
+  return dbConnection
+    .execute(statement, [colFilterValue])
+    .then(([rows, fields]) => {
+      if (rows.length > 0) {
+        return rows;
+      }
+      return null;
+    })
+    .catch((err) => {
+      console.log("[ERROR][getTableRow] - " + err.message);
+      console.log(statement);
+      return null;
+    });
+};
+
+exports.getTableRowsWithSelectColumns = (
+  selectColumnsArr,
+  table,
+  colFilter,
+  colFilterValue
+) => {
+  let statement = `select ${selectColumnsArr.join()} from ${table} where ${colFilter} = ?`;
   return dbConnection
     .execute(statement, [colFilterValue])
     .then(([rows, fields]) => {
