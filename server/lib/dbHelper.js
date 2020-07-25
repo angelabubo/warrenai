@@ -605,6 +605,25 @@ exports.deletePortfolio = (userId, ticker, callback) => {
     });
 };
 
+exports.addWatchlist = (userId, ticker, callback) => {
+  let statement = "insert into watchlist values (uuid(), ?, ?)";
+
+  dbConnection
+    .execute(statement, [userId, ticker])
+    .then(([rows, fields]) => {
+      if (rows.affectedRows > 0) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    })
+    //Return error to the caller
+    .catch((err) => {
+      console.log("[ERROR][addWatchlist] - " + err.message);
+      callback(err, null);
+    });
+};
+
 //Generic Helpers
 exports.getTableRow = (table, colFilter, colFilterValue) => {
   let statement = `select * from ${table} where ${colFilter} = ?`;

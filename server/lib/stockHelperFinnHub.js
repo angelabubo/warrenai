@@ -3,8 +3,8 @@ const axios = require("axios");
 const APIKEY = process.env.FINNHUB_APIKEY;
 const baseURL = "https://finnhub.io/api/v1";
 const suffixURL = `&token=${APIKEY}`;
-// https://finnhub.io/api/v1/quote?symbol=AAPL&token=bsatml7rh5r96cvcrbq0
 
+// https://finnhub.io/api/v1/quote?symbol=AAPL&token=
 //Get real-time quote data for US stocks.
 exports.getQuote = async (ticker) => {
   try {

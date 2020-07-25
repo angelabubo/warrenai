@@ -120,3 +120,25 @@ exports.deletePortfolio = async (req, res) => {
     res.json(result);
   });
 };
+
+exports.addWatchlist = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  const { userId } = req.params;
+  const { ticker } = req.body;
+  console.log(ticker);
+
+  //Persist data in database
+  await dbHelper.addWatchlist(userId, ticker, (err, result) => {
+    if (err) {
+      return res.status(500).send(err.message);
+    }
+    res.json(result);
+  });
+};

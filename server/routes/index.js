@@ -66,19 +66,33 @@ router
 
 /////////////////////////////////////////////////////////////////////
 //FREE ROUTES: /api/free/:userId
+//Portfolio
 router
   .route("/api/free/:userId/portfolio")
   //Get portfolio
   .get(authController.checkAuth, freemiumController.getPortfolio)
   //Add portfolio
   .post(authController.checkAuth, freemiumController.addPortfolio);
-
 //Delete portfolio
 router.delete(
   "/api/free/:userId/portfolio/:ticker",
   authController.checkAuth,
   catchErrors(freemiumController.deletePortfolio)
 );
+
+//Watchlist
+router
+  .route("/api/free/:userId/watchlist")
+  // //Get watchlist
+  // .get(authController.checkAuth, freemiumController.getPortfolio)
+  //Add watchlist
+  .post(authController.checkAuth, freemiumController.addWatchlist);
+// //Delete watchlist
+// router.delete(
+//   "/api/free/:userId/watchlist/:ticker",
+//   authController.checkAuth,
+//   catchErrors(freemiumController.deletePortfolio)
+// );
 
 /////////////////////////////////////////////////////////////////////
 //PREMIUM ROUTES: /api/premium

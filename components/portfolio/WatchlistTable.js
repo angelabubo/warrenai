@@ -2,7 +2,12 @@ import React, { useState, useEffect, forwardRef, Fragment } from "react";
 import MaterialTable from "material-table";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "../../pages/theme";
-import { addPortfolio, getPortfolio, deletePortfolio } from "../../lib/api";
+import {
+  addPortfolio,
+  getPortfolio,
+  deletePortfolio,
+  addWatchlist,
+} from "../../lib/api";
 
 import { dataWatchlist } from "./data";
 //Custom Components
@@ -55,11 +60,7 @@ const WatchlistTable = (props) => {
   const [loading, setLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [openAddDlg, setOpenAddDlg] = useState(false);
-  const [portfolio, setPortfolio] = useState({
-    ticker: null,
-    qty: null,
-    cost_per_share: null,
-  });
+  const [ticker, setTicker] = useState("");
 
   const [refreshTable, setRefreshTable] = useState(false);
 
@@ -137,43 +138,17 @@ const WatchlistTable = (props) => {
     setOpenAddDlg(false);
     setOpenDelDlg(false);
     setRowToDelete(null);
-    setPortfolio({
-      ticker: null,
-      qty: null,
-      cost_per_share: null,
-    });
+    setTicker("");
     setRefreshTable(!refreshTable);
   };
 
-  const handleChange = (evt) => {
-    const { name, value } = evt.target;
-    setPortfolio((prevValue) => {
-      return {
-        ...prevValue,
-        [name]: value,
-      };
-    });
-  };
-
-  const addNewPortfolio = () => {
+  const addNewWatchlist = () => {
     //Validate Data
-    if (!portfolio.ticker) {
+    if (!ticker) {
       return { error: "Specify ticker or company" };
     }
-
-    if (!portfolio.qty || parseInt(portfolio.qty, 10) <= 0) {
-      return { error: "Specify number of shares." };
-    }
-
-    if (
-      !portfolio.cost_per_share ||
-      parseFloat(portfolio.cost_per_share, 10) <= 0
-    ) {
-      return { error: "Specify cost of shares." };
-    }
-
-    //Call backend to add portfolio
-    return addPortfolio(userId, portfolio)
+    //Call backend to add watchlist
+    return addWatchlist(userId, ticker)
       .then((data) => {
         return { error: null };
       })
@@ -274,13 +249,13 @@ const WatchlistTable = (props) => {
       />
       {/* </MuiThemeProvider> */}
 
-      {/* Add Portfolio Dialog */}
+      {/* Add Watchlist Dialog */}
       <GenericDialog
         open={openAddDlg}
         btnDlgCancelName="Cancel"
         btnDlgConfirmName="Add"
-        dlgTitle="Add Portfolio"
-        confirmCallback={addNewPortfolio}
+        dlgTitle="Add Watchlist"
+        confirmCallback={addNewWatchlist}
         onDlgCloseCallback={closeDialog}
       >
         <Grid
@@ -292,55 +267,9 @@ const WatchlistTable = (props) => {
         >
           <Grid item>
             <StocksSearchBar
-              onSelectCallback={(option) =>
-                setPortfolio((prevValue) => {
-                  return {
-                    ...prevValue,
-                    ticker: option.ticker,
-                  };
-                })
-              }
+              onSelectCallback={(option) => setTicker(option.ticker)}
               maxWidth="inherit"
             />
-          </Grid>
-          <Grid item>
-            <Grid
-              container
-              direction="row"
-              justify="space-between"
-              alignItems="center"
-              spacing={2}
-            >
-              <Grid item>
-                <TextField
-                  style={{ width: 250 }}
-                  variant="outlined"
-                  size="small"
-                  label="Number of shares"
-                  name="qty"
-                  onChange={handleChange}
-                  value={portfolio.qty}
-                  autoComplete="off"
-                />
-              </Grid>
-              <Grid item>
-                <TextField
-                  style={{ width: 250 }}
-                  variant="outlined"
-                  size="small"
-                  label="Cost per share"
-                  name="cost_per_share"
-                  onChange={handleChange}
-                  value={portfolio.cost_per_share}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    ),
-                  }}
-                  autoComplete="off"
-                />
-              </Grid>
-            </Grid>
           </Grid>
         </Grid>
       </GenericDialog>
