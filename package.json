@@ -25,7 +25,6 @@
     "express-session": "^1.17.1",
     "express-validator": "^6.5.0",
     "helmet": "^3.22.0",
-    "infinite-react-carousel": "^1.2.11",
     "jquery": "^3.5.1",
     "material-table": "^1.66.0",
     "morgan": "^1.10.0",
@@ -37,6 +36,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-jss": "^10.2.0",
+    "react-material-ui-carousel": "^1.7.1",
     "react-payment-icons": "^1.2.6",
     "react-router-dom": "^5.2.0",
     "stripe": "^8.66.0"

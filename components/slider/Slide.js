@@ -11,7 +11,7 @@ const useStyles = makeStyles({
   },
   actionContainer: {
     color: "white",
-    minHeight: 350,
+    minHeight: 415,
     paddingLeft: 20,
     paddingRight: 20,
     backgroundColor: "#363636",
@@ -24,16 +24,23 @@ const useStyles = makeStyles({
     alignItems: "flex-start",
   },
   chipStyle: {
-    fontSize: "0.75rem",
-    height: 18,
+    marginTop: -30,
+  },
+  source: {
+    width: 24,
     marginRight: 10,
-    paddingTop: 2,
+    marginBottom: 8,
   },
 });
 
 export default function Slide(props) {
-  const { data } = props;
   const classes = useStyles();
+  const { data } = props;
+
+  const logoSource = data.url
+    .replace("http://", "")
+    .replace("https://", "")
+    .split(/[/?#]/)[0];
 
   return (
     <Paper variant="outlined" square className={classes.root} elevation={3}>
@@ -61,30 +68,22 @@ export default function Slide(props) {
           </Typography>
         </div>
         <div>
-          <Typography
-            align="right"
-            variant="caption"
-            component="p"
-            gutterBottom
-          >
-            {data.source && (
-              <Chip
-                className={classes.chipStyle}
-                label={data.source}
-                color="primary"
-                size="small"
-                style={{}}
-              />
-            )}
-            {data.category && (
-              <Chip
-                className={classes.chipStyle}
-                label={data.category}
-                color="secondary"
-                size="small"
-              />
-            )}
-          </Typography>
+          {data.url && (
+            <img
+              className={classes.source}
+              src={`https://logo.clearbit.com/${logoSource}`}
+              alt="source"
+            />
+          )}
+
+          {data.category && (
+            <Chip
+              className={classes.chipStyle}
+              label={data.category}
+              color="secondary"
+              size="small"
+            />
+          )}
         </div>
       </div>
     </Paper>

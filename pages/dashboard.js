@@ -1,12 +1,12 @@
 import { authInitialProps } from "../lib/auth";
 import NavDrawer from "../components/navigation/NavDrawer";
-import DashboardPane from "../components/DashboardPane";
+import Newspaper from "../components/Newspaper";
 
 const Dashboard = (props) => {
   return (
     <div>
       <NavDrawer {...props}>
-        <DashboardPane {...props} message="DASHBOARD" />
+        <Newspaper {...props} />
       </NavDrawer>
     </div>
   );
