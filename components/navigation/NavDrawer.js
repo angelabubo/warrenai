@@ -188,7 +188,7 @@ const NavDrawer = ({ children, auth }) => {
     },
     {
       primary: "My Watchlist",
-      href: "/portfolio/my-watchlist",
+      href: "/portfolio/mywatchlist",
     },
   ];
 
