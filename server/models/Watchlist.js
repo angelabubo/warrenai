@@ -10,6 +10,7 @@ class Watchlist {
     this.prevClose = pc;
     this.volume = volume;
     this.date = dateInTicks ? helper.ticksToDateString(dateInTicks) : null;
+    this.change = c && pc ? (c - pc).toFixed(2) : null;
   }
 }
 

@@ -21,7 +21,10 @@ class Portfolio {
   //change = ((price - avgCost)/avgCost) * 100
   computePercentChange() {
     if (this.price) {
-      this.change = ((this.price - this.avgCost) / this.avgCost) * 100;
+      this.change = (
+        ((this.price - this.avgCost) / this.avgCost) *
+        100
+      ).toFixed(2);
     }
   }
 
