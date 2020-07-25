@@ -78,10 +78,7 @@ const WatchlistTable = (props) => {
   }, [refreshTable]);
 
   const renderChange = (rowData) => {
-    const change =
-      rowData.close && rowData.prevClose
-        ? rowData.close - rowData.prevClose
-        : null;
+    const change = rowData.change ? rowData.change : null;
     const isNegative = change && Math.sign(change) === -1 ? true : false;
     return (
       <Fragment>
@@ -112,7 +109,7 @@ const WatchlistTable = (props) => {
                   />
                 )}
               </Grid>
-              <Grid item>{`${change.toFixed(2)}%`}</Grid>
+              <Grid item>{`${change}%`}</Grid>
             </Fragment>
           ) : (
             <Grid
@@ -179,25 +176,35 @@ const WatchlistTable = (props) => {
           {
             title: "Open",
             field: "open",
-            render: (rowData) => rowData.open.toFixed(2),
+            render: (rowData) =>
+              (rowData.open && rowData.open.toFixed(2)) || null,
           },
           {
             title: "High",
             field: "high",
-            render: (rowData) => rowData.high.toFixed(2),
+            render: (rowData) =>
+              (rowData.high && rowData.high.toFixed(2)) || null,
           },
           {
             title: "Low",
             field: "low",
-            render: (rowData) => rowData.low.toFixed(2),
+            render: (rowData) =>
+              (rowData.low && rowData.low.toFixed(2)) || null,
           },
           {
             title: "Close",
             field: "close",
-            render: (rowData) => rowData.close.toFixed(2),
+            render: (rowData) =>
+              (rowData.close && rowData.close.toFixed(2)) || null,
           },
           { title: "Volume", field: "volume" },
           { title: "Change", field: "change", render: renderChange },
+          {
+            title: "Date",
+            field: "date",
+            render: (rowData) =>
+              rowData.date ? rowData.date : "Data not available",
+          },
         ]}
         data={data}
         actions={[

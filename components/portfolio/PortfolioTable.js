@@ -111,7 +111,7 @@ const PortfolioTable = (props) => {
                   />
                 )}
               </Grid>
-              <Grid item>{`${rowData.change.toFixed(2)}%`}</Grid>
+              <Grid item>{`${rowData.change}%`}</Grid>
             </Fragment>
           ) : (
             <Grid
