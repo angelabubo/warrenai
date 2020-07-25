@@ -20,3 +20,13 @@ exports.cleandata = () => {
     if (err) return console.log(err);
   });
 };
+
+exports.ticksToDateTimeString = (ticks) => {
+  const date = new Date(ticks);
+  return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+};
+
+exports.ticksToDateString = (ticks) => {
+  const date = new Date(ticks);
+  return date.toLocaleDateString();
+};

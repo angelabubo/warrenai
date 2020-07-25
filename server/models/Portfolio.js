@@ -1,7 +1,4 @@
-function ticksToDateTimeString(ticks) {
-  const date = new Date(ticks);
-  return date.toLocaleDateString(); // + " " + date.toLocaleTimeString();
-}
+const helper = require("../lib/helper");
 
 class Portfolio {
   constructor(ticker, currentPrice, dateInTicks) {
@@ -10,7 +7,7 @@ class Portfolio {
     this.avgCost = 0;
     this.change = null;
     this.price = currentPrice;
-    this.date = dateInTicks ? ticksToDateTimeString(dateInTicks) : null;
+    this.date = dateInTicks ? helper.ticksToDateString(dateInTicks) : null;
     this.totalCost = 0;
   }
 
