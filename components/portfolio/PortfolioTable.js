@@ -173,7 +173,12 @@ const PortfolioTable = (props) => {
         return { error: null };
       })
       .catch((err) => {
-        return { error: err.message };
+        if (err.response) {
+          // client received an error response (5xx, 4xx)
+          return { error: err.response.data };
+        } else {
+          return { error: err.message };
+        }
       });
   };
 
