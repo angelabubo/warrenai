@@ -11,6 +11,8 @@ class Watchlist {
     this.volume = volume;
     this.date = dateInTicks ? helper.ticksToDateString(dateInTicks) : null;
     this.change = c && pc ? (c - pc).toFixed(2) : null;
+    this.changePercent =
+      c && pc ? (((c - pc) / pc) * 100 * -1).toFixed(2) : null; //always a positive
   }
 }
 
