@@ -109,7 +109,7 @@ const WatchlistTable = (props) => {
                   />
                 )}
               </Grid>
-              <Grid item>{`${change}%`}</Grid>
+              <Grid item>{`${change}`}</Grid>
             </Fragment>
           ) : (
             <Grid
