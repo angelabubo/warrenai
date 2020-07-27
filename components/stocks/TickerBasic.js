@@ -8,25 +8,31 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-const MAX_CHAR = 30;
+const MAX_CHAR = 25;
 const useStyles = makeStyles({
   root: {
-    maxWidth: 350,
+    maxWidth: 360,
     backgroundColor: "#FEFDFF",
   },
   media: {
-    height: 70,
-    width: 70,
-    padding: 8,
+    height: 90,
+    width: 90,
+    paddingTop: 10,
+    paddingLeft: 10,
+    paddingBottom: 10,
+    paddingRight: 8,
   },
   cardContent: {
     paddingLeft: 5,
     paddingRight: 0,
-    paddingTop: 13,
+    paddingTop: 10,
+    "&:last-child": {
+      paddingBottom: 0,
+    },
   },
   cardContent2: {
     paddingRight: 8,
-    paddingTop: 13,
+    paddingTop: 10,
   },
   company: {
     width: 110,
@@ -110,7 +116,7 @@ const TickerBasic = ({ data }) => {
           container
           direction="row"
           justify="flex-start"
-          alignItems="center"
+          alignItems="stretch"
         >
           <Grid item>
             <CardMedia
