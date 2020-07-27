@@ -11,6 +11,18 @@ export const dataTicker = [
     website: "http://www.apple.com",
     //stocks_us
     currency: "USD",
+    state: "portfolio",
+  },
+  {
+    ticker: "IBM",
+    close: 3001,
+    date: "2020-07-21",
+    change: "22.36",
+    changePercent: "6.67",
+    company_name: "International Business Machine",
+    website: "https://www.amazon.com/",
+    currency: "USD",
+    state: "watchlist",
   },
   {
     ticker: "AMZN",
@@ -21,5 +33,6 @@ export const dataTicker = [
     company_name: "Amazon Inc.",
     website: "https://www.amazon.com/",
     currency: "USD",
+    state: "portfolio",
   },
 ];

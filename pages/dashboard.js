@@ -1,17 +1,50 @@
+import { useState, useEffect } from "react";
 import { authInitialProps } from "../lib/auth";
 import NavDrawer from "../components/navigation/NavDrawer";
 import Newspaper from "../components/Newspaper";
 import StocksOverview from "../components/stocks/StocksOverview";
 import Grid from "@material-ui/core/Grid";
+
+import { dataTicker } from "../components/stocks/data";
+import { getBasicStockData } from "../lib/api";
+
 import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles({
-  overview: {
-    maxWidth: 880,
+  dashboard: {
+    maxWidth: 900,
   },
 });
 
 const Dashboard = (props) => {
   const classes = useStyles();
+  const userId = props.auth.user.id;
+
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    getBasicStockData(userId)
+      .then((data) => {
+        setLoading(false);
+        setData(data);
+      })
+      .catch((err) => {
+        console.log(err.message);
+        setLoading(false);
+        setData([]);
+      });
+    //setData(dataTicker);
+  }, []);
+
+  const watchlistStocks = data.filter((element) => {
+    return element.state === "watchlist";
+  });
+
+  const portfolioStocks = data.filter((element) => {
+    return element.state === "portfolio";
+  });
+
   return (
     <div>
       <NavDrawer {...props}>
@@ -21,7 +54,7 @@ const Dashboard = (props) => {
           justify="flex-start"
           alignItems="stretch"
           spacing={5}
-          className={classes.overview}
+          className={classes.dashboard}
         >
           <Grid item>
             <Newspaper {...props} />
@@ -36,10 +69,18 @@ const Dashboard = (props) => {
               spacing={5}
             >
               <Grid item>
-                <StocksOverview title="Portfolio" />
+                <StocksOverview
+                  title="Portfolio"
+                  stocks={portfolioStocks}
+                  isLoading={loading}
+                />
               </Grid>
               <Grid item>
-                <StocksOverview title="Watchlist" />
+                <StocksOverview
+                  title="Watchlist"
+                  stocks={watchlistStocks}
+                  isLoading={loading}
+                />
               </Grid>
             </Grid>
           </Grid>

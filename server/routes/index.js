@@ -94,6 +94,13 @@ router.delete(
   catchErrors(freemiumController.deleteWatchlist)
 );
 
+//Dashboard ticker data
+router.get(
+  "/api/free/:userId/basictickerdata",
+  authController.checkAuth,
+  freemiumController.getBasicTickerData
+);
+
 /////////////////////////////////////////////////////////////////////
 //PREMIUM ROUTES: /api/premium
 //WarrenAiTopCompanies

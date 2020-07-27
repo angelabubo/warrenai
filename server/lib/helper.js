@@ -30,3 +30,19 @@ exports.ticksToDateString = (ticks) => {
   const date = new Date(ticks);
   return date.toLocaleDateString();
 };
+
+exports.getStockCurrency = (ticker) => {
+  let stock = null;
+
+  stock = stocks_us.symbols.find((element) => {
+    return element.ticker === ticker;
+  });
+
+  if (stock) return stock.currency;
+  else {
+    stock = stocks_ca.symbols.find((element) => {
+      return element.ticker === ticker;
+    });
+    return stock ? stock.currency : null;
+  }
+};

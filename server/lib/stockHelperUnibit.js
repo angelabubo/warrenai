@@ -19,3 +19,19 @@ exports.getVolume = async (tickers) => {
     return null;
   }
 };
+
+//https://api.unibit.ai/v2/company/profile/?tickers=AAPL,AMZN&selectedFields=website,company_name&dataType=json&accessKey=
+//Supports batch ticker request. Tickers separated by ,
+exports.getBasicCompanyData = async (tickers) => {
+  try {
+    const { data } = await axios.get(
+      baseURL +
+        `/company/profile/?tickers=${tickers.join()}&selectedFields=website,company_name` +
+        suffixURL
+    );
+    return data.result_data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

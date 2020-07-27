@@ -3,6 +3,7 @@ const stockHelperFh = require("../lib/stockHelperFinnHub");
 const stockHelperUni = require("../lib/stockHelperUnibit");
 const Portfolio = require("../models/Portfolio");
 const Watchlist = require("../models/Watchlist");
+const BasicTicker = require("../models/BasicTicker");
 
 const processTickers = async (tickers, portfoliosFromDB) => {
   let promises = [];
@@ -15,7 +16,6 @@ const processTickers = async (tickers, portfoliosFromDB) => {
   }
 
   tickersData = await Promise.all(promises);
-  console.log(tickersData);
 
   for (let i = 0; i < tickersData.length; i++) {
     if (tickersData[i]) {
@@ -229,6 +229,109 @@ exports.getWatchlist = async (req, res) => {
 
     const watchlist = await doGetWatchlist(tickers);
     res.json(watchlist);
+  } else {
+    res.json([]);
+  }
+};
+
+const processTickerData = async (tickers) => {
+  let promises = [];
+
+  //Request all ticker data
+  //Get stock quote from FinnHub
+  for (let i = 0; i < tickers.length; i++) {
+    promises.push(stockHelperFh.getQuote(tickers[i].ticker));
+  }
+  const tickersQuote = await Promise.all(promises);
+
+  const tickerNames = tickers.map((element) => element.ticker);
+  //Get company info from Unibit
+  const tickersCompany = await stockHelperUni.getBasicCompanyData(tickerNames);
+
+  let tickersData = [];
+  tickersData = tickersQuote.map((quote, index) => {
+    const company = tickersCompany[quote.ticker]
+      ? tickersCompany[quote.ticker].company_name
+      : null;
+    const website = tickersCompany[quote.ticker]
+      ? tickersCompany[quote.ticker].website
+      : null;
+
+    const state = tickers.find((element) => {
+      return element.ticker === quote.ticker;
+    });
+
+    //constructor(ticker, c, pc, dateInTicks, company, website, state)
+    const watchlist = new BasicTicker(
+      quote.ticker,
+      quote.c,
+      quote.pc,
+      quote.t ? quote.t * 1000 : null,
+      company,
+      website,
+      state ? state.state : null
+    );
+
+    const jsonStr = JSON.stringify(watchlist);
+    return JSON.parse(jsonStr);
+  });
+
+  return tickersData;
+};
+
+const doGetTickerData = async (tickers) => {
+  return await processTickerData(tickers);
+};
+exports.getBasicTickerData = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  const { userId } = req.params;
+
+  let tickers = [];
+  //Get list of tickers watchlisted by user from database
+  const watchlist = await dbHelper.getTableRowsDistinct(
+    "ticker",
+    "watchlist",
+    "userId",
+    userId
+  );
+
+  if (watchlist) {
+    watchlist.map((element) => {
+      tickers.push({
+        ticker: element.ticker,
+        state: "watchlist",
+      });
+    });
+  }
+
+  //Get list of tickers in portfolio by user from database
+  const portfolio = await dbHelper.getTableRowsDistinct(
+    "ticker",
+    "portfolio",
+    "userId",
+    userId
+  );
+
+  if (portfolio) {
+    portfolio.map((element) => {
+      tickers.push({
+        ticker: element.ticker,
+        state: "portfolio",
+      });
+    });
+  }
+
+  if (tickers.length > 0) {
+    const tickerData = await doGetTickerData(tickers);
+    console.log(tickerData);
+    res.json(tickerData);
   } else {
     res.json([]);
   }

@@ -671,7 +671,29 @@ exports.getTableRows = (table, colFilter, colFilterValue) => {
       return null;
     })
     .catch((err) => {
-      console.log("[ERROR][getTableRow] - " + err.message);
+      console.log("[ERROR][getTableRows] - " + err.message);
+      console.log(statement);
+      return null;
+    });
+};
+
+exports.getTableRowsDistinct = (
+  distinctCol,
+  table,
+  colFilter,
+  colFilterValue
+) => {
+  let statement = `select distinct ${distinctCol} from ${table} where ${colFilter} = ?`;
+  return dbConnection
+    .execute(statement, [colFilterValue])
+    .then(([rows, fields]) => {
+      if (rows.length > 0) {
+        return rows;
+      }
+      return null;
+    })
+    .catch((err) => {
+      console.log("[ERROR][getTableRowsDistinct] - " + err.message);
       console.log(statement);
       return null;
     });
@@ -693,7 +715,7 @@ exports.getTableRowsWithSelectColumns = (
       return null;
     })
     .catch((err) => {
-      console.log("[ERROR][getTableRow] - " + err.message);
+      console.log("[ERROR][getTableRowsWithSelectColumns] - " + err.message);
       console.log(statement);
       return null;
     });
