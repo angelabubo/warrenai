@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     letterSpacing: "3px",
   },
 });
-const StocksOverview = ({ title, stocks, isLoading }) => {
+const StocksOverview = ({ title, stocks, isLoading, noDataMessage }) => {
   const classes = useStyles();
   return (
     <Fragment>
@@ -37,7 +37,7 @@ const StocksOverview = ({ title, stocks, isLoading }) => {
         >
           {isLoading ? (
             <CircularProgress size={70} className={classes.panelLoading} />
-          ) : (
+          ) : stocks.length > 0 ? (
             stocks.map((element, index) => {
               return (
                 <Grid key={`item${index}`} item>
@@ -45,6 +45,12 @@ const StocksOverview = ({ title, stocks, isLoading }) => {
                 </Grid>
               );
             })
+          ) : (
+            <Grid item style={{ maxWidth: 355 }}>
+              <Typography variant="body1" color="textSecondary">
+                {noDataMessage}
+              </Typography>
+            </Grid>
           )}
         </Grid>
       </Paper>

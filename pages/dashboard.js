@@ -73,6 +73,8 @@ const Dashboard = (props) => {
                   title="Portfolio"
                   stocks={portfolioStocks}
                   isLoading={loading}
+                  noDataMessage="You have not added anything to your portfolio yet. Go to
+                Portfolio > My Portfolio menu to start tracking your investments."
                 />
               </Grid>
               <Grid item>
@@ -80,6 +82,8 @@ const Dashboard = (props) => {
                   title="Watchlist"
                   stocks={watchlistStocks}
                   isLoading={loading}
+                  noDataMessage="You have not added anything to your watchlist yet. Go to
+                Portfolio > My Watchlist menu to start tracking the market."
                 />
               </Grid>
             </Grid>
