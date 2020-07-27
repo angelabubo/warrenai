@@ -1,5 +1,5 @@
-import { news } from "../data/news";
-import CustomSlider from "./slider/CustomSlider";
+import { news } from "../../data/news";
+import CustomSlider from "../slider/CustomSlider";
 
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";

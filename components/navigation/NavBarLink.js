@@ -1,4 +1,4 @@
-import ActiveLink from "../ActiveLink";
+import ActiveLink from "./ActiveLink";
 import Typography from "@material-ui/core/Typography";
 
 export default ({ href, children }) => {

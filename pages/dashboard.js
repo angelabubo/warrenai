@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { authInitialProps } from "../lib/auth";
 import NavDrawer from "../components/navigation/NavDrawer";
-import Newspaper from "../components/Newspaper";
+import Newspaper from "../components/dashboard/Newspaper";
 import StocksOverview from "../components/stocks/StocksOverview";
 import Grid from "@material-ui/core/Grid";
 

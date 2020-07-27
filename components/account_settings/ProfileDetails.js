@@ -5,7 +5,7 @@ import { withStyles } from "@material-ui/core";
 import { updateProfile, updatePassword, deleteProfile } from "../../lib/api";
 import { signoutUser } from "../../lib/auth";
 
-import ConfirmationDialog from "../ConfirmationDialog";
+import ConfirmationDialog from "../dialog/ConfirmationDialog";
 
 import { FormControl, Snackbar } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";

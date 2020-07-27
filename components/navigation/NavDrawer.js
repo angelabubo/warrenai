@@ -39,7 +39,7 @@ import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import ComputerIcon from "@material-ui/icons/Computer";
 import SearchIcon from "@material-ui/icons/Search";
 
-import AccountMenu from "../AccountMenu";
+import AccountMenu from "../account_settings/AccountMenu";
 
 const drawerWidth = 300;
 
