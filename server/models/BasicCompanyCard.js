@@ -7,11 +7,11 @@ class BasicCompanyCard {
     this.company_name = companyName;
     this.website = website;
     this.sector = sector;
-    this.company_description = company_description;
+    this.company_description = companyDesc;
     this.exchangeShort = helper.getStockExhangeShort(ticker);
     this.coverImageUrl =
-      CompanyCovers.ByTicker[ticker] &&
-      CompanyCovers.BySector[sector] &&
+      CompanyCovers.ByTicker[ticker] ||
+      CompanyCovers.BySector[sector.replace(" ", "")] ||
       CompanyCovers.ByTicker["default"];
   }
 }
