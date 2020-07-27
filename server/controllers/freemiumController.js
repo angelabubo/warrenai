@@ -246,7 +246,12 @@ const processTickerData = async (tickers) => {
 
   const tickerNames = tickers.map((element) => element.ticker);
   //Get company info from Unibit
-  const tickersCompany = await stockHelperUni.getBasicCompanyData(tickerNames);
+
+  const fields = ["website", "company_name"];
+  const tickersCompany = await stockHelperUni.getBasicCompanyData(
+    tickerNames,
+    fields
+  );
 
   let tickersData = [];
   tickersData = tickersQuote.map((quote, index) => {
