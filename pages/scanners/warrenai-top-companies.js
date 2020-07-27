@@ -88,7 +88,7 @@ const WarrenAITopCo = (props) => {
                 })
               ) : (
                 <Grid item>
-                  <SubscriptionRequired feature="WarrenAi Top Companies" />
+                  <SubscriptionRequired feature="view WarrenAi Top Companies" />
                 </Grid>
               )}
             </Grid>

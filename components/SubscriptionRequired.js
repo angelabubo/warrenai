@@ -35,7 +35,9 @@ const SubscriptionRequired = ({ feature }) => {
           color="textSecondary"
           className={classes.subtitle}
         >
-          You must be subscribed to WarrenAi Premium to view {feature}.
+          {feature
+            ? `You must be subscribed to WarrenAi Premium to ${feature}.`
+            : "You must be subscribed to WarrenAi Premium to access this feature."}
         </Typography>
       </CardContent>
       <CardActions>
