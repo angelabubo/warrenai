@@ -1,12 +1,11 @@
 import { authInitialProps } from "../../lib/auth";
 import NavDrawer from "../../components/navigation/NavDrawer";
-import DashboardPane from "../../components/DashboardPane";
 
 const RankCoBySector = (props) => {
   return (
     <div>
       <NavDrawer {...props}>
-        <DashboardPane {...props} message="Rank Companies By Sector" />
+        <h1>"Rank Companies By Sector" </h1>
       </NavDrawer>
     </div>
   );

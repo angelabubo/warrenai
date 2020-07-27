@@ -1,6 +1,6 @@
 import { authInitialProps } from "../../lib/auth";
 import NavDrawer from "../../components/navigation/NavDrawer";
-import DashboardPane from "../../components/DashboardPane";
+
 import { getWarrenAiTopCompaniesFromServer } from "../../lib/api";
 import { useEffect, useState } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -34,8 +34,6 @@ const WarrenAITopCo = (props) => {
             Companies.
           </h1>
         )}
-
-        {/* <DashboardPane {...props} message="WARRENAI TOP Companies List" /> */}
       </NavDrawer>
     </div>
   );
