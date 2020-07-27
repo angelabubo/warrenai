@@ -30,7 +30,8 @@ export const dataPortfolio = [
 
 export const dataWatchlist = [
   {
-    ticker: "IBM",
+    //Watchlist Data
+    ticker: "AAPL",
     open: 13,
     high: 13.36,
     low: 12,
@@ -38,6 +39,11 @@ export const dataWatchlist = [
     volume: 3558545,
     date: "2020-07-21",
     prevClose: 13.54,
+    change: "-0.92",
+    changePercent: "3.98",
+    //Unibit API - Company Profle
+    company_name: "Apple Inc.",
+    website: "http://www.apple.com",
   },
   {
     ticker: "AMZN",
@@ -48,5 +54,9 @@ export const dataWatchlist = [
     volume: 6858545,
     date: "2020-07-21",
     prevClose: 2999,
+    change: "22.36",
+    changePercent: "6.67",
+    company_name: "Amazon Inc.",
+    website: "https://www.amazon.com/",
   },
 ];

@@ -9,13 +9,21 @@ const useStyles = makeStyles({
   newsPaper: {
     padding: 20,
   },
+  fonstyle: {
+    letterSpacing: "3px",
+  },
 });
 
 const Newspaper = (props) => {
   const classes = useStyles();
   return (
     <Paper variant="outlined" className={classes.newsPaper}>
-      <Typography align="left" gutterBottom variant="h5" component="h2">
+      <Typography
+        align="left"
+        gutterBottom
+        variant="h4"
+        className={classes.fonstyle}
+      >
         News Feed
       </Typography>
       <Typography
