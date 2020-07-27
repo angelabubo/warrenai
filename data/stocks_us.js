@@ -4860,6 +4860,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+  */
   {
     ticker: "CLX",
     companyName: "The Clorox Company",
@@ -4876,6 +4877,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+  /*
   {
     ticker: "CMA",
     companyName: "Comerica Incorporated",
@@ -13346,6 +13348,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+    */
   {
     ticker: "LSI",
     companyName: "Life Storage, Inc.",
@@ -13354,6 +13357,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+
   {
     ticker: "LTC",
     companyName: "LTC Properties, Inc.",
@@ -13362,6 +13366,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+  /*
   {
     ticker: "LTHM",
     companyName: "Livent Corporation",
@@ -17865,7 +17870,7 @@ export const us_stock_symbols = [
     exchangeShort: "NYSE",
     currency: "USD",
     timezone: "America/New_York",
-  },
+  },*/
   {
     ticker: "PRU",
     companyName: "Prudential Financial, Inc.",
@@ -17874,6 +17879,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+  /*
   {
     ticker: "PSA",
     companyName: "Public Storage",
@@ -21005,6 +21011,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+  */
   {
     ticker: "TCO",
     companyName: "Taubman Centers, Inc.",
@@ -21013,6 +21020,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+  /*
   {
     ticker: "TCO-J",
     companyName: "Taubman Centers, Inc. Series J Cum. Preferred Shs",
@@ -22622,6 +22630,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+  */
   {
     ticker: "V",
     companyName: "Visa Inc.",
@@ -22638,6 +22647,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+  /*
   {
     ticker: "VALE",
     companyName: "Vale S.A.",
@@ -36097,6 +36107,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+
   {
     ticker: "GOOG",
     companyName: "Alphabet Inc.",
@@ -36105,6 +36116,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+    */
   {
     ticker: "GOOGL",
     companyName: "Alphabet Inc.",
@@ -36113,6 +36125,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+  /*
   {
     ticker: "GPAQ",
     companyName: "Gordon Pointe Acquisition Corp.",
@@ -41082,6 +41095,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+  */
   {
     ticker: "MSFT",
     companyName: "Microsoft Corporation",
@@ -41106,6 +41120,7 @@ export const us_stock_symbols = [
     currency: "USD",
     timezone: "America/New_York",
   },
+  /*
   {
     ticker: "MSVB",
     companyName: "Mid-Southern Bancorp, Inc.",
