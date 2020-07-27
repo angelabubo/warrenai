@@ -15,3 +15,32 @@ exports.topCompanies = [
     value: 500,
   },
 ];
+
+exports.WarrenAiTopCompanies = [
+  "CLX",
+  "FB",
+  "AMZN",
+  "PFE",
+  "AAPL",
+  "V",
+  "MSFT",
+  "TSLA",
+];
+
+exports.DividendScanner = ["LTC", "FL", "PRU", "TCO", "LSI"];
+
+exports.RankBySector = [
+  "CLX",
+  "FB",
+  "AMZN",
+  "PFE",
+  "AAPL",
+  "V",
+  "MSFT",
+  "TSLA",
+  "LTC",
+  "FL",
+  "PRU",
+  "TCO",
+  "LSI",
+];
