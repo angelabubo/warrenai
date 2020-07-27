@@ -29,7 +29,7 @@ const Newspaper = (props) => {
       <Typography
         align="left"
         gutterBottom
-        variant="body2"
+        variant="body1"
         color="textSecondary"
         component="p"
       >
