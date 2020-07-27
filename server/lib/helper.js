@@ -1,5 +1,6 @@
 const stocks_us = require("../data/stocks_us");
 const stocks_ca = require("../data/stocks_ca");
+
 fs = require("fs");
 
 exports.cleandata = () => {
@@ -44,5 +45,21 @@ exports.getStockCurrency = (ticker) => {
       return element.ticker === ticker;
     });
     return stock ? stock.currency : null;
+  }
+};
+
+exports.getStockExhangeShort = (ticker) => {
+  let stock = null;
+
+  stock = stocks_us.symbols.find((element) => {
+    return element.ticker === ticker;
+  });
+
+  if (stock) return stock.exchangeShort;
+  else {
+    stock = stocks_ca.symbols.find((element) => {
+      return element.ticker === ticker;
+    });
+    return stock ? stock.exchangeShort : null;
   }
 };
