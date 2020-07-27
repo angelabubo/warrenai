@@ -10,7 +10,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Divider from "@material-ui/core/Divider";
-import { signoutUser } from "../lib/auth";
+import { signoutUser } from "../../lib/auth";
 import Router from "next/router";
 
 const useStyles = makeStyles((theme) => ({
