@@ -9,11 +9,10 @@ import React, { Fragment } from "react";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 
-import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import CompanyCard from "../../components/stocks/CompanyCard";
 import SubscriptionRequired from "../../components/SubscriptionRequired";
-
+import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles({
   root: {
     padding: 33,
