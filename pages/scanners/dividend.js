@@ -67,7 +67,7 @@ const DividendScanner = (props) => {
               container
               direction="row"
               justify="flex-start"
-              alignItems="flex-start"
+              alignItems="stretch"
               spacing={3}
               className={classes.grid}
             >

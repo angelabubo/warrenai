@@ -32,7 +32,7 @@ const CompanyCard = ({ data }) => {
           title={data.company_name}
         />
         <CardContent>
-          <Typography variant="h5" component="h2">
+          <Typography variant="h5" component="h2" noWrap>
             {data.company_name}
           </Typography>
           <Typography variant="caption" component="h2" gutterBottom paragraph>
