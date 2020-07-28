@@ -5,7 +5,7 @@ const stockHelperUni = require("../lib/stockHelperUnibit");
 
 const BasicCompanyCard = require("../models/BasicCompanyCard");
 
-const processWarrenAiTopCompaniesData = async (tickers) => {
+const getBasicCompanyInfo = async (tickers) => {
   //Request all ticker data
   //Get company info from Unibit
   const fields = ["website", "company_name", "sector", "company_description"];
@@ -48,9 +48,30 @@ exports.getWarrenAiTopCompanies = async (req, res) => {
 
   if (hasAccess) {
     //Get basic data of WarrenAi Top Companies
-    const companyData = await processWarrenAiTopCompaniesData(
-      premium.WarrenAiTopCompanies
-    );
+    const companyData = await getBasicCompanyInfo(premium.WarrenAiTopCompanies);
+
+    res.json(companyData);
+  } else {
+    res.json(null);
+  }
+};
+
+exports.getDividendScanners = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  //Check whether user has active subscription first
+  const { userId } = req.params;
+  const hasAccess = await dbHelper.userHasPremiumAccess(userId);
+
+  if (hasAccess) {
+    //Get basic data of Dividend Scanners
+    const companyData = await getBasicCompanyInfo(premium.DividendScanner);
 
     res.json(companyData);
   } else {

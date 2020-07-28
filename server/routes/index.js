@@ -110,6 +110,13 @@ router.get(
   premiumController.getWarrenAiTopCompanies
 );
 
+//Dividend Scanner
+router.get(
+  "/api/premium/dividendscanner/:userId",
+  authController.checkAuth,
+  premiumController.getDividendScanners
+);
+
 /////////////////////////////////////////////////////////////////////
 //STRIPE ROUTES: /api/stripe
 router.post(
