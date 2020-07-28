@@ -26,7 +26,12 @@ const SubscriptionRequired = ({ feature }) => {
   return (
     <Card className={classes.root} variant="outlined" elevation={3}>
       <CardContent>
-        <Typography variant="h2" component="h2" className={classes.title}>
+        <Typography
+          variant="h2"
+          component="h2"
+          className={classes.title}
+          align="left"
+        >
           Ooops!
         </Typography>
         <Typography
@@ -34,6 +39,7 @@ const SubscriptionRequired = ({ feature }) => {
           component="h2"
           color="textSecondary"
           className={classes.subtitle}
+          align="left"
         >
           {feature
             ? `You must be subscribed to WarrenAi Premium to ${feature}.`
