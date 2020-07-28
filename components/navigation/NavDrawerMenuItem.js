@@ -29,11 +29,17 @@ const NavDrawerMenuItem = (props) => {
 
   return (
     <Fragment>
-      <Link href={props.href}>
-        <StyledListItem selected={isCurrentPath} button>
+      {props.href ? (
+        <Link href={props.href}>
+          <StyledListItem selected={isCurrentPath} button>
+            {props.children}
+          </StyledListItem>
+        </Link>
+      ) : (
+        <StyledListItem selected={isCurrentPath} button onClick={() => {}}>
           {props.children}
         </StyledListItem>
-      </Link>
+      )}
     </Fragment>
   );
 };

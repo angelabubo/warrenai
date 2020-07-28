@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { useRouter } from "next/router";
 import clsx from "clsx";
-import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
+import {
+  fade,
+  makeStyles,
+  useTheme,
+  withStyles,
+} from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -38,6 +43,7 @@ import ImportContactsIcon from "@material-ui/icons/ImportContacts";
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import ComputerIcon from "@material-ui/icons/Computer";
 import SearchIcon from "@material-ui/icons/Search";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import AccountMenu from "../account_settings/AccountMenu";
 
@@ -154,6 +160,16 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
+const StyledTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: "#a8dadc",
+    color: "rgba(0, 0, 0, 0.87)",
+    maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: "1px solid #dadde9",
+  },
+}))(Tooltip);
 
 const NavDrawer = ({ children, auth }) => {
   const router = useRouter();
@@ -352,19 +368,40 @@ const NavDrawer = ({ children, auth }) => {
           </Collapse>
 
           {/* Backtesting */}
-          <NavDrawerMenuItem href="/backtesting">
+
+          <NavDrawerMenuItem>
             <ListItemIcon>
               <FastRewindIcon color="secondary" />
             </ListItemIcon>
-            <ListItemText primary={"Backtesting"} />
+            <StyledTooltip
+              title={
+                <Fragment>
+                  <Typography color="inherit">
+                    Coming soon with WarrenAi Premium 👑
+                  </Typography>
+                </Fragment>
+              }
+            >
+              <ListItemText primary={"Backtesting"} />
+            </StyledTooltip>
           </NavDrawerMenuItem>
 
           {/* Learn */}
-          <NavDrawerMenuItem href="/learn">
+          <NavDrawerMenuItem>
             <ListItemIcon>
               <ImportContactsIcon color="secondary" />
             </ListItemIcon>
-            <ListItemText primary={"Learn"} />
+            <StyledTooltip
+              title={
+                <Fragment>
+                  <Typography color="inherit">
+                    Coming soon with WarrenAi Premium 👑
+                  </Typography>
+                </Fragment>
+              }
+            >
+              <ListItemText primary={"Learn"} />
+            </StyledTooltip>
           </NavDrawerMenuItem>
         </List>
 
