@@ -19,3 +19,19 @@ exports.getQuote = async (ticker) => {
     return null;
   }
 };
+
+//https://finnhub.io/api/v1/stock/metric?symbol=AMZN&metric=valuation&token=
+//Get real-time basic financial data for US stocks.
+exports.getBasicFinancial = async (ticker) => {
+  try {
+    const { data } = await axios.get(
+      baseURL + `/stock/metric?symbol=${ticker}&metric=valuation` + suffixURL
+    );
+
+    data.metric["ticker"] = ticker;
+    return data.metric;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

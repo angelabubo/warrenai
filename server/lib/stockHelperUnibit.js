@@ -35,3 +35,19 @@ exports.getBasicCompanyData = async (tickers, fields) => {
     return null;
   }
 };
+
+//https://api.unibit.ai/v2/company/financialSummary/?tickers=AAPL&selectedFields=dividend,yield_percent&dataType=json&accessKey=demo
+//Supports batch ticker request. Tickers separated by ,
+exports.getCompanyFinancialSummary = async (tickers, fields) => {
+  try {
+    const { data } = await axios.get(
+      baseURL +
+        `/company/financialSummary/?tickers=${tickers.join()}&selectedFields=${fields.join()}` +
+        suffixURL
+    );
+    return data.result_data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

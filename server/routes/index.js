@@ -117,6 +117,13 @@ router.get(
   premiumController.getDividendScanners
 );
 
+//Rank Companies by Sector
+router.get(
+  "/api/premium/rankcompanies/:userId",
+  authController.checkAuth,
+  premiumController.getRankCompanies
+);
+
 /////////////////////////////////////////////////////////////////////
 //STRIPE ROUTES: /api/stripe
 router.post(

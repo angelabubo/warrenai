@@ -76,6 +76,21 @@ const ComboBox = ({ options, comboboxOnChange, disabled }) => {
   );
 };
 
+const NotAvailable = () => {
+  return (
+    <Fragment>
+      <Typography
+        variant="caption"
+        style={{
+          color: "black",
+        }}
+      >
+        Not Available
+      </Typography>
+    </Fragment>
+  );
+};
+
 const RankBySectorTable = (props) => {
   const classes = useStyles();
   const userId = props.auth.user.id;
@@ -119,15 +134,10 @@ const RankBySectorTable = (props) => {
         setData([]);
         setDataFromServer([]);
       });
-
-    setData([]);
-    setDataFromServer(null);
-    setLoading(false);
   }, []);
 
   const onSectorSelect = (sector) => {
     if (sector) {
-      console.log(sector + " selected.");
       //Filter data to selected sector
       const filteredData = dataFromServer
         ? dataFromServer.filter((element) => element.sector === sector)
@@ -171,16 +181,11 @@ const RankBySectorTable = (props) => {
                   />
                 )}
               </Grid>
-              <Grid item>{`${ey}%`}</Grid>
+              <Grid item>{`${ey.toFixed(2)}%`}</Grid>
             </Fragment>
           ) : (
-            <Grid
-              item
-              style={{
-                color: "black",
-              }}
-            >
-              Data not available
+            <Grid item>
+              <NotAvailable />
             </Grid>
           )}
         </Grid>
@@ -249,7 +254,12 @@ const RankBySectorTable = (props) => {
             { title: "Company", field: "company_name" },
             { title: "Sector", field: "sector" },
             { title: "PE Ratio", field: "pe_ratio" },
-            { title: "Stock Price", field: "price" },
+            {
+              title: "Stock Price",
+              field: "price",
+              render: (rowData) =>
+                (rowData.price && "$" + rowData.price) || <NotAvailable />,
+            },
             {
               title: "Earnings Yield",
               field: "earnings_yield",
@@ -260,16 +270,16 @@ const RankBySectorTable = (props) => {
               field: "dividendYieldTTM",
               render: (rowData) =>
                 (rowData.dividendYieldTTM &&
-                  rowData.dividendYieldTTM.toFixed(2) + "%") ||
-                null,
+                  rowData.dividendYieldTTM.toFixed(2) + "%") || (
+                  <NotAvailable />
+                ),
             },
             {
               title: "Dividend Yield(5Y)",
               field: "dividendYield5Y",
               render: (rowData) =>
                 (rowData.dividendYield5Y &&
-                  rowData.dividendYield5Y.toFixed(2) + "%") ||
-                null,
+                  rowData.dividendYield5Y.toFixed(2) + "%") || <NotAvailable />,
             },
           ]}
           data={data}
