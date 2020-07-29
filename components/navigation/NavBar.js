@@ -16,6 +16,11 @@ import theme from "../../pages/theme";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    backgroundColor: "#fff",
+    color: "#26303e",
+    fontWeight: "bold",
+    marginRight: 100,
+    marginLeft: 100,
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -27,14 +32,7 @@ const useStyles = makeStyles((theme) => ({
     height: 40,
     margin: 10,
   },
-  link: {
-    textDecoration: "none",
-    color: "#fff",
-    fontSize: "1.5rem",
-  },
-  ai: {
-    color: "#437ff1",
-  },
+
   signout: {
     width: "150px",
   },
@@ -47,13 +45,15 @@ export default function NavBar({ auth }) {
   return (
     <div className={classes.root}>
       <AppBar position="static" color="transparent" elevation={0}>
-        <Toolbar>
-          <Brand leftalign light />
+        <Toolbar disableGutters>
+          <Brand leftalign />
 
           {user.id ? (
             //Authorized Navigation
             <Fragment>
-              <NavBarLink href="/dashboard">Dashboard</NavBarLink>
+              <NavBarLink color="inherit" href="/dashboard">
+                Dashboard
+              </NavBarLink>
               <Button
                 color="inherit"
                 onClick={signoutUser}

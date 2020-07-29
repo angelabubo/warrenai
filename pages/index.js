@@ -4,17 +4,20 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { Typography } from "@material-ui/core";
 import { Fragment } from "react";
+
 const useStyles = makeStyles((theme) => ({
-  title: {
-    backgroundColor: "#26303e",
-    color: "#fff",
-    marginBottom: "5rem",
+  heading: {
+    backgroundColor: "#fff",
+    color: "#26303e",
+    padding: 0,
   },
   content: {
     margin: "5rem",
   },
   about: {
-    color: "#26303e",
+    backgroundColor: "#26303e",
+    color: "#fff",
+
     marginBottom: "5rem",
   },
 }));
@@ -24,7 +27,7 @@ const Index = (props) => {
   return (
     <Fragment>
       {/* Title */}
-      <Container maxWidth={false} className={classes.title}>
+      <Container maxWidth={false} className={classes.heading}>
         <NavBar {...props} />
         <Typography className={classes.content}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
