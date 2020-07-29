@@ -31,9 +31,11 @@ const useStyles = makeStyles((theme) => ({
   contentHeading: {
     padding: 100,
     minHeight: 800,
+    width: "100%",
   },
   content: {
     padding: 100,
+    width: "100%",
   },
   laptop: {
     maxWidth: 500,
