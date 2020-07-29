@@ -65,9 +65,9 @@ export default function NavBar({ auth }) {
           ) : (
             //Unauthorized Navigation
             <Fragment>
-              <NavBarLink href="/">About</NavBarLink>
-              <NavBarLink href="/">Pricing</NavBarLink>
-              <NavBarLink href="/">Contact</NavBarLink>
+              <NavBarLink href="/#about">About</NavBarLink>
+              {/* <NavBarLink href="/">Pricing</NavBarLink> */}
+              <NavBarLink href="/#contact">Contact</NavBarLink>
 
               <NavBarLink href="/signin">Sign In</NavBarLink>
               <NavBarLink href="/signup">Sign Up</NavBarLink>
