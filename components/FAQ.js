@@ -15,7 +15,7 @@ const useStyles = makeStyles({
 const FAQ = ({ question, answer }) => {
   const classes = useStyles();
   return (
-    <Paper variant="outlined" square className={classes.root} elevation={3}>
+    <Paper square className={classes.root} elevation={3}>
       <Typography variant="h5" gutterBottom component="p">
         {question}
       </Typography>

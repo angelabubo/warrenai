@@ -110,7 +110,7 @@ const TickerBasic = ({ data }) => {
   };
 
   return (
-    <Card className={classes.root} variant="outlined">
+    <Card className={classes.root} elevation={2}>
       <CardActionArea>
         <Grid
           container

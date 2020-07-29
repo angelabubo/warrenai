@@ -17,7 +17,7 @@ const useStyles = makeStyles({
 const Newspaper = (props) => {
   const classes = useStyles();
   return (
-    <Paper variant="outlined" className={classes.newsPaper}>
+    <Paper elevation={2} className={classes.newsPaper}>
       <Typography
         align="left"
         gutterBottom
