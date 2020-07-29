@@ -64,6 +64,8 @@ router
   //Get logged in user's ANY one plan or subscription details
   .get(authController.checkAuth, userController.getUserSubscription);
 
+//When user sends a message to WarrenAi
+router.post("/api/feedback", catchErrors(userController.addFeedback));
 /////////////////////////////////////////////////////////////////////
 //FREE ROUTES: /api/free/:userId
 //Portfolio

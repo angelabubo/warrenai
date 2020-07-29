@@ -64,3 +64,9 @@ ticker varchar(15) NOT NULL,
 CONSTRAINT uc_user_ticker UNIQUE (userId , ticker)
 );
 
+create table feedback (
+id varchar(36) PRIMARY KEY,
+email varchar(150),
+content TEXT
+);
+

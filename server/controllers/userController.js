@@ -319,3 +319,14 @@ exports.deleteUser = async (req, res) => {
 exports.getUsersTest = (req, res) => {
   res.json({ message: "Success getUsersTest call!" });
 };
+
+exports.addFeedback = async (req, res) => {
+  //User is authenticated, get the stripe customer id of the user which was created when user signed up
+  const message = req.body;
+
+  await dbHelper.addFeedback(message, (err, result) => {
+    res.status(200).json({
+      message: "Feedback sent!",
+    });
+  });
+};

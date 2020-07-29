@@ -642,6 +642,27 @@ exports.deleteWatchlist = (userId, ticker, callback) => {
     });
 };
 
+exports.addFeedback = (message, callback) => {
+  const { email, content } = message;
+
+  let statement = "insert into feedback values (uuid(), ?, ?)";
+
+  dbConnection
+    .execute(statement, [email, content])
+    .then(([rows, fields]) => {
+      if (rows.affectedRows > 0) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    })
+    //Return error to the caller
+    .catch((err) => {
+      console.log("[ERROR][addFeedback] - " + err.message);
+      callback(err, null);
+    });
+};
+
 //Generic Helpers
 exports.getTableRow = (table, colFilter, colFilterValue) => {
   let statement = `select * from ${table} where ${colFilter} = ?`;

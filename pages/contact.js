@@ -8,23 +8,62 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle,
 } from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
 import Link from "next/link";
 import { authInitialProps } from "../lib/auth";
 import { useState } from "react";
 import { sendFeedback } from "../lib/api";
 import Button from "@material-ui/core/Button";
 import Slide from "@material-ui/core/Slide";
-import Router from "next/router";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+
 import Brand from "../components/Brand";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Container from "@material-ui/core/Container";
 import { Fragment } from "react";
 import { Grid } from "@material-ui/core";
 
-function Contact() {
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+const base_url = "http://localhost:3000";
+
+const DialogTitle = (props) => {
+  const { children, classes, onClose, ...other } = props;
+  return (
+    <MuiDialogTitle disableTypography className={classes.rootDlg} {...other}>
+      <Grid
+        container
+        direction="row"
+        justify="space-between"
+        alignItems="center"
+      >
+        <Grid item>
+          <Typography variant="h6" display="inline">
+            {children}
+          </Typography>
+        </Grid>
+        <Grid item>
+          {onClose ? (
+            <IconButton
+              aria-label="close"
+              className={classes.closeButton}
+              onClick={onClose}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          ) : null}
+        </Grid>
+      </Grid>
+    </MuiDialogTitle>
+  );
+};
+
+const Contact = () => {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -34,6 +73,12 @@ function Contact() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false);
+
+  const handleClose = () => {
+    location.replace("/");
+    setOpenSuccess(false);
+  };
 
   const handleChange = (evt) => {
     const { name, value } = evt.target;
@@ -52,13 +97,21 @@ function Contact() {
 
     sendFeedback(message)
       .then(() => {
-        Router.push("/");
+        setMessage({
+          email: "",
+          content: "",
+        });
         setIsLoading(false);
+        setOpenSuccess(true);
       })
       .catch((err) => {
         console.log(err);
-        Router.push("/");
+        setMessage({
+          email: "",
+          content: "",
+        });
         setIsLoading(false);
+        setOpenSuccess(true);
       });
   };
 
@@ -106,6 +159,7 @@ function Contact() {
                   </FormControl>
                   <FormControl margin="normal" fullWidth={true}>
                     <TextField
+                      id="outlined-multiline-static"
                       variant="outlined"
                       size="small"
                       label="Message"
@@ -113,8 +167,8 @@ function Contact() {
                       name="content"
                       onChange={handleChange}
                       value={message.content}
-                      rows={5}
                       multiline
+                      rows={5}
                     />
                   </FormControl>
                   <Button
@@ -132,12 +186,43 @@ function Contact() {
             </div>
           </Grid>
         </Grid>
+
+        {/* Success Dialog */}
+        <Dialog
+          open={openSuccess}
+          TransitionComponent={Transition}
+          style={{ minWidth: 350, minHeight: 250 }}
+          onClose={handleClose}
+        >
+          <DialogTitle
+            id="customized-dialog-title"
+            onClose={handleClose}
+            classes
+          >
+            Contact Us
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Thank you for your feedback! Have a great day!
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
       </Container>
     </Fragment>
   );
-}
+};
 
 const useStyles = makeStyles((theme) => ({
+  rootDlg: {
+    margin: 0,
+    padding: theme.spacing(2),
+  },
+  closeButton: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
   root: {
     width: "auto",
     display: "block",
@@ -185,5 +270,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// Contact.getInitialProps = authInitialProps(true);
 export default Contact;
