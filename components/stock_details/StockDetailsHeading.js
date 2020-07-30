@@ -65,7 +65,7 @@ const StockDetailsHeading = (props) => {
       <div
         className={classes.root}
         style={{
-          backgroundImage: `linear-gradient(to left, rgba(0,0,0,0) , rgba(0,0,0,1)), url(${coverImageUrl})`,
+          backgroundImage: `linear-gradient(to left, rgba(0,0,0,0.40) , rgba(0,0,0,1)), url(${coverImageUrl})`,
         }}
       >
         <Grid
