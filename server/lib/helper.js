@@ -1,5 +1,6 @@
 const stocks_us = require("../data/stocks_us");
 const stocks_ca = require("../data/stocks_ca");
+const moment = require("moment");
 
 fs = require("fs");
 
@@ -62,4 +63,10 @@ exports.getStockExhangeShort = (ticker) => {
     });
     return stock ? stock.exchangeShort : null;
   }
+};
+
+exports.get3MonthsTicks = () => {
+  const from = Math.floor(moment().subtract(3, "months").valueOf() / 1000);
+  const to = Math.floor(moment().valueOf() / 1000);
+  console.log(from, to);
 };
