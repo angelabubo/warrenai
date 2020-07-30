@@ -110,11 +110,18 @@ router.get(
   freemiumController.getCompleteTickerData
 );
 
-//Company Details ticker data
+//Latest general news
 router.get(
   "/api/free/:userId/news",
   authController.checkAuth,
   freemiumController.getGeneralNews
+);
+
+//2 month Candlestick Data
+router.get(
+  "/api/free/:userId/candlestick/:ticker",
+  authController.checkAuth,
+  freemiumController.getCandlestick
 );
 
 /////////////////////////////////////////////////////////////////////

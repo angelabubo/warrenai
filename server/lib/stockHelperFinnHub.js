@@ -1,5 +1,6 @@
 const axios = require("axios");
 const moment = require("moment");
+const helper = require("./helper");
 
 const APIKEY = process.env.FINNHUB_APIKEY;
 const baseURL = "https://finnhub.io/api/v1";
@@ -46,6 +47,27 @@ exports.getGeneralNews = async () => {
 
     const { data } = await axios.get(
       baseURL + `/news?category=general` + suffixURL
+    );
+
+    return data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+//https://finnhub.io/api/v1/stock/candle?symbol=IBM&resolution=D&from=1572651390&to=1575243390&token=
+//Get 2 months candlestick data
+exports.getCandlestick = async (ticker) => {
+  try {
+    // const from = moment().subtract(1, "days").format("YYYY-MM-DD");
+    // const to = moment().format("YYYY-MM-DD");
+    const dates = helper.get2MonthsTicks();
+
+    const { data } = await axios.get(
+      baseURL +
+        `/stock/candle?symbol=${ticker}&resolution=D&from=${dates.from}&to=${dates.to}` +
+        suffixURL
     );
 
     return data;

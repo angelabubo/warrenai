@@ -49,12 +49,12 @@ const MarketPerformance = (props) => {
 
           <Grid item>
             <Typography align="left" variant="h5" component="h2">
-              3-Month Candlestick
+              60-Day Candlestick
             </Typography>
           </Grid>
 
           <Grid item>
-            <CandlestickChart data={dataFromServer} />
+            <CandlestickChart data={props.candleData} />
           </Grid>
         </Grid>
       </div>

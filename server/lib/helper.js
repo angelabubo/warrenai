@@ -65,10 +65,10 @@ exports.getStockExhangeShort = (ticker) => {
   }
 };
 
-exports.get3MonthsTicks = () => {
-  const from = Math.floor(moment().subtract(3, "months").valueOf() / 1000);
+exports.get2MonthsTicks = () => {
+  const from = Math.floor(moment().subtract(2, "months").valueOf() / 1000);
   const to = Math.floor(moment().valueOf() / 1000);
-  console.log(from, to);
+
   return { from, to };
 };
 

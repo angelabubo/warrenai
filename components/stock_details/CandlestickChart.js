@@ -31,7 +31,7 @@ const CandlestickChart = ({ data, title }) => {
   useEffect(() => {
     setTimeout(() => {
       setSeries(seriesData);
-    }, 1000);
+    }, 700);
   }, []);
 
   const options = {

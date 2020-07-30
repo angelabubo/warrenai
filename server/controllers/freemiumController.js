@@ -424,3 +424,20 @@ exports.getGeneralNews = async (req, res) => {
     res.json([]);
   }
 };
+
+exports.getCandlestick = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  const { userId, ticker } = req.params;
+
+  const candles = await stockHelperFh.getCandlestick(ticker);
+
+  if (candles) res.json(candles);
+  else res.json({});
+};
