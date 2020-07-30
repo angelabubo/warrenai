@@ -17,7 +17,7 @@ exports.validateSignup = [
     check("password", "Enter a password.").notEmpty(),
     check("password", "Password must be between 8 and 20 characters.").isLength(
       {
-        min: 1, //TODO
+        min: 8,
         max: 20,
       }
     ),

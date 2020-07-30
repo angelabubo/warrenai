@@ -112,7 +112,7 @@ exports.validateUpdatePassword = [
       "newPassword",
       "Password must be between 8 and 20 characters."
     ).isLength({
-      min: 4, //TODO
+      min: 8,
       max: 20,
     }),
     //Confirmation Password should be the same as new password
