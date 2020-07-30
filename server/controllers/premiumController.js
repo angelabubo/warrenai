@@ -85,7 +85,7 @@ const processCompanyFinancials = async (tickers) => {
   let promises = [];
   //Get company basic financials info from FinnHub
   for (let i = 0; i < tickers.length; i++) {
-    promises.push(stockHelperFh.getBasicFinancial(tickers[i]));
+    promises.push(stockHelperFh.getBasicFinancial(tickers[i], "valuation"));
   }
   const tickerFinancesFromFinn = await Promise.all(promises);
 

@@ -22,10 +22,10 @@ exports.getQuote = async (ticker) => {
 
 //https://finnhub.io/api/v1/stock/metric?symbol=AMZN&metric=valuation&token=
 //Get real-time basic financial data for US stocks.
-exports.getBasicFinancial = async (ticker) => {
+exports.getBasicFinancial = async (ticker, metric) => {
   try {
     const { data } = await axios.get(
-      baseURL + `/stock/metric?symbol=${ticker}&metric=valuation` + suffixURL
+      baseURL + `/stock/metric?symbol=${ticker}&metric=${metric}` + suffixURL
     );
 
     data.metric["ticker"] = ticker;

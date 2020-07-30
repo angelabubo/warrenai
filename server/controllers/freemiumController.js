@@ -4,6 +4,7 @@ const stockHelperUni = require("../lib/stockHelperUnibit");
 const Portfolio = require("../models/Portfolio");
 const Watchlist = require("../models/Watchlist");
 const BasicTicker = require("../models/BasicTicker");
+const CompanyDetails = require("../models/CompanyDetails");
 
 const processTickers = async (tickers, portfoliosFromDB) => {
   let promises = [];
@@ -340,4 +341,67 @@ exports.getBasicTickerData = async (req, res) => {
   } else {
     res.json([]);
   }
+};
+
+const processCompleteTickerData = async (ticker) => {
+  //Get company info from Unibit
+  let tickers = [];
+  tickers.push(ticker);
+  const fields = [
+    "company_name",
+    "sector",
+    "address",
+    "phone",
+    "website",
+    "employee_number",
+    "company_description",
+  ];
+  const companyProfile = await stockHelperUni.getBasicCompanyData(
+    tickers,
+    fields
+  );
+  const companyInfo = companyProfile[ticker];
+
+  //Get Company Basic Financial from FinnHub
+  const companyFinancial = await stockHelperFh.getBasicFinancial(
+    ticker,
+    "price"
+  );
+
+  const tickerData = new CompanyDetails(
+    ticker,
+    companyInfo.company_name,
+    companyInfo.company_description,
+    companyInfo.sector,
+    companyInfo.address,
+    companyInfo.phone,
+    companyInfo.website,
+    companyInfo.employee_number,
+    companyFinancial.marketCapitalization,
+    companyFinancial["5DayPriceReturnDaily"],
+    companyFinancial["13WeekPriceReturnDaily"],
+    companyFinancial["26WeekPriceReturnDaily"],
+    companyFinancial["52WeekPriceReturnDaily"],
+    companyFinancial["yearToDatePriceReturnDaily"]
+  );
+
+  const jsonStr = JSON.stringify(tickerData);
+  return JSON.parse(jsonStr);
+};
+
+exports.getCompleteTickerData = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  const { userId, ticker } = req.params;
+
+  const tickerData = await processCompleteTickerData(ticker);
+  console.log(tickerData);
+  if (tickerData) res.json(tickerData);
+  else res.json([]);
 };

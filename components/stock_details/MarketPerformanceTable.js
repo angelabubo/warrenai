@@ -64,7 +64,7 @@ const MarketPerformanceTable = ({ data }) => {
                   color: Math.sign(row.pr5d) === -1 ? "red" : "#26303e",
                 }}
               >
-                {row.pr5d.toFixed(2)}
+                {row.pr5d && row.pr5d.toFixed(2)}
               </TableCell>
               <TableCell
                 component="th"
@@ -74,7 +74,7 @@ const MarketPerformanceTable = ({ data }) => {
                   color: Math.sign(row.pr13w) === -1 ? "red" : "#26303e",
                 }}
               >
-                {row.pr13w.toFixed(2)}
+                {row.pr13w && row.pr13w.toFixed(2)}
               </TableCell>
               <TableCell
                 component="th"
@@ -84,7 +84,7 @@ const MarketPerformanceTable = ({ data }) => {
                   color: Math.sign(row.pr26w) === -1 ? "red" : "#26303e",
                 }}
               >
-                {row.pr26w.toFixed(2)}
+                {row.pr26w && row.pr26w.toFixed(2)}
               </TableCell>
               <TableCell
                 component="th"
@@ -94,7 +94,7 @@ const MarketPerformanceTable = ({ data }) => {
                   color: Math.sign(row.pr52w) === -1 ? "red" : "#26303e",
                 }}
               >
-                {row.pr52w.toFixed(2)}
+                {row.pr52w && row.pr52w.toFixed(2)}
               </TableCell>
               <TableCell
                 component="th"
@@ -104,7 +104,7 @@ const MarketPerformanceTable = ({ data }) => {
                   color: Math.sign(row.prytd) === -1 ? "red" : "#26303e",
                 }}
               >
-                {row.prytd.toFixed(2)}
+                {row.prytd && row.prytd.toFixed(2)}
               </TableCell>
             </TableRow>
           ))}

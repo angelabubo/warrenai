@@ -52,9 +52,11 @@ const CompanyDetail = ({ CustomIcon, Detail }) => {
 const CompanyProfile = ({ data }) => {
   const classes = useStyles();
   const logoSource = data.website
-    .replace("http://", "")
-    .replace("https://", "")
-    .split(/[/?#]/)[0];
+    ? data.website
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#]/)[0]
+    : "";
   const logoUrl = `https://logo.clearbit.com/${logoSource}`;
 
   return (
