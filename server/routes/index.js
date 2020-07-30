@@ -110,6 +110,13 @@ router.get(
   freemiumController.getCompleteTickerData
 );
 
+//Company Details ticker data
+router.get(
+  "/api/free/:userId/news",
+  authController.checkAuth,
+  freemiumController.getGeneralNews
+);
+
 /////////////////////////////////////////////////////////////////////
 //PREMIUM ROUTES: /api/premium
 //WarrenAiTopCompanies

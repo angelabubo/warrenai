@@ -405,3 +405,22 @@ exports.getCompleteTickerData = async (req, res) => {
   if (tickerData) res.json(tickerData);
   else res.json([]);
 };
+
+exports.getGeneralNews = async (req, res) => {
+  //Check if user who sent the request is authenticated (signed in)
+  if (!req.isAuthUser) {
+    res.status(403).json({
+      message: "You are unauthenticated. Please sign in or sign up",
+    });
+    return res.redirect("/signin");
+  }
+
+  const news = await stockHelperFh.getGeneralNews();
+
+  if (news) {
+    const selectedNews = news.slice(0, 8);
+    res.json(selectedNews);
+  } else {
+    res.json([]);
+  }
+};

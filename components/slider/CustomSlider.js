@@ -13,10 +13,13 @@ const CustomSlider = (props) => {
   return (
     <div>
       <Carousel {...settings}>
-        {data &&
+        {data ? (
           data.map((element, index) => {
             return <Slide key={index} data={element} />;
-          })}
+          })
+        ) : (
+          <Slide key={0} data={data} />
+        )}
       </Carousel>
     </div>
   );

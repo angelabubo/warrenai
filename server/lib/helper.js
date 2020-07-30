@@ -69,4 +69,12 @@ exports.get3MonthsTicks = () => {
   const from = Math.floor(moment().subtract(3, "months").valueOf() / 1000);
   const to = Math.floor(moment().valueOf() / 1000);
   console.log(from, to);
+  return { from, to };
+};
+
+exports.getYesterDayNow = (formatString) => {
+  const from = moment().subtract(1, "days").format("YYYY-MM-DD");
+  const to = moment().format("YYYY-MM-DD");
+
+  return { from, to };
 };

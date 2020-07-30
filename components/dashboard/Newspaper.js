@@ -1,4 +1,6 @@
-import { news } from "../../data/news";
+import React, { useEffect, useState } from "react";
+import { testnews } from "../../data/news";
+import { getGeneralNews } from "../../lib/api";
 import CustomSlider from "../slider/CustomSlider";
 
 import Paper from "@material-ui/core/Paper";
@@ -16,6 +18,22 @@ const useStyles = makeStyles({
 
 const Newspaper = (props) => {
   const classes = useStyles();
+  const userId = props.auth.user.id;
+
+  const [news, setNews] = useState(null);
+
+  useEffect(() => {
+    //setNews(testnews);
+    getGeneralNews(userId)
+      .then((result) => {
+        setNews(result);
+      })
+      .catch((err) => {
+        console.log(err.message);
+        setNews(null);
+      });
+  }, []);
+
   return (
     <Paper elevation={2} className={classes.newsPaper}>
       <Typography

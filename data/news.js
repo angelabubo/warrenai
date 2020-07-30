@@ -1,4 +1,4 @@
-export const news = [
+export const testnews = [
   {
     category: "top news",
     datetime: 1595688788,
