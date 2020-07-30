@@ -3,6 +3,7 @@ import MaterialTable from "material-table";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "../../pages/theme";
 import { addPortfolio, getPortfolio, deletePortfolio } from "../../lib/api";
+import Link from "next/link";
 
 //Custom Components
 import GenericDialog from "../dialog/GenericDialog";
@@ -200,7 +201,17 @@ const PortfolioTable = (props) => {
         title="My Portfolio"
         icons={tableIcons}
         columns={[
-          { title: "Ticker", field: "ticker" },
+          {
+            title: "Ticker",
+            field: "ticker",
+            render: (rowData) => {
+              return (
+                <Link href={`/company/details/${rowData.ticker}`}>
+                  <a style={{ color: "inherit" }}>{rowData.ticker}</a>
+                </Link>
+              );
+            },
+          },
           { title: "Quantity", field: "qty" },
           {
             title: "Avg. Cost",

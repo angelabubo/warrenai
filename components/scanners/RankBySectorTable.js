@@ -4,6 +4,7 @@ import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "../../pages/theme";
 import { getCompaniesBySectorFromServer } from "../../lib/api";
 import { sectors } from "../../data/sectors";
+import Link from "next/link";
 
 //Custom Components
 import GenericDialog from "../dialog/GenericDialog";
@@ -249,7 +250,17 @@ const RankBySectorTable = (props) => {
           title="Company Financials"
           icons={tableIcons}
           columns={[
-            { title: "Ticker", field: "ticker" },
+            {
+              title: "Ticker",
+              field: "ticker",
+              render: (rowData) => {
+                return (
+                  <Link href={`/company/details/${rowData.ticker}`}>
+                    <a style={{ color: "inherit" }}>{rowData.ticker}</a>
+                  </Link>
+                );
+              },
+            },
             { title: "Company", field: "company_name" },
             { title: "Sector", field: "sector" },
             { title: "PE Ratio", field: "pe_ratio" },

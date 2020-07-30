@@ -3,6 +3,7 @@ import MaterialTable from "material-table";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "../../pages/theme";
 import { deleteWatchlist, addWatchlist, getWatchlist } from "../../lib/api";
+import Link from "next/link";
 
 import { dataWatchlist } from "./data";
 //Custom Components
@@ -172,7 +173,17 @@ const WatchlistTable = (props) => {
         title="My Watchlist"
         icons={tableIcons}
         columns={[
-          { title: "Ticker", field: "ticker" },
+          {
+            title: "Ticker",
+            field: "ticker",
+            render: (rowData) => {
+              return (
+                <Link href={`/company/details/${rowData.ticker}`}>
+                  <a style={{ color: "inherit" }}>{rowData.ticker}</a>
+                </Link>
+              );
+            },
+          },
           {
             title: "Open",
             field: "open",
