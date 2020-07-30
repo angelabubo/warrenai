@@ -7,7 +7,6 @@ import { sectors } from "../../data/sectors";
 
 //Custom Components
 import GenericDialog from "../dialog/GenericDialog";
-import StocksSearchBar from "../stocks/StocksSearchBar";
 import SubscriptionRequired from "../../components/SubscriptionRequired";
 
 import Paper from "@material-ui/core/Paper";

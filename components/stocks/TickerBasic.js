@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { useRouter } from "next/router";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
@@ -105,8 +106,9 @@ const TickerBasic = ({ data }) => {
     );
   };
 
+  const router = useRouter();
   const openTickerDetails = () => {
-    alert("OPEN" + data.ticker);
+    router.push(`/company/details/${data.ticker}`);
   };
 
   return (

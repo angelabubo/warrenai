@@ -7,7 +7,6 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-
 const MAX_CHAR = 115;
 
 const useStyles = makeStyles({
@@ -60,7 +59,11 @@ const CompanyCard = ({ data }) => {
         >
           Website
         </Button>
-        <Button href="/dashboard" size="small" color="secondary">
+        <Button
+          href={`/company/details/${data.ticker}`}
+          size="small"
+          color="secondary"
+        >
           Learn More
         </Button>
       </CardActions>

@@ -117,6 +117,12 @@ nextApp.prepare().then(() => {
     return nextApp.render(req, res, "/account/settings", routeParams);
   });
 
+  //Route handler to get Ticker Details page
+  expressApp.get("/company/details/:ticker", (req, res) => {
+    const routeParams = Object.assign({}, req.params, req.query);
+    return nextApp.render(req, res, "/company/details", routeParams);
+  });
+
   /* default route
      - allows Next to handle all other routes
      - includes the numerous `/_next/...` routes which must be exposedfor the next app to work correctly

@@ -239,6 +239,10 @@ const NavDrawer = ({ children, auth }) => {
     setOpenPortfolio(!openPortfolio);
   };
 
+  const handleSearchCallback = (option) => {
+    router.push(`/company/details/${option.ticker}`);
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -266,7 +270,11 @@ const NavDrawer = ({ children, auth }) => {
             justify="space-between"
           >
             <Grid item>
-              <StocksSearchBar minWidth={330} maxWidth={400} />
+              <StocksSearchBar
+                onSelectCallback={handleSearchCallback}
+                minWidth={330}
+                maxWidth={400}
+              />
             </Grid>
             <Grid item>
               <AccountMenu userName={displayName} />
