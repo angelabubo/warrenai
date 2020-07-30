@@ -9,6 +9,7 @@ import NavDrawer from "../../components/navigation/NavDrawer";
 import StockDetailsHeading from "../../components/stock_details/StockDetailsHeading";
 import MarketPerformance from "../../components/stock_details/MarketPerformance";
 import CompanyProfile from "../../components/stock_details/CompanyProfile";
+import { Grid } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +49,18 @@ const CompanyDetails = (props) => {
     <div>
       <NavDrawer {...props}>
         {loading ? (
-          <CircularProgress size={150} className={classes.loadingIcon} />
+          <Fragment>
+            <Grid
+              container
+              direction="column"
+              justify="center"
+              alignItems="center"
+            >
+              <Grid item>
+                <CircularProgress size={70} className={classes.loadingIcon} />{" "}
+              </Grid>
+            </Grid>
+          </Fragment>
         ) : (
           <Fragment>
             <StockDetailsHeading data={data} />

@@ -16,7 +16,6 @@ exports.BySector = {
 
 exports.ByTicker = {
   default: "https://cdn.ttweb.net/News/images/178753.jpg?preset=w800_q70",
-  CLX: "https://pbs.twimg.com/media/Dcnzp1oVMAABOGC.jpg",
   FL: "https://investorplace.com/wp-content/uploads/2020/05/fl-stock.jpg",
   PRU: "https://g.foolcdn.com/art/companylogos/square/pru.png",
   TCO:
