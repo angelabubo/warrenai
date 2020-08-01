@@ -12,7 +12,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { blue } from "@material-ui/core/colors";
 import Paper from "@material-ui/core/Paper";
 
-import theme from "../../pages/theme";
+import theme from "../theme";
 
 import CheckCircleOutlineIcon from "@material-ui/icons/Check";
 

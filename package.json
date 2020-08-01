@@ -4,8 +4,10 @@
   "description": "Warren Ai Mock Website",
   "main": "server/server.js",
   "scripts": {
-    "dev": "nodemon server/server.js",
-    "start": "node server/server.js"
+    "dev": "nodemon server/server.js --watch server",
+    "start": "node server/server.js",
+    "build": "next build",
+    "heroku-postbuild": "next build"
   },
   "author": "Angel Abubo",
   "license": "ISC",

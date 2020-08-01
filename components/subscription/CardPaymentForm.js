@@ -20,7 +20,7 @@ import {
   processSubscriptionRequest,
 } from "./subscriptionHelper";
 
-import theme from "../../pages/theme";
+import theme from "../theme";
 
 import CheckCircleOutlineIcon from "@material-ui/icons/Check";
 

@@ -11,7 +11,7 @@ import Link from "next/link";
 import Brand from "../Brand";
 import NavBarLink from "./NavBarLink";
 
-import theme from "../../pages/theme";
+import theme from "../theme";
 
 const useStyles = makeStyles((theme) => ({
   root: {

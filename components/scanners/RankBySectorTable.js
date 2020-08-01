@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef, Fragment } from "react";
 import MaterialTable from "material-table";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
-import theme from "../../pages/theme";
+import theme from "../theme";
 import { getCompaniesBySectorFromServer } from "../../lib/api";
 import { sectors } from "../../data/sectors";
 import Link from "next/link";

@@ -70,11 +70,3 @@ email varchar(150),
 content TEXT
 );
 
-=============================================================
-Current API Keys
-FINNHUB_APIKEY=bsatml7rh5r96cvcrbq0
-UNIBIT_APIKEY=Gx5te3INjwY8jK90qRYDnZR9pOldqBco
-
-Alternate free API Keys
-FINNHUB_APIKEY=bshdb5nrh5r9t1gms83g
-UNIBIT_APIKEY=Xoej1aT-OttGP1sD0MmVW8sdjIWPgY7Q
