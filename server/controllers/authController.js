@@ -7,8 +7,8 @@ exports.validateSignup = [
   [
     //Name should not be null and between 4-50 characters
     check("name", "Enter a name.").notEmpty(),
-    check("name", "Name must be between 4 and 50 characters.").isLength({
-      min: 4,
+    check("name", "Name must be between 3 and 50 characters.").isLength({
+      min: 3,
       max: 50,
     }),
     //Email should be valid, normalize and not null
@@ -17,7 +17,7 @@ exports.validateSignup = [
     check("password", "Enter a password.").notEmpty(),
     check("password", "Password must be between 8 and 20 characters.").isLength(
       {
-        min: 1, //TODO
+        min: 8,
         max: 20,
       }
     ),
@@ -65,8 +65,10 @@ exports.signin = (req, res, next) => {
       //Return User Information
       const loggedInUser = {
         id: user.id,
-        name: user.name,
+        name: user.fname,
         email: user.email,
+        fname: user.fname,
+        lname: user.lname,
       };
       res.json(loggedInUser);
     });

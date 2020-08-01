@@ -1,14 +1,72 @@
 DATABASE SETUP
 These are the scripts to prepare the database and initialize the table with values
 
-
 drop DATABASE if EXISTS db_warrenai;
 
 create DATABASE db_warrenai;
 
 USE db_warrenai;
 
-create table users (id varchar(36) PRIMARY KEY, name varchar(150), email varchar(150) UNIQUE, password TEXT NOT NULL);
+create table users (
+id varchar(36) PRIMARY KEY,
+stripeCustomerId varchar(36) UNIQUE,
+fname varchar(150) NOT NULL,
+lname varchar(150),
+email varchar(150) UNIQUE,
+password TEXT NOT NULL,
+default_paymentmethod_id varchar(36),
+default_paymentmethod_card_brand varchar(36),
+default_paymentmethod_card_last4 varchar(5)
+);
 
-//subsription
-//userid type(basic, premium), paymentplan
+create table subscriptions(
+id varchar(36) PRIMARY KEY,
+stripeCustomerId varchar(36) NOT NULL references users(stripeCustomerId),
+current_period_end BIGINT,
+status varchar(30),
+product_price_id varchar(36),
+product_id varchar(36),
+latest_invoice_id varchar(36),
+cancel_at_period_end BOOLEAN,
+cancel_at BIGINT
+);
+
+create table invoices (
+id varchar(36) PRIMARY KEY,
+invoice_number varchar(36),
+stripeCustomerId varchar(36) NOT NULL references users(stripeCustomerId),
+created_date BIGINT,
+product_description varchar(150),
+period_start BIGINT,
+period_end BIGINT,
+payment_method_brand varchar(36),
+payment_method_last4 varchar(5),
+total int,
+status varchar(30),
+payment_intent_id varchar(36),
+payment_intent_status varchar(30),
+receipt_url TEXT,
+charge_id varchar(36)
+);
+
+create table portfolio (
+id varchar(36) PRIMARY KEY,
+userId varchar(36),
+ticker varchar(15),
+qty INT,
+cost_per_share FLOAT
+);
+
+create table watchlist (
+id varchar(36) PRIMARY KEY,
+userId varchar(36) NOT NULL,
+ticker varchar(15) NOT NULL,
+CONSTRAINT uc_user_ticker UNIQUE (userId , ticker)
+);
+
+create table feedback (
+id varchar(36) PRIMARY KEY,
+email varchar(150),
+content TEXT
+);
+

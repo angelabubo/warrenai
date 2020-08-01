@@ -1,8 +1,8 @@
+import { checkNotAuth } from "../lib/auth";
+import TextField from "@material-ui/core/TextField";
 import {
   Typography,
   FormControl,
-  InputLabel,
-  Input,
   Paper,
   Snackbar,
   Dialog,
@@ -23,7 +23,6 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Container from "@material-ui/core/Container";
 import { Fragment } from "react";
 import { Grid } from "@material-ui/core";
-import { authInitialProps } from "../lib/auth";
 
 function Signin() {
   const classes = useStyles();
@@ -58,7 +57,7 @@ function Signin() {
 
     signinUser(user)
       .then(() => {
-        Router.push("/");
+        Router.push("/dashboard");
       })
       .catch((err) => {
         showError(err);
@@ -86,7 +85,12 @@ function Signin() {
         <Grid container direction="column" justify="center" alignItems="center">
           <Grid item>
             <div className={classes.root}>
-              <Paper className={classes.paper}>
+              <Paper
+                className={classes.paper}
+                square
+                variant="elevation"
+                elevation={5}
+              >
                 <Brand />
                 <ButtonGroup
                   color="primary"
@@ -99,9 +103,11 @@ function Signin() {
                   </Button>
                 </ButtonGroup>
                 <form onSubmit={handleSubmit} className={classes.form}>
-                  <FormControl margin="normal" fullWidth>
-                    <InputLabel htmlFor="name">Email</InputLabel>
-                    <Input
+                  <FormControl margin="normal" fullWidth={true}>
+                    <TextField
+                      variant="outlined"
+                      size="small"
+                      label="Email"
                       name="email"
                       type="email"
                       onChange={handleChange}
@@ -109,13 +115,14 @@ function Signin() {
                       value={user.email}
                     />
                   </FormControl>
-                  <FormControl margin="normal" fullWidth>
-                    <InputLabel htmlFor="password">Password</InputLabel>
-                    <Input
+                  <FormControl margin="normal" fullWidth={true}>
+                    <TextField
+                      variant="outlined"
+                      size="small"
+                      label="Password"
                       name="password"
                       type="password"
                       onChange={handleChange}
-                      placeholder="●●●●●●●●"
                       value={user.password}
                     />
                   </FormControl>
@@ -198,4 +205,5 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+Signin.getInitialProps = checkNotAuth;
 export default Signin;

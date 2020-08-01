@@ -1,6 +1,10 @@
 const express = require("express");
 const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
+const stripeController = require("../controllers/stripeController");
+const premiumController = require("../controllers/premiumController");
+const freemiumController = require("../controllers/freemiumController");
+const bodyParser = require("body-parser");
 
 const router = express.Router();
 
@@ -10,7 +14,7 @@ const catchErrors = (fn) => {
     return fn(req, res, next).catch(next);
   };
 };
-
+/////////////////////////////////////////////////////////////////////
 // AUTH ROUTES: /api/auth
 router.post(
   "/api/auth/signup",
@@ -20,16 +24,170 @@ router.post(
 router.post("/api/auth/signin", authController.signin);
 router.get("/api/auth/signout", authController.signout);
 
+/////////////////////////////////////////////////////////////////////
 //USER ROUTES: /api/users
+//Any route with userId will call the controller
 router.param("userId", userController.getUserById);
 
 router
   .route("/api/users/:userId")
-  //Get logged in user info
-  .get(userController.getAuthUser)
+  //Get logged in user info (name, id, email, subscription details)
+  .get(authController.checkAuth, userController.getAuthUser)
+  //Update logged in user info (name, id, email, subscription details)
+  .post(
+    authController.checkAuth,
+    userController.validateUpdateProfile,
+    catchErrors(userController.updateAuthUser)
+  )
   //When user wants to delete his account
   .delete(authController.checkAuth, catchErrors(userController.deleteUser));
 
-router.get("/api/users/profile/:userId", userController.getUserProfile);
+router.post(
+  "/api/users/:userId/password",
+  authController.checkAuth,
+  userController.validateUpdatePassword,
+  catchErrors(userController.updateAuthUserPassword)
+);
+
+router
+  .route("/api/users/:userId/billing")
+  //Get logged in user's billing information
+  .get(authController.checkAuth, userController.getUserBillingInfo);
+
+router
+  .route("/api/users/subscription/:userId")
+  //Get logged in user's ACTIVE plan or subscription details
+  .get(authController.checkAuth, userController.getUserPlan);
+
+router
+  .route("/api/users/subscription/:userId/get-any-subscription")
+  //Get logged in user's ANY one plan or subscription details
+  .get(authController.checkAuth, userController.getUserSubscription);
+
+//When user sends a message to WarrenAi
+router.post("/api/feedback", catchErrors(userController.addFeedback));
+/////////////////////////////////////////////////////////////////////
+//FREE ROUTES: /api/free/:userId
+//Portfolio
+router
+  .route("/api/free/:userId/portfolio")
+  //Get portfolio
+  .get(authController.checkAuth, freemiumController.getPortfolio)
+  //Add portfolio
+  .post(authController.checkAuth, freemiumController.addPortfolio);
+//Delete portfolio
+router.delete(
+  "/api/free/:userId/portfolio/:ticker",
+  authController.checkAuth,
+  catchErrors(freemiumController.deletePortfolio)
+);
+
+//Watchlist
+router
+  .route("/api/free/:userId/watchlist")
+  //Get watchlist
+  .get(authController.checkAuth, freemiumController.getWatchlist)
+  //Add watchlist
+  .post(authController.checkAuth, freemiumController.addWatchlist);
+//Delete watchlist
+router.delete(
+  "/api/free/:userId/watchlist/:ticker",
+  authController.checkAuth,
+  catchErrors(freemiumController.deleteWatchlist)
+);
+
+//Dashboard ticker data
+router.get(
+  "/api/free/:userId/basictickerdata",
+  authController.checkAuth,
+  freemiumController.getBasicTickerData
+);
+
+//Company Details ticker data
+router.get(
+  "/api/free/:userId/completetickerdata/:ticker",
+  authController.checkAuth,
+  freemiumController.getCompleteTickerData
+);
+
+//Latest general news
+router.get(
+  "/api/free/:userId/news",
+  authController.checkAuth,
+  freemiumController.getGeneralNews
+);
+
+//2 month Candlestick Data
+router.get(
+  "/api/free/:userId/candlestick/:ticker",
+  authController.checkAuth,
+  freemiumController.getCandlestick
+);
+
+/////////////////////////////////////////////////////////////////////
+//PREMIUM ROUTES: /api/premium
+//WarrenAiTopCompanies
+router.get(
+  "/api/premium/warrenaitopco/:userId",
+  authController.checkAuth,
+  premiumController.getWarrenAiTopCompanies
+);
+
+//Dividend Scanner
+router.get(
+  "/api/premium/dividendscanner/:userId",
+  authController.checkAuth,
+  premiumController.getDividendScanners
+);
+
+//Rank Companies by Sector
+router.get(
+  "/api/premium/rankcompanies/:userId",
+  authController.checkAuth,
+  premiumController.getRankCompanies
+);
+
+/////////////////////////////////////////////////////////////////////
+//STRIPE ROUTES: /api/stripe
+router.post(
+  "/api/stripe/:userId/create-subscription",
+  authController.checkAuth,
+  stripeController.createSubscription
+);
+
+router.post("/api/stripe/:userId/retry-invoice", stripeController.retryInvoice);
+
+router.post(
+  "/api/stripe/:userId/update-subscription",
+  authController.checkAuth,
+  stripeController.updateSubscription
+);
+
+router.post(
+  "/api/stripe/:userId/change-subscription",
+  authController.checkAuth,
+  stripeController.changeSubscription
+);
+
+router.post(
+  "/api/stripe/:userId/cancel-subscription",
+  authController.checkAuth,
+  stripeController.cancelSubscription
+);
+
+router.post(
+  "/api/stripe/:userId/update-payment-method",
+  authController.checkAuth,
+  stripeController.updatePaymentMethod
+);
+
+//STRIPE WEBHOOK handler for asynchronous events.
+router.post(
+  "/api/stripe/stripe-webhook",
+  bodyParser.raw({ type: "application/json" }),
+  stripeController.stripeWebhookHandler
+);
+
+router.get("/api/test", authController.checkAuth, userController.getUsersTest);
 
 module.exports = router;

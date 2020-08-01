@@ -3,7 +3,7 @@ import Typography from "@material-ui/core/Typography";
 
 export default ({ href, children }) => {
   return (
-    <div>
+    <div style={{ color: "inherit" }}>
       <ActiveLink href={href}>
         <Typography variant="button" noWrap={true}>
           {children}
