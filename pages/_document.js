@@ -19,6 +19,11 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap"
           />
           <link rel="stylesheet" href="/styles/styles.css" />
+          <link
+            rel="shortcut icon"
+            type="image/x-icon"
+            href="/img/favicon.ico"
+          />
         </Head>
         <body>
           <Main />
